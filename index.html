@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Bloom Series — Invitations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#f7e3ea; --bg2:#ecccd8; --accent:#c45d7c; --ink:#3b2a33; --soft:rgba(59,42,51,.62);
+  --glass:rgba(255,255,255,.52); --line:rgba(59,42,51,.14);
+  --serif:"Cormorant Garamond",Garamond,Georgia,serif; --caps:Cinzel,"Trajan Pro",Georgia,serif; --script:"Great Vibes","Snell Roundhand",cursive;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;color:var(--ink);font-family:var(--serif);overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(120% 90% at 50% 40%,var(--bg1) 0%,var(--bg2) 100%);transition:background 1.2s}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;transition:filter .7s ease,transform .7s ease,opacity .4s ease}
+body.fading #scene{opacity:0}
+#cardScene{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:19;touch-action:none;opacity:0;pointer-events:none;transition:opacity .45s}
+body.carding #cardScene{opacity:1;pointer-events:auto}
+body.carding #scene{filter:blur(14px) saturate(1.15) brightness(1.03);transform:scale(1.05)}
+body.carding .sheet,body.carding #dots,body.carding .top{opacity:0;pointer-events:none}
+.sheet,#dots,.top{transition:opacity .5s}
+#inv.webgl{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;justify-content:flex-end;pointer-events:none;padding-bottom:calc(env(safe-area-inset-bottom) + 24px)}
+#inv.webgl .rise{display:none}
+#inv.webgl .invbar,#inv.webgl .ihint{pointer-events:auto}
+.ihint{display:none;font-style:italic;font-size:15px;color:var(--soft);text-align:center}
+#inv.webgl .ihint{display:block}
+.frame{position:fixed;inset:18px;border:1px solid rgba(255,255,255,.7);pointer-events:none;z-index:1}
+
+.top{position:fixed;z-index:5;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;
+  padding:calc(env(safe-area-inset-top) + 30px) calc(env(safe-area-inset-right) + 34px) 0 calc(env(safe-area-inset-left) + 34px);pointer-events:none}
+.brand .script{font-family:var(--script);font-size:33px;line-height:1;display:block}
+.brand .sub{display:block;margin-top:5px;font-family:var(--caps);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
+.count{font-family:var(--caps);font-size:12px;letter-spacing:.24em;color:var(--soft);padding-top:10px}
+#dots{position:fixed;z-index:5;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 92px);display:flex;gap:9px}
+#dots button{width:9px;height:9px;border-radius:99px;background:var(--c);opacity:.45;box-shadow:0 0 0 1px rgba(255,255,255,.8);transition:width .4s,opacity .4s}
+#dots button.on{width:28px;opacity:1}
+
+.sheet{position:fixed;z-index:5;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 30px);
+  width:min(540px,calc(100% - 52px));display:flex;align-items:center;gap:4px;padding:12px 8px;border-radius:22px;
+  background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.75);box-shadow:0 14px 40px rgba(80,40,60,.14)}
+.info{flex:1;min-width:0;text-align:center}
+.flower{font-family:var(--script);font-size:34px;line-height:1.05;color:var(--accent);transition:color .8s}
+.title{font-size:19px;font-weight:600;line-height:1.15;margin-top:2px}
+.meta{font-size:15.5px;color:var(--soft)}
+.actions{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px}
+.btn{font-family:var(--caps);font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:10px 13px;border-radius:99px;border:1px solid var(--line);
+  background:rgba(255,255,255,.55);color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap;transition:transform .15s,background .3s}
+.btn:active{transform:scale(.96)}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent;font-weight:600}
+.nav{flex:0 0 38px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.5);font-size:21px;line-height:1;display:grid;place-items:center;padding-bottom:3px}
+
+#hint{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 116px);font-size:15px;font-style:italic;color:var(--soft);
+  opacity:0;transition:opacity .8s;pointer-events:none;white-space:nowrap}
+#hint.show{opacity:1}
+#busy{position:fixed;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--script);font-size:28px;color:var(--soft);opacity:0;transition:opacity .4s;pointer-events:none}
+#busy.show{opacity:1}
+#toast{position:fixed;z-index:40;left:50%;bottom:calc(env(safe-area-inset-bottom) + 190px);transform:translateX(-50%) translateY(8px);font-family:var(--caps);font-size:10.5px;
+  letter-spacing:.16em;text-transform:uppercase;padding:9px 16px;border-radius:99px;background:var(--ink);color:#fff;opacity:0;transition:all .4s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+#loader{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;background:radial-gradient(120% 90% at 50% 40%,#f7e3ea,#ecccd8);transition:opacity 1.1s}
+#loader.gone{opacity:0;pointer-events:none}
+#loader .script{font-family:var(--script);font-size:42px}
+#loader p{font-style:italic;color:var(--soft);font-size:17px;margin-top:2px}
+.sprout{width:46px;height:46px;margin:0 auto 14px;border-radius:50%;border:1.5px solid rgba(59,42,51,.15);border-top-color:var(--accent);animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* the invitation, opened */
+#inv{position:fixed;inset:0;z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;
+  background:rgba(60,40,50,.28);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);perspective:1500px}
+#inv.open{display:flex;animation:fade .5s both}
+@keyframes fade{from{opacity:0}}
+.tilt{transition:transform .25s ease-out;transform-style:preserve-3d}
+.card3d{position:relative;height:min(68dvh,calc((100vw - 40px)*1.4));aspect-ratio:1024/1434;transform-style:preserve-3d;
+  transition:transform 1s cubic-bezier(.2,.75,.2,1);animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{transform:translateY(40px) rotateX(18deg) scale(.92);opacity:0}}
+.card3d.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2.4%;overflow:hidden;
+  box-shadow:0 30px 60px rgba(40,20,30,.35),0 4px 12px rgba(40,20,30,.2)}
+.face.back{transform:rotateY(180deg)}
+.face canvas{width:100%;height:100%;display:block}
+.sheen{position:absolute;inset:0;pointer-events:none;mix-blend-mode:soft-light;opacity:.75;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.75) 47%,rgba(255,240,200,.4) 52%,transparent 68%);background-size:250% 250%;background-position:var(--sx,50%) var(--sy,50%)}
+.invbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.invbar .btn{background:rgba(255,255,255,.82)}
+.invbar .btn.primary{background:var(--accent)}
+
+/* the invitation's pages */
+#reader{position:fixed;inset:0;z-index:7;pointer-events:none;opacity:0;transition:opacity .5s}
+body.reading #reader{opacity:1}
+body.reading .rtop,body.reading .rbar{pointer-events:auto}
+body.reading .sheet,body.reading #dots,body.reading .top,body.reading #hint{opacity:0;pointer-events:none}
+.rtop{position:fixed;top:calc(env(safe-area-inset-top) + 22px);left:calc(env(safe-area-inset-left) + 22px);right:calc(env(safe-area-inset-right) + 26px);display:flex;justify-content:space-between;align-items:center}
+.rback{font-family:var(--caps);font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:10px 15px 10px 12px;border-radius:99px;background:var(--glass);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.75);box-shadow:0 8px 24px rgba(80,40,60,.1)}
+.rback b{font-family:var(--serif);font-size:17px;font-weight:500;line-height:0;margin-right:6px;position:relative;top:1px}
+.rcount{font-family:var(--caps);font-size:12px;letter-spacing:.24em;color:var(--soft)}
+.rhint{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top) + 74px);font-style:italic;font-size:15px;color:var(--soft);opacity:0;transition:opacity .8s;white-space:nowrap;pointer-events:none}
+.rhint.show{opacity:1}
+.rbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 22px);width:min(470px,calc(100% - 32px));display:flex;align-items:center;gap:6px;
+  padding:11px 8px;border-radius:22px;background:var(--glass);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);border:1px solid rgba(255,255,255,.75);box-shadow:0 14px 40px rgba(80,40,60,.14)}
+.rmid{flex:1;min-width:0;text-align:center}
+.rtitle{font-family:var(--script);font-size:30px;line-height:1.05;color:var(--accent)}
+.rdots{display:flex;gap:7px;justify-content:center;margin:6px 0 2px}
+.rdots button{width:7px;height:7px;padding:0;border-radius:99px;background:var(--accent);opacity:.3;transition:width .4s,opacity .4s}
+.rdots button.on{width:22px;opacity:1}
+.racts{display:flex;gap:7px;justify-content:center;flex-wrap:nowrap;margin-top:8px}
+.racts .btn{padding:9px 12px}
+.nav:disabled{opacity:.3;cursor:default}
+.rbar .nav{font-size:17px;padding-bottom:0}
+@media (max-width:640px){.rtop{top:calc(env(safe-area-inset-top) + 16px);left:16px;right:20px}.rhint{top:calc(env(safe-area-inset-top) + 64px);font-size:14px}.rbar{bottom:calc(env(safe-area-inset-bottom) + 16px)}.rtitle{font-size:27px}}
+
+/* RSVP */
+#modal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#modal.open{display:grid}
+.paper{width:min(430px,100%);max-height:calc(100dvh - 36px);overflow:auto;background:#fbf6ef;color:#3d2b33;border-radius:18px;padding:26px 24px 22px;
+  position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3);outline:1.5px solid #c9a35c;outline-offset:-9px}
+.paper h3{font-family:var(--script);font-weight:400;font-size:40px;line-height:1;text-align:center;color:#a8792f}
+.paper .lede{text-align:center;font-style:italic;font-size:17px;margin:4px 0 16px;opacity:.85}
+.paper label{display:block;font-family:var(--caps);font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin:12px 0 5px;color:#8a6a3a}
+.paper input,.paper textarea,.paper select{width:100%;font:inherit;font-size:18px;padding:9px 11px;border-radius:10px;border:1px solid #dccbb0;background:#fffdf9;color:#3d2b33}
+.paper textarea{resize:vertical;min-height:64px}
+.choice{display:flex;gap:8px}.choice label{flex:1;margin:0;cursor:pointer}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice span{display:block;text-align:center;font-family:var(--serif);font-size:16px;letter-spacing:0;text-transform:none;color:#3d2b33;padding:10px 6px;border-radius:10px;border:1px solid #dccbb0;background:#fffdf9}
+.choice input:checked + span{background:#3d2b33;color:#fbf6ef;border-color:#3d2b33}
+.row{display:flex;gap:10px;margin-top:18px}.row .btn{flex:1;text-align:center}
+.paper .btn{border-color:#dccbb0;background:#fff}.paper .btn.primary{background:#3d2b33;color:#fbf6ef}
+.close{position:absolute;top:12px;right:14px;font-size:26px;line-height:1;color:#8a6a3a}
+.note{font-size:14.5px;font-style:italic;opacity:.75;margin-top:10px;text-align:center}
+#rsvpOut{font-size:16px;line-height:1.35;min-height:150px}
+
+@media (max-width:640px){
+  .frame{inset:10px}
+  .top{padding:calc(env(safe-area-inset-top) + 20px) calc(env(safe-area-inset-right) + 22px) 0 calc(env(safe-area-inset-left) + 22px)}
+  .brand .script{font-size:29px}
+  #dots{top:calc(env(safe-area-inset-top) + 78px)}
+  #hint{top:calc(env(safe-area-inset-top) + 100px);font-size:14px}
+  .sheet{bottom:calc(env(safe-area-inset-bottom) + 18px);width:calc(100% - 32px)}
+}
+</style>
+</head>
+<body>
+<canvas id="scene" tabindex="0" aria-label="A living invitation card with a garden growing on it. Drag to turn it; scroll, swipe up or press the down arrow to open the invitation and read its pages."></canvas>
+<div class="frame"></div>
+<header class="top">
+  <div class="brand"><span class="script" id="seriesName">The Bloom Series</span><span class="sub" id="seriesTag"></span></div>
+  <div class="count"><span id="num">I</span> / <span id="total">V</span></div>
+</header>
+<nav id="dots" aria-label="Invitations"></nav>
+<div id="hint">Drag to turn the card · scroll down to read it</div>
+<div id="reader" aria-label="The invitation, opened">
+  <div class="rtop"><button class="rback" id="rBack"><b>‹</b>Garden</button><div class="rcount"><span id="rNum">1</span> / <span id="rTot">5</span></div></div>
+  <div class="rhint" id="rHint">Scroll to read on · pinch or double-tap to look closer</div>
+  <div class="rbar" id="rbar">
+    <button class="nav" id="rPrev" aria-label="Previous page">↑</button>
+    <div class="rmid"><div class="rtitle" id="rTitle">You’re invited</div><div class="rdots" id="rDots"></div><div class="racts" id="rActs"></div></div>
+    <button class="nav" id="rNext" aria-label="Next page">↓</button>
+  </div>
+</div>
+<div id="busy">Growing…</div>
+
+<section class="sheet" id="sheet" aria-live="polite">
+  <button class="nav" id="prev" aria-label="Previous invitation">‹</button>
+  <div class="info">
+    <div class="flower" id="fName"></div>
+    <div class="title" id="eTitle"></div>
+    <div class="meta" id="eMeta"></div>
+    <div class="actions">
+      <button class="btn primary" id="btnOpen">Read it</button>
+      <a class="btn" id="btnCal" href="#" target="_blank" rel="noopener">Calendar</a>
+      <button class="btn" id="btnRsvp">RSVP</button>
+    </div>
+  </div>
+  <button class="nav" id="next" aria-label="Next invitation">›</button>
+</section>
+
+<div id="inv" role="dialog" aria-modal="true" aria-label="Invitation">
+  <div class="tilt" id="tilt"><div class="card3d" id="card3d">
+    <div class="face front" id="faceF"><div class="sheen"></div></div>
+    <div class="face back" id="faceB"><div class="sheen"></div></div>
+  </div></div>
+  <div class="ihint" id="ihint">Drag to turn · tap the card to flip it · pinch or scroll to look closer</div>
+  <div class="invbar">
+    <button class="btn primary" id="iFlip">Turn over</button>
+    <a class="btn" id="iCal" href="#" target="_blank" rel="noopener">Calendar</a>
+    <a class="btn" id="iMap" href="#" target="_blank" rel="noopener">Directions</a>
+    <button class="btn" id="iRsvp">RSVP</button>
+    <button class="btn" id="iClose">Close</button>
+  </div>
+</div>
+
+<div id="toast">Copied</div>
+<div id="loader"><div><div class="sprout"></div><div class="script">Planting the gardens</div><p id="loadMsg">Opening the gates…</p></div></div>
+
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="rsvpH">
+  <div class="paper">
+    <button class="close" id="mClose" aria-label="Close">×</button>
+    <form id="rsvpForm">
+      <h3 id="rsvpH">Kindly Reply</h3>
+      <div class="lede" id="rsvpLede"></div>
+      <label for="rName">Your name</label>
+      <input id="rName" required autocomplete="name" placeholder="Full name">
+      <label>Will you join us?</label>
+      <div class="choice">
+        <label><input type="radio" name="att" value="Joyfully accepts" checked><span>Joyfully accepts</span></label>
+        <label><input type="radio" name="att" value="Regretfully declines"><span>Regretfully declines</span></label>
+      </div>
+      <label for="rGuests">Number of guests</label>
+      <select id="rGuests"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+      <label for="rNote">A note for the host (optional)</label>
+      <textarea id="rNote" placeholder="Dietary needs, a kind word…"></textarea>
+      <div class="row"><button type="submit" class="btn primary">Prepare my reply</button></div>
+    </form>
+    <div id="rsvpDone" hidden>
+      <h3>Thank you</h3>
+      <div class="lede">Your reply is ready to send to the host.</div>
+      <textarea id="rsvpOut" readonly></textarea>
+      <div class="row"><button class="btn primary" id="rCopy">Copy reply</button><a class="btn" id="rMail" href="#">Email host</a></div>
+      <p class="note">Send it to <b id="rAddr"></b></p>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     1. YOUR EVENT DETAILS — edit everything in this block
+     ========================================================= -->
+<script>
+window.BLOOM = {
+  series:   'The Bloom Series',
+  tagline:  'Five evenings in the garden · 2027',
+  host:     'Your Studio',
+  rsvpEmail:'hello@yourstudio.com',
+  timezone: 'Asia/Shanghai',
+  venue:    'The Glasshouse Garden',
+  address:  '88 Garden Lane, Shanghai',
+  signoff:  'With warmest wishes',
+  notes: [
+    ['Getting there', 'Ten minutes’ walk from Garden Lane station (Line 2, Exit 3), or take the 88 bus to the garden gate.'],
+    ['Parking', 'A small car park sits behind the glasshouse. Please car-share where you can.'],
+    ['Accessibility', 'Paths are step-free throughout. Tell us if anything would make the evening easier for you.'],
+    ['Gifts', 'Your company is the gift. If you like, bring a cutting from your own garden for our swap table.']
+  ],
+  faq: [
+    ['Can I bring a guest?', 'Your invitation is for you and one guest. Just add their name when you reply.'],
+    ['What if it rains?', 'The glasshouse is covered, so the evening goes ahead whatever the weather.'],
+    ['Are children welcome?', 'This is an adults-only evening, so it can stay calm and unhurried for everyone.']
+  ],
+  invites: [
+    { key:'cherry-blossom', flower:'Cherry Blossom', latin:'Prunus serrulata', numeral:'I',
+      welcome:'Spring is here, and so is a new season of evenings in the garden. We would love you to open it with us.',
+      story:{ title:'How it began', text:[
+        'The Bloom Series started with a single cherry tree. In the spring of 2019 twelve of us carried a table out of the studio, set it beneath the blossom and stayed talking until the lanterns burned low.',
+        'The next year forty people came. By the third we had outgrown the courtyard and found the glasshouse on Garden Lane, where every evening since has taken root.',
+        'This year the series grows to five evenings, one for each flower. It opens, as it always has, beneath the blossom.' ],
+        quote:'Every good thing we have made began as a conversation in a garden.', milestones:[['2019','One tree, twelve friends'],['2022','Our first full season'],['2027','Five evenings in bloom']] },
+      programme:[['18:30','Welcome drinks','Sparkling tea and blossom cordial on the lawn'],['19:00','A few words','A toast to the season ahead'],['19:15','First look','A preview of the year’s projects and evenings'],['20:00','Supper beneath the blossom','Small plates from the garden kitchen'],['21:00','Lanterns','Music, slow conversation and the walk home']],
+      theme:'New Beginnings', title:'Spring Opening Night',
+      date:'2027-03-20', start:'18:30', end:'21:30', rsvpBy:'2027-03-06', dress:'Soft pastels',
+      note:'We open the season beneath the blossoms with welcome drinks, a short toast and a first look at the year ahead.',
+      card:{paper:'#fbf2f0', ink:'#5e3341', accent:'#d9738f'},
+      petals:{base:'#fff7f9', tip:'#f6b3c6', edge:'#ec8cab'}, ui:'#f4a9bf' },
+    { key:'tulip', flower:'Tulip', latin:'Tulipa gesneriana', numeral:'II',
+      welcome:'An evening of making, sharing and trying things out. Come curious, leave with something you made.',
+      story:{ title:'Where ideas grow', text:[
+        'Our workshops began as Thursday sketch nights around the studio kitchen table: paper, pens and whatever we were stuck on that week.',
+        'Friends started bringing friends, and the table became three. We learned that the best ideas rarely arrive alone. They come up in rows, like tulips, when enough people tend them together.',
+        'This evening brings that table into the garden, with open studios hosted by the people we most love learning from.' ],
+        quote:'Bring a half-finished idea. Someone here will know what it needs.', milestones:[['2020','Thursday sketch nights'],['2023','Open studios begin'],['2027','Into the garden']] },
+      programme:[['18:00','Arrive and settle','Tea, pastries and a look around the studios'],['18:30','Open studios','Choose two: print, clay, type or light'],['19:45','Show and tell','Five minutes each, no slides allowed'],['20:15','Garden supper','Long tables among the tulip beds'],['21:00','Take it home','Pack up what you made, and a bulb to plant']],
+      theme:'Ideas in Bloom', title:'Creative Workshop Evening',
+      date:'2027-04-24', start:'18:00', end:'21:00', rsvpBy:'2027-04-10', dress:'Smart casual',
+      note:'Hands-on sessions, open studios and good conversation. Bring a curious mind and a friend.',
+      card:{paper:'#fdf0e4', ink:'#6b3323', accent:'#e0673f'},
+      petals:{base:'#ffd77a', tip:'#ff7d55', edge:'#ee4d68'}, ui:'#ff9a6b' },
+    { key:'rose', flower:'Rose', latin:'Rosa gallica', numeral:'III',
+      welcome:'A candlelit evening to say the simplest thing we know: thank you.',
+      story:{ title:'The people behind the work', text:[
+        'Nothing we make is made alone. Behind every project is a client who trusted us early, a partner who answered late at night and a family who waited while we finished.',
+        'For years we said thank you in emails and end-of-project notes. This year we wanted to say it properly: around one long table, with good food, roses and time.',
+        'You are invited because, in one way or another, you helped something grow.' ],
+        quote:'Gratitude, like a rose, is best given in person.', milestones:[['40+','projects together'],['12','cities and counting'],['1','long table tonight']] },
+      programme:[['19:00','Arrival','Rose-garden aperitif and canapés'],['19:30','Seated dinner','Four courses at the long table'],['20:45','Thanks','A few words from the studio, and from you'],['21:30','Dessert in the rose walk','Coffee, sweets and candlelight'],['22:30','Goodnight','A rose to take home']],
+      theme:'Gratitude', title:'Appreciation Dinner',
+      date:'2027-05-29', start:'19:00', end:'22:30', rsvpBy:'2027-05-15', dress:'Black tie optional',
+      note:'A candlelit long-table dinner to thank the people who make our work possible.',
+      dark:true, card:{paper:'#3a0e1b', ink:'#f7e7d9', accent:'#ec6b82'},
+      petals:{base:'#45040f', tip:'#b30f2d', edge:'#e2344f'}, ui:'#ec6b82' },
+    { key:'lavender', flower:'Lavender', latin:'Lavandula angustifolia', numeral:'IV',
+      welcome:'No agenda, no speeches. Just tea, music and the long blue hour of a summer evening.',
+      story:{ title:'Why we slow down', text:[
+        'Our busiest year taught us a quiet lesson: the work got better on the days we stopped rushing it.',
+        'So once a summer we put the laptops away and spend an evening doing very little, very well. We brew good tea, listen to live music and find a corner of the garden to talk in.',
+        'Come for an hour or stay until the lanterns go out. There is nowhere else to be.' ],
+        quote:'Rest is not the opposite of good work. It is where good work comes from.', milestones:[['2021','The first quiet evening'],['2024','Tea from three gardens'],['2027','The twilight salon']] },
+      programme:[['18:30','Tea is poured','Six teas from small gardens, served slowly'],['19:15','Acoustic set','Strings in the lavender walk'],['20:00','Quiet corners','Reading nooks, a chess table and hammocks'],['20:30','Twilight','Candles lit as the light turns blue'],['21:00','Goodnight','A sachet of lavender for your pillow']],
+      theme:'Slow Evenings', title:'Tea & Twilight Salon',
+      date:'2027-07-10', start:'18:30', end:'21:00', rsvpBy:'2027-06-26', dress:'Linen & light layers',
+      note:'An unhurried evening of tea, live acoustic music and quiet corners of the garden.',
+      dark:true, card:{paper:'#241d40', ink:'#efe9ff', accent:'#b29cf0'},
+      petals:{base:'#46288a', tip:'#b49ceb', edge:'#cdb9ff'}, ui:'#b9a2f2' },
+    { key:'sunflower', flower:'Sunflower', latin:'Helianthus annuus', numeral:'V',
+      welcome:'One last golden evening to close the series: music, dancing and a toast to the year we made together.',
+      story:{ title:'A year in full bloom', text:[
+        'Five evenings ago we opened the season beneath the blossom. Since then we have made things, thanked people, slowed down and grown.',
+        'Sunflowers turn to follow the light all day. This year we tried to do the same: towards good people, good work and the long warm evenings in between.',
+        'Join us to close the series in the last light of summer. Wear something bright and bring your dancing shoes.' ],
+        quote:'Turn towards the light, and the rest follows.', milestones:[['5','evenings this season'],['300+','guests through the gate'],['1','last golden hour']] },
+      programme:[['17:30','Golden hour','Lemonade and spritz in the sunflower field'],['18:30','Garden feast','Grill, salads and summer fruit'],['19:30','The year in pictures','A short film of the season'],['20:00','Dancing','A live band on the lawn'],['21:30','Last toast','Sparklers and a toast to next spring']],
+      theme:'Golden Hour', title:'Summer Celebration',
+      date:'2027-08-21', start:'17:30', end:'22:00', rsvpBy:'2027-08-07', dress:'Garden party chic',
+      note:'We close the series in the last light of summer with music, dancing and a toast to the year.',
+      card:{paper:'#fbf3d8', ink:'#4a3410', accent:'#c98a0c'},
+      petals:{base:'#e27a0c', tip:'#ffd23a', edge:'#ffc21a'}, ui:'#ffc94a' }
+  ]
+};
+</script>
+
+<!-- =========================================================
+     2. PRINTED ARTWORK — the gold-foil text on the card and its back
+     ========================================================= -->
+<script>
+window.BloomFmt = (function(){
+  const WD=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const MO=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function parts(s){const [y,m,d]=s.split('-').map(Number);return {y,m,d,wd:new Date(y,m-1,d).getDay()};}
+  function t12(hm){let [h,m]=hm.split(':').map(Number);const ap=h>=12?'PM':'AM';h=h%12||12;return {s:h+(m?':'+String(m).padStart(2,'0'):''),ap};}
+  return {
+    long(s){const p=parts(s);return `${WD[p.wd]}, ${p.d} ${MO[p.m-1]} ${p.y}`;},
+    caps(s){const p=parts(s);return `${WD[p.wd]} · ${p.d} ${MO[p.m-1]} ${p.y}`.toUpperCase();},
+    short(s){const p=parts(s);return `${WD[p.wd].slice(0,3)} ${p.d} ${MO[p.m-1].slice(0,3)} ${p.y}`;},
+    dayMonth(s){const p=parts(s);return `${p.d} ${MO[p.m-1]}`;},
+    time(hm){const t=t12(hm);return t.s+' '+t.ap;},
+    range(a,b){const x=t12(a),y=t12(b);return x.ap===y.ap?`${x.s} – ${y.s} ${y.ap}`:`${x.s} ${x.ap} – ${y.s} ${y.ap}`;}
+  };
+})();
+
+window.CardArt = (function(){
+  const W=1024, H=1434, TAU=Math.PI*2;
+  const F_SCRIPT='"Great Vibes","Snell Roundhand",cursive';
+  const F_CAPS='Cinzel,"Trajan Pro",Georgia,serif';
+  const F_SERIF='"Cormorant Garamond",Garamond,Georgia,serif';
+
+  function hexA(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;}
+
+  function styler(ctx,mode,inv){
+    const p=inv.card;
+    const mr=mode==='mr';
+    return {
+      paper:()=>mr?'rgb(0,232,0)':p.paper,
+      ink:()=>mr?'rgb(0,215,0)':p.ink,
+      soft:()=>mr?'rgb(0,215,0)':hexA(p.ink,.66),
+      accent:()=>mr?'rgb(0,210,0)':p.accent,
+      gold:()=>{
+        if(mr) return 'rgb(0,70,255)';          // G = roughness, B = metalness
+        const g=ctx.createLinearGradient(0,0,W,H);
+        const st=inv.dark?['#b8873a','#f6dfa2','#c8994a','#f1d48f','#a77830']:['#8f601c','#d6ad5f','#a2722a','#cfa452','#875815'];
+        [0,.28,.5,.74,1].forEach((o,i)=>g.addColorStop(o,st[i]));
+        return g;
+      }
+    };
+  }
+
+  function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function dot(ctx,x,y,r){ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();}
+  function spaced(ctx,text,x,y,sp){
+    const ch=[...text];const ws=ch.map(c=>ctx.measureText(c).width);
+    const total=ws.reduce((a,b)=>a+b,0)+sp*(ch.length-1);
+    let cx=x-total/2;const al=ctx.textAlign;ctx.textAlign='left';
+    ch.forEach((c,i)=>{ctx.fillText(c,cx,y);cx+=ws[i]+sp;});ctx.textAlign=al;return total;
+  }
+  function fit(ctx,text,font,size,maxW){
+    let s=size;ctx.font=font.replace('{s}',s);
+    while(ctx.measureText(text).width>maxW&&s>10){s-=2;ctx.font=font.replace('{s}',s);}
+    return s;
+  }
+  function wrap(ctx,text,x,y,maxW,lh){
+    const words=text.split(' ');let line='';const lines=[];
+    for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>maxW&&line){lines.push(line);line=w;}else line=t;}
+    if(line)lines.push(line);lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lh));return lines.length;
+  }
+
+  function frame(ctx,S){
+    ctx.strokeStyle=S.gold();ctx.fillStyle=S.gold();
+    ctx.lineWidth=5;rr(ctx,42,42,W-84,H-84,28);ctx.stroke();
+    ctx.lineWidth=2;rr(ctx,62,62,W-124,H-124,18);ctx.stroke();
+    const C=[[88,88,1,1],[W-88,88,-1,1],[88,H-88,1,-1],[W-88,H-88,-1,-1]];
+    for(const [x,y,sx,sy] of C){
+      ctx.save();ctx.translate(x,y);ctx.scale(sx,sy);ctx.lineWidth=2.5;
+      ctx.beginPath();ctx.moveTo(0,118);ctx.quadraticCurveTo(0,0,118,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(20,72);ctx.quadraticCurveTo(20,20,72,20);ctx.stroke();
+      ctx.save();ctx.translate(40,40);ctx.rotate(-Math.PI/4);ctx.beginPath();ctx.ellipse(0,0,15,6,0,0,TAU);ctx.fill();ctx.restore();
+      dot(ctx,0,132,4);dot(ctx,132,0,4);
+      ctx.restore();
+    }
+  }
+  function divider(ctx,S,y,w){
+    ctx.strokeStyle=S.gold();ctx.fillStyle=S.gold();ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(W/2-w/2,y);ctx.lineTo(W/2-18,y);ctx.moveTo(W/2+18,y);ctx.lineTo(W/2+w/2,y);ctx.stroke();
+    ctx.save();ctx.translate(W/2,y);ctx.rotate(Math.PI/4);ctx.fillRect(-6,-6,12,12);ctx.restore();
+    dot(ctx,W/2-w/2-8,y,3);dot(ctx,W/2+w/2+8,y,3);
+  }
+  function leaf(ctx,x,y,rot,len){
+    ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.beginPath();
+    ctx.moveTo(0,0);ctx.quadraticCurveTo(len*.5,-len*.36,len,0);ctx.quadraticCurveTo(len*.5,len*.36,0,0);
+    ctx.moveTo(len*.08,0);ctx.lineTo(len*.82,0);ctx.stroke();ctx.restore();
+  }
+
+  /* ---- line-art emblems, one per flower ---- */
+  const EMB={
+    'cherry-blossom'(ctx,s){
+      for(let k=0;k<5;k++){ctx.save();ctx.rotate(k*TAU/5);ctx.beginPath();
+        ctx.moveTo(0,-s*.13);ctx.bezierCurveTo(-s*.52,-s*.32,-s*.46,-s*.98,-s*.13,-s*.96);
+        ctx.lineTo(0,-s*.83);ctx.lineTo(s*.13,-s*.96);ctx.bezierCurveTo(s*.46,-s*.98,s*.52,-s*.32,0,-s*.13);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(0,-s*.24);ctx.lineTo(0,-s*.56);ctx.stroke();ctx.restore();}
+      ctx.beginPath();ctx.arc(0,0,s*.1,0,TAU);ctx.stroke();
+      for(let k=0;k<10;k++){const a=k*TAU/10+.3,x=Math.cos(a)*s*.27,y=Math.sin(a)*s*.27;
+        ctx.beginPath();ctx.moveTo(Math.cos(a)*s*.11,Math.sin(a)*s*.11);ctx.lineTo(x,y);ctx.stroke();dot(ctx,x,y,s*.026);}
+    },
+    tulip(ctx,s){
+      ctx.translate(0,-s*.22);
+      ctx.beginPath();ctx.moveTo(-s*.42,-s*.55);ctx.bezierCurveTo(-s*.5,0,-s*.26,s*.24,0,s*.24);
+      ctx.bezierCurveTo(s*.26,s*.24,s*.5,0,s*.42,-s*.55);ctx.lineTo(s*.2,-s*.3);ctx.lineTo(0,-s*.66);ctx.lineTo(-s*.2,-s*.3);ctx.closePath();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,-s*.66);ctx.bezierCurveTo(-s*.2,-s*.2,-s*.12,s*.12,0,s*.24);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,-s*.66);ctx.bezierCurveTo(s*.2,-s*.2,s*.12,s*.12,0,s*.24);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,s*.24);ctx.quadraticCurveTo(s*.06,s*.64,0,s*1.05);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,s*.95);ctx.quadraticCurveTo(-s*.5,s*.7,-s*.52,s*.2);ctx.quadraticCurveTo(-s*.22,s*.5,0,s*.86);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(s*.02,s*.8);ctx.quadraticCurveTo(s*.42,s*.66,s*.46,s*.34);ctx.quadraticCurveTo(s*.2,s*.5,s*.02,s*.72);ctx.stroke();
+    },
+    rose(ctx,s){
+      ctx.translate(0,-s*.08);
+      ctx.beginPath();let first=true;
+      for(let t=0;t<=5.4*Math.PI;t+=.05){const r=s*(.03+.042*t);const x=Math.cos(t)*r,y=Math.sin(t)*r*.86;
+        if(first){ctx.moveTo(x,y);first=false;}else ctx.lineTo(x,y);}
+      ctx.stroke();
+      ctx.beginPath();const R=s*.8;
+      for(let k=0;k<6;k++){const a0=k*TAU/6-Math.PI/2,a1=a0+TAU/6,am=(a0+a1)/2;
+        ctx.moveTo(Math.cos(a0)*R*.94,Math.sin(a0)*R*.94*.88);
+        ctx.quadraticCurveTo(Math.cos(am)*R*1.22,Math.sin(am)*R*1.22*.88,Math.cos(a1)*R*.94,Math.sin(a1)*R*.94*.88);}
+      ctx.stroke();
+      leaf(ctx,-s*.3,s*.8,Math.PI*.86,s*.52);leaf(ctx,s*.3,s*.8,Math.PI*.14,s*.52);
+    },
+    lavender(ctx,s){
+      const stems=[[-.34,-.1],[0,0],[.34,.1]];
+      for(const [dx,lean] of stems){
+        const bx=dx*.2*s,by=s*1.0,tx=dx*s,ty=-s*.95+Math.abs(dx)*s*.28;
+        ctx.beginPath();ctx.moveTo(bx,by);ctx.quadraticCurveTo((bx+tx)/2+lean*s*.25,(by+ty)/2,tx,ty);ctx.stroke();
+        for(let j=0;j<10;j++){const t=j/10;const px=tx+(bx-tx)*t*.44,py=ty+(by-ty)*t*.44;const side=j%2?1:-1;
+          ctx.save();ctx.translate(px+side*s*.045,py);ctx.rotate(side*.5);ctx.beginPath();
+          ctx.ellipse(0,0,s*.034,s*.062,0,0,TAU);ctx.fill();ctx.restore();}
+      }
+      ctx.beginPath();ctx.moveTo(-s*.06,s*.62);ctx.bezierCurveTo(-s*.3,s*.46,-s*.34,s*.74,-s*.06,s*.66);
+      ctx.moveTo(s*.06,s*.62);ctx.bezierCurveTo(s*.3,s*.46,s*.34,s*.74,s*.06,s*.66);
+      ctx.moveTo(-s*.04,s*.66);ctx.quadraticCurveTo(-s*.16,s*.82,-s*.22,s*.92);
+      ctx.moveTo(s*.04,s*.66);ctx.quadraticCurveTo(s*.16,s*.82,s*.22,s*.92);ctx.stroke();
+    },
+    sunflower(ctx,s){
+      const n=22;
+      for(let k=0;k<n;k++){ctx.save();ctx.rotate(k*TAU/n);ctx.beginPath();
+        ctx.moveTo(0,-s*.35);ctx.quadraticCurveTo(s*.1,-s*.68,0,-s);ctx.quadraticCurveTo(-s*.1,-s*.68,0,-s*.35);ctx.stroke();ctx.restore();}
+      ctx.beginPath();ctx.arc(0,0,s*.33,0,TAU);ctx.stroke();
+      for(let i=0;i<90;i++){const r=s*.29*Math.sqrt((i+.5)/90),a=i*2.39996;dot(ctx,Math.cos(a)*r,Math.sin(a)*r,s*.017);}
+    }
+  };
+
+  function emblem(ctx,S,key,cx,cy,s,lw){
+    ctx.save();ctx.translate(cx,cy);ctx.strokeStyle=S.gold();ctx.fillStyle=S.gold();
+    ctx.lineWidth=lw||4;ctx.lineCap='round';ctx.lineJoin='round';
+    (EMB[key]||EMB['cherry-blossom'])(ctx,s);ctx.restore();
+  }
+
+  function paperGrain(ctx,inv){
+    let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+    for(let i=0;i<2600;i++){ctx.fillStyle=rnd()>.5?'rgba(255,255,255,.05)':'rgba(0,0,0,.035)';
+      ctx.fillRect(rnd()*W,rnd()*H,1+rnd()*2,1+rnd()*2);}
+    const g=ctx.createRadialGradient(W/2,H*.45,W*.2,W/2,H/2,W*.95);
+    g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(1,inv.dark?'rgba(0,0,0,.35)':'rgba(120,80,60,.12)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+
+  function front(ctx,S,inv,mode){
+    const F=window.BloomFmt,C=window.BLOOM;
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillStyle=S.gold();ctx.font=`600 30px ${F_CAPS}`;spaced(ctx,C.series.toUpperCase(),W/2,168,9);
+    ctx.strokeStyle=S.gold();ctx.lineWidth=2;ctx.beginPath();ctx.arc(W/2,232,32,0,TAU);ctx.stroke();
+    ctx.font=`600 28px ${F_CAPS}`;ctx.fillText(inv.numeral,W/2,242);
+    emblem(ctx,S,inv.key,W/2,490,165,4.5);
+    ctx.fillStyle=S.soft();ctx.font=`italic 500 44px ${F_SERIF}`;ctx.fillText('You are cordially invited to',W/2,742);
+    ctx.fillStyle=S.gold();fit(ctx,inv.flower,`{s}px ${F_SCRIPT}`,156,760);ctx.fillText(inv.flower,W/2,905);
+    ctx.fillStyle=S.accent();ctx.font=`600 30px ${F_CAPS}`;spaced(ctx,inv.theme.toUpperCase(),W/2,992,8);
+    divider(ctx,S,1044,330);
+    ctx.fillStyle=S.ink();fit(ctx,F.caps(inv.date),`500 {s}px ${F_CAPS}`,33,720);spaced(ctx,F.caps(inv.date),W/2,1115,3);
+    fit(ctx,`${F.time(inv.start)} · ${inv.venue||C.venue}`,`500 {s}px ${F_SERIF}`,42,760);
+    ctx.fillText(`${F.time(inv.start)} · ${inv.venue||C.venue}`,W/2,1176);
+    ctx.fillStyle=S.soft();ctx.font=`italic 400 31px ${F_SERIF}`;ctx.fillText('tap to open',W/2,1300);
+  }
+
+  function back(ctx,S,inv,mode){
+    const F=window.BloomFmt,C=window.BLOOM;
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillStyle=S.gold();ctx.font=`600 24px ${F_CAPS}`;spaced(ctx,`${C.series.toUpperCase()} · ${inv.numeral}`,W/2,160,7);
+    fit(ctx,inv.flower,`{s}px ${F_SCRIPT}`,104,720);ctx.fillText(inv.flower,W/2,268);
+    ctx.fillStyle=S.ink();fit(ctx,inv.title,`600 {s}px ${F_SERIF}`,60,740);ctx.fillText(inv.title,W/2,345);
+    divider(ctx,S,392,300);
+    const rows=[
+      ['WHEN',[F.long(inv.date),F.range(inv.start,inv.end)]],
+      ['WHERE',[inv.venue||C.venue,inv.address||C.address]],
+      ['DRESS CODE',[inv.dress]],
+      ['HOSTED BY',[C.host]],
+      ['KINDLY REPLY',['by '+F.dayMonth(inv.rsvpBy)+' · '+C.rsvpEmail]]
+    ];
+    let y=458;
+    for(const [label,vals] of rows){
+      ctx.fillStyle=S.gold();ctx.font=`600 22px ${F_CAPS}`;spaced(ctx,label,W/2,y,6);
+      ctx.fillStyle=S.ink();
+      vals.forEach((v,i)=>{fit(ctx,v,`500 {s}px ${F_SERIF}`,42,780);ctx.fillText(v,W/2,y+46+i*42);});
+      y+=46+vals.length*42+24;
+    }
+    ctx.fillStyle=S.soft();ctx.font=`italic 400 34px ${F_SERIF}`;
+    wrap(ctx,inv.note,W/2,y+24,760,40);
+    ctx.font=`italic 400 26px ${F_SERIF}`;ctx.fillText(inv.latin,W/2,1322);
+  }
+
+  function draw(inv,side,mode,scale){
+    scale=scale||1;
+    const c=document.createElement('canvas');c.width=Math.round(W*scale);c.height=Math.round(H*scale);
+    const ctx=c.getContext('2d');ctx.scale(scale,scale);
+    const S=styler(ctx,mode,inv);
+    ctx.fillStyle=S.paper();ctx.fillRect(0,0,W,H);
+    if(mode!=='mr')paperGrain(ctx,inv);
+    frame(ctx,S);
+    (side==='back'?back:front)(ctx,S,inv,mode);
+    return c;
+  }
+  return {draw,W,H,emblem,styler};
+})();
+</script>
+<script>
+/* The printed parts of the living card: the invitation text on the front (below the garden)
+   and the design on the back. Transparent where the garden and paper show through. */
+window.PrintArt = (function () {
+  const TAU = Math.PI * 2;
+  const F_SCRIPT = '"Great Vibes","Snell Roundhand",cursive', F_CAPS = 'Cinzel,"Trajan Pro",Georgia,serif', F_SERIF = '"Cormorant Garamond",Garamond,Georgia,serif';
+  function spaced(ctx, t, x, y, sp) { const ch = [...t], ws = ch.map(c => ctx.measureText(c).width), tot = ws.reduce((a, b) => a + b, 0) + sp * (ch.length - 1); let cx = x - tot / 2; const al = ctx.textAlign; ctx.textAlign = 'left'; ch.forEach((c, i) => { ctx.fillText(c, cx, y); cx += ws[i] + sp; }); ctx.textAlign = al; }
+  function fit(ctx, t, font, size, maxW) { let s = size; ctx.font = font.replace('{s}', s); while (ctx.measureText(t).width > maxW && s > 8) { s -= 1; ctx.font = font.replace('{s}', s); } }
+  function wrapLines(ctx, text, maxW) { const w = text.split(' '), out = []; let l = ''; for (const x of w) { const t = l ? l + ' ' + x : x; if (ctx.measureText(t).width > maxW && l) { out.push(l); l = x; } else l = t; } if (l) out.push(l); return out; }
+  function diamondRule(ctx, S, cx, y, w) { ctx.strokeStyle = S.gold(); ctx.fillStyle = S.gold(); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx - w, y); ctx.lineTo(cx - 20, y); ctx.moveTo(cx + 20, y); ctx.lineTo(cx + w, y); ctx.stroke(); ctx.save(); ctx.translate(cx, y); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore(); }
+
+  // front print: size in card units (w × h) -> canvas at ~490 px per unit
+  function front(inv, w, h, mode, scale) {
+    scale = scale || 1; const PPU = 490, W = Math.round(w * PPU), H = Math.round(h * PPU);
+    const c = document.createElement('canvas'); c.width = Math.round(W * scale); c.height = Math.round(H * scale);
+    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
+    const S = window.CardArt.styler(ctx, mode, inv), mr = mode === 'mr', F = window.BloomFmt, C = window.BLOOM, cx = W / 2, cw = W * .66;
+    if (mr) { ctx.fillStyle = 'rgb(0,232,0)'; ctx.fillRect(0, 0, W, H); }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    let y = H * .17;
+    const line = (style, font, size, str, gapAfter, sp) => { ctx.fillStyle = S[style](); if (sp) { ctx.font = font.replace('{s}', size); spaced(ctx, str, cx, y + size * .8, sp); } else { fit(ctx, str, font, size, cw); ctx.fillText(str, cx, y + size * .8); } y += size + gapAfter; };
+    line('gold', `600 {s}px ${F_CAPS}`, 30, C.series.toUpperCase(), 26, 10);
+    ctx.strokeStyle = S.gold(); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, y + 30, 30, 0, TAU); ctx.stroke(); ctx.fillStyle = S.gold(); ctx.font = `600 28px ${F_CAPS}`; ctx.fillText(inv.numeral, cx, y + 40); y += 60 + 34;
+    line('soft', `italic 500 {s}px ${F_SERIF}`, 46, 'You are cordially invited to', 6);
+    line('gold', `{s}px ${F_SCRIPT}`, 168, inv.flower, 4);
+    line('accent', `600 {s}px ${F_CAPS}`, 30, inv.theme.toUpperCase(), 30, 9);
+    diamondRule(ctx, S, cx, y, 190); y += 44;
+    line('ink', `600 {s}px ${F_SERIF}`, 66, inv.title, 18);
+    line('ink', `500 {s}px ${F_CAPS}`, 34, F.caps(inv.date), 14, 4);
+    line('ink', `500 {s}px ${F_SERIF}`, 44, `${F.range(inv.start, inv.end)} · ${inv.venue || C.venue}`, 58);
+    // details block, framed
+    const top = y, rows = [['WHERE', [inv.venue || C.venue, inv.address || C.address]], ['DRESS CODE', [inv.dress]], ['KINDLY REPLY', ['by ' + F.long(inv.rsvpBy), C.rsvpEmail]]];
+    y += 44;
+    for (const [label, vals] of rows) { line('gold', `600 {s}px ${F_CAPS}`, 24, label, 10, 7); vals.forEach(v => line('ink', `500 {s}px ${F_SERIF}`, 42, v, 6)); y += 26; }
+    ctx.font = `italic 400 36px ${F_SERIF}`; const lines = wrapLines(ctx, inv.note, cw * .95);
+    lines.forEach(l => line('soft', `italic 400 {s}px ${F_SERIF}`, 36, l, 8)); y += 30;
+    ctx.strokeStyle = S.gold(); ctx.lineWidth = 2; const fw = cw * .62 + 60; ctx.beginPath(); ctx.moveTo(cx - fw, top); ctx.lineTo(cx + fw, top); ctx.moveTo(cx - fw, y); ctx.lineTo(cx + fw, y); ctx.stroke();
+    ctx.fillStyle = S.gold(); for (const [px, py] of [[cx - fw, top], [cx + fw, top], [cx - fw, y], [cx + fw, y]]) { ctx.save(); ctx.translate(px, py); ctx.rotate(Math.PI / 4); ctx.fillRect(-6, -6, 12, 12); ctx.restore(); }
+    y += 40; line('soft', `italic 400 {s}px ${F_SERIF}`, 32, `Hosted by ${C.host} · ${inv.latin}`, 0);
+    return c;
+  }
+
+  // the back of the card (full card size)
+  function back(inv, w, h, mode, scale) {
+    scale = scale || 1; const PPU = 330, W = Math.round(w * PPU), H = Math.round(h * PPU);
+    const c = document.createElement('canvas'); c.width = Math.round(W * scale); c.height = Math.round(H * scale);
+    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
+    const S = window.CardArt.styler(ctx, mode, inv), mr = mode === 'mr', F = window.BloomFmt, C = window.BLOOM, cx = W / 2;
+    ctx.fillStyle = S.paper(); ctx.fillRect(0, 0, W, H);
+    if (!mr) {
+      let sd = 9; const rnd = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+      for (let i = 0; i < 3000; i++) { ctx.fillStyle = rnd() > .5 ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.035)'; ctx.fillRect(rnd() * W, rnd() * H, 1 + rnd() * 2, 1 + rnd() * 2); }
+    }
+    // a lattice of tiny emblems
+    ctx.save(); ctx.globalAlpha = mr ? 1 : .22;
+    for (let yy = 120, r = 0; yy < H - 80; yy += 150, r++) for (let xx = 110 + (r % 2) * 75; xx < W - 80; xx += 150) window.CardArt.emblem(ctx, S, inv.key, xx, yy, 26, 2);
+    ctx.restore();
+    // a clear panel in the middle
+    const pw = W * .7, ph = H * .44, px = cx - pw / 2, py = H / 2 - ph / 2;
+    ctx.fillStyle = S.paper(); ctx.fillRect(px, py, pw, ph);
+    ctx.strokeStyle = S.gold(); ctx.lineWidth = 3; ctx.strokeRect(px, py, pw, ph); ctx.lineWidth = 1.2; ctx.strokeRect(px + 14, py + 14, pw - 28, ph - 28);
+    ctx.lineWidth = 4; ctx.strokeRect(30, 30, W - 60, H - 60); ctx.lineWidth = 1.5; ctx.strokeRect(46, 46, W - 92, H - 92);
+    ctx.textAlign = 'center';
+    window.CardArt.emblem(ctx, S, inv.key, cx, py + 150, 80, 3.5);
+    ctx.fillStyle = S.gold(); fit(ctx, inv.flower, `{s}px ${F_SCRIPT}`, 110, pw * .85); ctx.fillText(inv.flower, cx, py + 340);
+    ctx.fillStyle = S.accent(); ctx.font = `600 22px ${F_CAPS}`; spaced(ctx, `${C.series.toUpperCase()} · ${inv.numeral}`, cx, py + 392, 7);
+    ctx.fillStyle = S.ink(); fit(ctx, inv.title, `600 {s}px ${F_SERIF}`, 46, pw * .85); ctx.fillText(inv.title, cx, py + 462);
+    ctx.font = `500 34px ${F_SERIF}`; ctx.fillText(F.long(inv.date), cx, py + 512);
+    ctx.fillStyle = S.soft(); ctx.font = `italic 400 30px ${F_SERIF}`; ctx.fillText(`Kindly reply by ${F.dayMonth(inv.rsvpBy)}`, cx, py + 572);
+    ctx.fillStyle = S.ink(); fit(ctx, C.rsvpEmail, `500 {s}px ${F_SERIF}`, 34, pw * .85); ctx.fillText(C.rsvpEmail, cx, py + 616);
+    return c;
+  }
+
+  /* ---- a grand frame of its own for each invitation. The opening is shared with the 3D page,
+     in world units with the origin at the page centre and z pointing down the page. ---- */
+  const FR = { 'cherry-blossom': { rim: .09, gilt: '#e8bba6' }, tulip: { rim: .09, gilt: '#dcab5c' }, rose: { rim: .16, gilt: '#caa24e' }, lavender: { rim: .09, gilt: '#ddd2c2' }, sunflower: { rim: .15, gilt: '#e6b33a' } };
+  function frameInner(key, PW, PH) {
+    const f = FR[key] || FR.rose, hw = PW / 2 - f.rim, hh = PH / 2 - f.rim, P = [], PI = Math.PI;
+    const arc = (cx, cz, rx, rz, a0, a1, n) => { for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; P.push([cx + Math.cos(a) * rx, cz + Math.sin(a) * rz]); } };
+    if (key === 'cherry-blossom') { const c = .15; P.push([-hw + c, -hh], [hw - c, -hh], [hw - c, -hh + c], [hw, -hh + c], [hw, hh - c], [hw - c, hh - c], [hw - c, hh], [-hw + c, hh], [-hw + c, hh - c], [-hw, hh - c], [-hw, -hh + c], [-hw + c, -hh + c]); }
+    else if (key === 'tulip') { const sp = -hh + .5; arc(-hw + .12, hh - .12, .12, .12, PI, PI / 2, 6); arc(hw - .12, hh - .12, .12, .12, PI / 2, 0, 6); arc(0, sp, hw, .5, 0, -PI, 40); }
+    else if (key === 'rose') { const rc = .24, b = .13; arc(0, -hh, b, b, PI, 2 * PI, 12); arc(hw, -hh, rc, rc, PI, PI / 2, 10); arc(hw, hh, rc, rc, -PI / 2, -PI, 10); arc(0, hh, b, b, 0, PI, 12); arc(-hw, hh, rc, rc, 0, -PI / 2, 10); arc(-hw, -hh, rc, rc, PI / 2, 0, 10); }
+    else if (key === 'lavender') { const a = .22; arc(0, -hh + a, hw, a, PI, 2 * PI, 30); arc(0, hh - a, hw, a, 0, PI, 30); }
+    else { const s = .1; P.push([-hw + 2 * s, -hh], [-.3, -hh], [0, -hh - .11], [.3, -hh], [hw - 2 * s, -hh], [hw - 2 * s, -hh + s], [hw - s, -hh + s], [hw - s, -hh + 2 * s], [hw, -hh + 2 * s], [hw, hh - 2 * s], [hw - s, hh - 2 * s], [hw - s, hh - s], [hw - 2 * s, hh - s], [hw - 2 * s, hh],
+      [-hw + 2 * s, hh], [-hw + 2 * s, hh - s], [-hw + s, hh - s], [-hw + s, hh - 2 * s], [-hw, hh - 2 * s], [-hw, -hh + 2 * s], [-hw + s, -hh + 2 * s], [-hw + s, -hh + s], [-hw + 2 * s, -hh + s]); }
+    // drop repeated points
+    return P.filter((q, i) => { const o = P[(i + P.length - 1) % P.length]; return Math.hypot(q[0] - o[0], q[1] - o[1]) > 1e-4; });
+  }
+  function offsetPoly(P, d) { // d > 0 moves the outline inwards
+    let A = 0; P.forEach((p, i) => { const q = P[(i + 1) % P.length]; A += p[0] * q[1] - q[0] * p[1]; }); const sg = A > 0 ? 1 : -1;
+    const nrm = (a, b) => { const dx = b[0] - a[0], dz = b[1] - a[1], l = Math.hypot(dx, dz) || 1; return [-dz / l * sg, dx / l * sg]; };
+    return P.map((p, i) => { const a = P[(i + P.length - 1) % P.length], b = P[(i + 1) % P.length], n1 = nrm(a, p), n2 = nrm(p, b); let nx = n1[0] + n2[0], nz = n1[1] + n2[1]; const l = Math.hypot(nx, nz) || 1; nx /= l; nz /= l;
+      const m = d / Math.max(.35, nx * n1[0] + nz * n1[1]); return [p[0] + nx * m, p[1] + nz * m]; });
+  }
+  function drawFrame(ctx, S, key, w, h, PPU) {   // a single hairline in this invitation's own shape
+    const X = x => (x + w / 2) * PPU, Y = z => (z + h / 2) * PPU, P = frameInner(key, w + .05, h + .05);
+    ctx.save(); ctx.strokeStyle = S.gold(); ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.beginPath(); P.forEach(([x, z], i) => i ? ctx.lineTo(X(x), Y(z)) : ctx.moveTo(X(x), Y(z))); ctx.closePath(); ctx.stroke(); ctx.restore();
+  }
+  /* the inside pages: an invitation, its story, the evening, the details and the reply.
+     Each page keeps clear the bands where its flowers grow: [top, bottom, width] as fractions of the page. */
+  const AREAS = [[.15, .8, .7], [.075, .86, .74], [.13, .9, .72], [.08, .82, .76], [.15, .74, .68]];
+  const PAGE_TITLES = ['You’re invited', 'Our story', 'The evening', 'The details', 'Kindly reply'];
+  function page(inv, n, w, h, mode, scale) {
+    scale = scale || 1; const PPU = 400, W = Math.round(w * PPU), H = Math.round(h * PPU);
+    const c = document.createElement('canvas'); c.width = Math.round(W * scale); c.height = Math.round(H * scale);
+    const ctx = c.getContext('2d'); ctx.scale(scale, scale);
+    const S = window.CardArt.styler(ctx, mode, inv), mr = mode === 'mr', F = window.BloomFmt, C = window.BLOOM, cx = W / 2;
+    ctx.fillStyle = S.paper(); ctx.fillRect(0, 0, W, H);
+    if (!mr) {
+      let sd = 13 + n; const rnd = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+      for (let i = 0; i < 2600; i++) { ctx.fillStyle = rnd() > .5 ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.035)'; ctx.fillRect(rnd() * W, rnd() * H, 1 + rnd() * 2, 1 + rnd() * 2); }
+    }
+    drawFrame(ctx, S, inv.key, w, h, PPU);
+    const [a0, a1, wf] = AREAS[n], CW = W * wf, L0 = cx - CW / 2, st = inv.story || {}, notes = inv.notes || C.notes || [], faq = inv.faq || C.faq || [];
+    const serif = (wt, it) => `${it ? 'italic ' : ''}${wt} {s}px ${F_SERIF}`, caps = `600 {s}px ${F_CAPS}`;
+    // lays the page out at scale u; returns the drawing steps and their total height
+    function build(u) {
+      const ops = []; let tot = 0; const push = (hh, d, flex = 0) => { ops.push({ h: hh, d, flex }); tot += hh; };
+      const font = (tpl, size) => { ctx.font = tpl.replace('{s}', size * u); };
+      const gap = v => push(v * u, () => {}, v * u);
+      const line = (style, tpl, size, str, o = {}) => { const hh = size * u * (o.lh || 1.3); push(hh, y => { ctx.fillStyle = S[style](); ctx.textAlign = o.align || 'center'; const x = o.align === 'left' ? (o.x ?? L0) : cx;
+        if (o.sp) { font(tpl, size); spaced(ctx, str, cx, y + hh * .78, o.sp * u); } else { fit(ctx, str, tpl, size * u, o.maxW || CW); ctx.fillText(str, x, y + hh * .78); } }); };
+      const para = (style, tpl, size, str, o = {}) => { font(tpl, size); wrapLines(ctx, str, o.maxW || CW).forEach(l => line(style, tpl, size, l, { ...o, maxW: 1e9 })); };
+      const rule = wd => push(30 * u, y => diamondRule(ctx, S, cx, y + 15 * u, wd * u));
+      const head = (eyebrow, title) => { line('gold', caps, 20, eyebrow.toUpperCase(), { sp: 7 }); gap(4); line('gold', `{s}px ${F_SCRIPT}`, 92, title, { lh: 1.1 }); rule(120); gap(14); };
+      const block = (cols, cellFn, gapX = 40) => { // several columns of wrapped text side by side
+        const cw = (CW - gapX * u * (cols.length - 1)) / cols.length; let hh = 0; const cells = cols.map(cl => { const r = cellFn(cl, cw); hh = Math.max(hh, r.h); return r; });
+        push(hh, y => cells.forEach((r, i) => r.d(L0 + i * (cw + gapX * u), y, cw))); };
+      const cell = (label, text, cw, center) => { font(serif(400), 27); const ls = wrapLines(ctx, text, cw), lh = 27 * u * 1.4, hh = 26 * u + ls.length * lh + 8 * u;
+        return { h: hh, d: (x, y, w2) => { ctx.textAlign = center ? 'center' : 'left'; const tx = center ? x + w2 / 2 : x; ctx.fillStyle = S.gold(); font(caps, 18); ctx.fillText(label.toUpperCase(), tx, y + 18 * u);
+          ctx.fillStyle = S.ink(); font(serif(400), 27); ls.forEach((l, i) => ctx.fillText(l, tx, y + 26 * u + (i + .78) * lh)); } }; };
+      if (n === 0) {
+        line('gold', caps, 22, `${C.series.toUpperCase()} · ${inv.numeral}`, { sp: 7 }); gap(16);
+        line('soft', serif(500, 1), 36, 'You are cordially invited to'); gap(2);
+        line('gold', `{s}px ${F_SCRIPT}`, 136, inv.flower, { lh: 1.15 });
+        line('accent', caps, 22, inv.theme.toUpperCase(), { sp: 8 }); gap(8); rule(150); gap(14);
+        line('ink', serif(600), 56, inv.title); gap(6);
+        line('ink', `500 {s}px ${F_CAPS}`, 25, F.caps(inv.date), { sp: 3 }); gap(4);
+        line('ink', serif(500), 34, `${F.range(inv.start, inv.end)} · ${inv.venue || C.venue}`); gap(22);
+        if (inv.welcome) para('soft', serif(400, 1), 31, inv.welcome, { maxW: CW * .9, lh: 1.42 });
+      } else if (n === 1) {
+        head('Our story', st.title || 'Our story');
+        (st.text || [inv.note]).forEach((t, i) => { para('ink', serif(400), 28, t, { align: 'left', lh: 1.48 }); gap(14); });
+        if (st.quote) { gap(6); para('gold', serif(500, 1), 34, `“${st.quote}”`, { maxW: CW * .86, lh: 1.32 }); gap(18); }
+        if (st.milestones) { rule(90); gap(10); block(st.milestones, ([a, b], cw) => { font(serif(400, 1), 24); const ls = wrapLines(ctx, b, cw), hh = 60 * u + ls.length * 24 * u * 1.3;
+          return { h: hh, d: (x, y, w2) => { ctx.textAlign = 'center'; ctx.fillStyle = S.gold(); font(`{s}px ${F_SCRIPT}`, 54); ctx.fillText(a, x + w2 / 2, y + 46 * u); ctx.fillStyle = S.soft(); font(serif(400, 1), 24); ls.forEach((l, i) => ctx.fillText(l, x + w2 / 2, y + 60 * u + (i + .8) * 24 * u * 1.3)); } }; }, 24); }
+      } else if (n === 2) {
+        head('The evening', 'Programme');
+        para('soft', serif(400, 1), 29, inv.note, { maxW: CW * .92, lh: 1.4 }); gap(22);
+        const rows = inv.programme || [], tx = L0 + CW * .27;
+        rows.forEach(([t, ti, sub], i) => { font(serif(400, 1), 24); const ls = sub ? wrapLines(ctx, sub, CW * .7) : [], hh = (44 + ls.length * 32 + 22) * u;
+          push(hh, y => { ctx.fillStyle = S.gold(); ctx.textAlign = 'right'; font(caps, 24); ctx.fillText(t, tx - 34 * u, y + 34 * u);
+            ctx.beginPath(); ctx.arc(tx - 13 * u, y + 25 * u, 6 * u, 0, Math.PI * 2); ctx.fill(); if (i < rows.length - 1) { ctx.fillRect(tx - 14 * u, y + 34 * u, 2 * u, hh - 18 * u); }
+            ctx.textAlign = 'left'; ctx.fillStyle = S.ink(); font(serif(600), 32); ctx.fillText(ti, tx + 6 * u, y + 34 * u); ctx.fillStyle = S.soft(); font(serif(400, 1), 24); ls.forEach((l, j) => ctx.fillText(l, tx + 6 * u, y + (64 + j * 32) * u)); }); });
+        gap(10); rule(90); gap(10); line('gold', caps, 19, 'DRESS CODE', { sp: 7 }); line('ink', serif(500), 34, inv.dress);
+      } else if (n === 3) {
+        head('The details', 'Good to know');
+        block([['When', `${F.long(inv.date)}, ${F.range(inv.start, inv.end)}`], ['Where', `${inv.venue || C.venue}, ${inv.address || C.address}`]], ([a, b], cw) => cell(a, b, cw, true)); gap(18); rule(90); gap(18);
+        for (let i = 0; i < notes.length; i += 2) { block(notes.slice(i, i + 2), ([a, b], cw) => cell(a, b, cw)); gap(16); }
+        gap(4); line('gold', caps, 19, 'DRESS CODE', { sp: 7 }); line('ink', serif(500), 32, inv.dress);
+      } else {
+        head('Kindly reply', 'With love');
+        line('soft', serif(400, 1), 30, 'Please let us know by'); line('ink', serif(600), 40, F.long(inv.rsvpBy)); line('ink', serif(500), 32, C.rsvpEmail); gap(20);
+        faq.forEach(([q, a]) => { line('ink', serif(600), 29, q, { lh: 1.35 }); para('soft', serif(400, 1), 26, a, { maxW: CW * .92, lh: 1.38 }); gap(14); });
+        gap(4); push(118 * u, y => window.CardArt.emblem(ctx, S, inv.key, cx, y + 58 * u, 50 * u, 3 * u));
+        line('soft', serif(400, 1), 29, C.signoff || 'With warmest wishes'); line('gold', `{s}px ${F_SCRIPT}`, 60, C.host, { lh: 1.15 });
+      }
+      return { ops, tot };
+    }
+    const avail = (a1 - a0) * H; let u = 1, R = build(u);
+    for (let k = 0; k < 5 && R.tot > avail; k++) { u *= Math.max(.6, avail / R.tot) * .995; R = build(u); }
+    // share any spare room among the gaps (each may grow to about three times its size), then centre what remains
+    const spare = Math.max(0, avail - R.tot), fl = R.ops.reduce((a, o) => a + o.flex, 0), grow = fl ? Math.min(2.2, spare / fl) : 0;
+    let used = 0; R.ops.forEach(o => { o.h += o.flex * grow; used += o.h; });
+    ctx.textBaseline = 'alphabetic'; let y = (a0 + a1) / 2 * H - used / 2;
+    R.ops.forEach(o => { o.d(y); y += o.h; });
+    return c;
+  }
+  return { front, back, page, frameInner, offsetPoly, FR, PAGES: PAGE_TITLES.length, PAGE_TITLES };
+})();
+</script>
+
+<!-- =========================================================
+     3. PAGE UI
+     ========================================================= -->
+<script>
+(function(){
+  const C=window.BLOOM,F=window.BloomFmt,N=C.invites.length;
+  const $=s=>document.querySelector(s);
+  const ROMAN=['I','II','III','IV','V','VI','VII','VIII','IX','X'];
+  // pastel backdrop + accent for each garden
+  const LOOK={
+    'cherry-blossom':{bg1:'#f8e6ec',bg2:'#ebc9d6',accent:'#c45d7c'},
+    tulip:{bg1:'#fbeadf',bg2:'#f0cfbb',accent:'#d0603a'},
+    rose:{bg1:'#f7e1e3',bg2:'#e6bcc3',accent:'#a3263f'},
+    lavender:{bg1:'#eee9f7',bg2:'#d6cbee',accent:'#6f55b5'},
+    sunflower:{bg1:'#fbf3da',bg2:'#f0dca0',accent:'#b7790a'}
+  };
+  let cur=fromHash(),ready=false;
+  const faces={};
+
+  function fromHash(){const h=(location.hash||'').slice(1);const i=C.invites.findIndex(v=>v.key===h);return i<0?0:i;}
+  function venueOf(v){return (v.venue||C.venue)+', '+(v.address||C.address);}
+  function gcal(v){
+    const d=v.date.replace(/-/g,''),s=v.start.replace(':','')+'00',e=v.end.replace(':','')+'00';
+    const det=`${v.flower} · ${v.theme}\n\n${v.note}\n\nDress code: ${v.dress}\nKindly reply by ${F.long(v.rsvpBy)} to ${C.rsvpEmail}`;
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(`${v.title} · ${C.series}`)+
+      '&dates='+d+'T'+s+'/'+d+'T'+e+'&ctz='+encodeURIComponent(C.timezone)+'&details='+encodeURIComponent(det)+'&location='+encodeURIComponent(venueOf(v));
+  }
+  const mapUrl=v=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(venueOf(v));
+  function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800);}
+  async function copy(text,ok){try{await navigator.clipboard.writeText(text);toast(ok||'Copied');return true;}catch(e){toast('Select the text to copy');return false;}}
+
+  $('#seriesName').textContent=C.series;$('#seriesTag').textContent=C.tagline;$('#total').textContent=ROMAN[N-1]||N;
+  const dots=$('#dots');
+  C.invites.forEach((v,i)=>{const b=document.createElement('button');b.style.setProperty('--c',(LOOK[v.key]||LOOK.rose).accent);
+    b.setAttribute('aria-label',`${v.flower}: ${v.title}`);b.onclick=()=>go(i);dots.appendChild(b);});
+
+  function render(i){
+    cur=i;const v=C.invites[i],L=LOOK[v.key]||LOOK.rose,R=document.documentElement.style;
+    R.setProperty('--bg1',L.bg1);R.setProperty('--bg2',L.bg2);R.setProperty('--accent',L.accent);
+    $('#num').textContent=v.numeral;$('#fName').textContent=v.flower;$('#eTitle').textContent=v.title;
+    $('#eMeta').textContent=`${F.short(v.date)} · ${F.range(v.start,v.end)}`;
+    $('#btnCal').href=$('#iCal').href=gcal(v);$('#iMap').href=mapUrl(v);
+    [...dots.children].forEach((b,k)=>b.classList.toggle('on',k===i));
+  }
+  function go(i){i=((i%N)+N)%N;if(window.BloomScene)window.BloomScene.go(i);else render(i);}
+  $('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
+  addEventListener('keydown',e=>{
+    if($('#modal').classList.contains('open')||document.body.classList.contains('reading'))return;
+    if(e.key==='Escape'){closeInv();return;}
+    if($('#inv').classList.contains('open')){if(e.key===' '||e.key==='Enter'){e.preventDefault();flipInv();}return;}
+    if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);
+  });
+
+  /* ---------- the opened invitation: a physical card you can tilt and turn ---------- */
+  const inv=$('#inv'),card=$('#card3d'),tilt=$('#tilt');
+  function faceFor(i,side){const k=i+side;if(!faces[k])faces[k]=window.CardArt.draw(C.invites[i],side,'color',1);return faces[k];}
+  let webgl=false;
+  function openInv(i){
+    if(i===undefined)i=cur;
+    if(window.BloomScene&&window.BloomScene.openCard){webgl=true;window.BloomScene.openCard(i);inv.classList.add('open','webgl');$('#iFlip').textContent='Turn over';
+      const h=$('#ihint');h.style.opacity=1;clearTimeout(openInv._t);openInv._t=setTimeout(()=>h.style.opacity=0,6000);return;}
+    const f=$('#faceF'),b=$('#faceB');
+    f.querySelector('canvas')?.remove();b.querySelector('canvas')?.remove();
+    f.prepend(faceFor(i,'front'));b.prepend(faceFor(i,'back'));
+    card.classList.remove('flipped');$('#iFlip').textContent='Turn over';
+    card.style.animation='none';void card.offsetWidth;card.style.animation='';
+    inv.classList.add('open');
+  }
+  function closeInv(){if(webgl&&window.BloomScene)window.BloomScene.closeCard();inv.classList.remove('open','webgl');webgl=false;}
+  function flipInv(){if(webgl){const f=window.BloomScene.flipCard();$('#iFlip').textContent=f?'Show front':'Turn over';return;}
+    card.classList.toggle('flipped');$('#iFlip').textContent=card.classList.contains('flipped')?'Show front':'Turn over';}
+  $('#btnOpen').onclick=()=>{if(window.BloomScene&&window.BloomScene.read)window.BloomScene.read(0);else openInv();};
+
+  /* ---------- the pages, opened in 3D ---------- */
+  const RT=(window.PrintArt&&PrintArt.PAGE_TITLES)||['You’re invited','Our story','The evening','The details','Kindly reply'],rd=$('#rDots');let rCur=0;$('#rTot').textContent=RT.length;
+  RT.forEach((t,k)=>{const b=document.createElement('button');b.setAttribute('aria-label',t);b.onclick=()=>window.BloomScene&&window.BloomScene.turn(k);rd.appendChild(b);});
+  $('#rPrev').onclick=()=>window.BloomScene&&window.BloomScene.turn(rCur-1);
+  $('#rNext').onclick=()=>window.BloomScene&&window.BloomScene.turn(rCur+1);
+  $('#rBack').onclick=()=>window.BloomScene&&window.BloomScene.close();
+  function readerPage(n){
+    rCur=n;$('#rNum').textContent=n+1;$('#rTitle').textContent=RT[n];[...rd.children].forEach((b,k)=>b.classList.toggle('on',k===n));
+    const v=C.invites[cur],A=$('#rActs');A.innerHTML='';
+    const link=(t,href,pr)=>{const a=document.createElement('a');a.className='btn'+(pr?' primary':'');a.textContent=t;a.href=href;a.target='_blank';a.rel='noopener';A.appendChild(a);};
+    const btn=(t,fn,pr)=>{const b=document.createElement('button');b.className='btn'+(pr?' primary':'');b.textContent=t;b.onclick=fn;A.appendChild(b);};
+    if(n===RT.length-1){btn('RSVP',openRsvp,true);btn('Copy email',()=>copy(C.rsvpEmail,'Email copied'));}
+    else if(n===3){link('Directions',mapUrl(v),true);link('Calendar',gcal(v));}
+    else if(n===2){link('Calendar',gcal(v),true);btn('RSVP',openRsvp);}
+    else{btn('RSVP',openRsvp,true);link('Calendar',gcal(v));}
+    $('#rPrev').disabled=n===0;$('#rNext').disabled=n===RT.length-1;
+  }
+  function reader(on,n){
+    document.body.classList.toggle('reading',!!on);
+    if(on){readerPage(n||0);const h=$('#rHint');h.classList.add('show');clearTimeout(reader._t);reader._t=setTimeout(()=>h.classList.remove('show'),5000);}
+    else $('#rHint').classList.remove('show');
+  }
+  $('#iFlip').onclick=flipInv;$('#iClose').onclick=closeInv;
+  inv.addEventListener('click',e=>{if(e.target===inv&&!webgl)closeInv();});
+  let tdown=null;
+  card.addEventListener('pointerdown',e=>{tdown={x:e.clientX,y:e.clientY};});
+  card.addEventListener('pointerup',e=>{if(tdown&&Math.hypot(e.clientX-tdown.x,e.clientY-tdown.y)<8)flipInv();tdown=null;});
+  function tiltTo(x,y){ // x,y in -1..1
+    tilt.style.transform=`rotateY(${x*12}deg) rotateX(${-y*10}deg)`;
+    document.querySelectorAll('.sheen').forEach(s=>{s.style.setProperty('--sx',(50+x*40)+'%');s.style.setProperty('--sy',(50+y*40)+'%');});
+  }
+  inv.addEventListener('pointermove',e=>{tiltTo(e.clientX/innerWidth*2-1,e.clientY/innerHeight*2-1);});
+  inv.addEventListener('pointerleave',()=>tiltTo(0,0));
+
+  /* ---------- RSVP ---------- */
+  const modal=$('#modal');
+  function openRsvp(){const v=C.invites[cur];$('#rsvpLede').textContent=`${v.title} · ${F.long(v.date)}`;
+    $('#rsvpForm').hidden=false;$('#rsvpDone').hidden=true;modal.classList.add('open');setTimeout(()=>$('#rName').focus(),50);}
+  $('#btnRsvp').onclick=openRsvp;$('#iRsvp').onclick=openRsvp;
+  $('#mClose').onclick=()=>modal.classList.remove('open');
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+  $('#rsvpForm').addEventListener('submit',e=>{
+    e.preventDefault();const v=C.invites[cur];
+    const att=document.querySelector('input[name=att]:checked').value,note=$('#rNote').value.trim();
+    const text=`RSVP · ${v.title} (${v.flower}, ${F.long(v.date)})\n\nName: ${$('#rName').value.trim()}\nReply: ${att}\nGuests: ${$('#rGuests').value}`+(note?`\nNote: ${note}`:'');
+    $('#rsvpOut').value=text;$('#rAddr').textContent=C.rsvpEmail;
+    $('#rMail').href=`mailto:${C.rsvpEmail}?subject=${encodeURIComponent('RSVP · '+v.title)}&body=${encodeURIComponent(text)}`;
+    $('#rsvpForm').hidden=true;$('#rsvpDone').hidden=false;
+  });
+  $('#rCopy').onclick=async()=>{if(!(await copy($('#rsvpOut').value,'Reply copied'))){$('#rsvpOut').focus();$('#rsvpOut').select();}};
+
+  /* ---------- no 3D? still show the invitations ---------- */
+  function no3d(){
+    if(ready)return;ready=true;$('#loader').classList.add('gone');
+    $('#hint').textContent='3D isn’t available here · tap Open invitation';$('#hint').classList.add('show');
+  }
+  let watchdog=setTimeout(no3d,25000);
+
+  window.BloomUI={
+    initial:cur,LOOK,
+    setStation(i){render(i);},
+    reader,readerPage,
+    open:openInv,
+    cardFlipped(f){$('#iFlip').textContent=f?'Show front':'Turn over';},
+    message(m){$('#loadMsg').textContent=m;clearTimeout(watchdog);watchdog=setTimeout(no3d,25000);},
+    busy(on){$('#busy').classList.toggle('show',!!on);},
+    ready(){
+      if(ready)return;ready=true;clearTimeout(watchdog);$('#loader').classList.add('gone');
+      const h=$('#hint');setTimeout(()=>h.classList.add('show'),1500);setTimeout(()=>h.classList.remove('show'),8000);
+    },
+    hideHint(){$('#hint').classList.remove('show');},
+    fallback:no3d
+  };
+  render(cur);
+})();
+</script>
+
+<!-- =========================================================
+     4. THE LIVING INVITATION — Three.js
+     ========================================================= -->
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const CFG = window.BLOOM, INV = CFG.invites, NS = INV.length, UI = window.BloomUI;
+const TAU = Math.PI * 2, V3 = THREE.Vector3;
+const coarse = matchMedia('(pointer:coarse)').matches;
+const Q = coarse ? .55 : 1;                       // fewer plants on phones
+
+/* ============ renderer ============ */
+const canvas = document.getElementById('scene');
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+catch (e) { UI.fallback(); throw e; }
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, coarse ? 1.6 : 2)); renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.08; renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const maxAniso = renderer.capabilities.getMaxAnisotropy();
+const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(32, 1, .02, 200);
+
+/* ============ helpers ============ */
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const smooth = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
+const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _p = new V3(), _s = new V3();
+function xf(g, o = {}) {
+  _e.set(o.rx || 0, o.ry || 0, o.rz || 0, 'YXZ'); _q.setFromEuler(_e); _p.set(o.x || 0, o.y || 0, o.z || 0);
+  const s = o.s ?? 1; _s.set((o.sx ?? 1) * s, (o.sy ?? 1) * s, (o.sz ?? 1) * s); _m.compose(_p, _q, _s); g.applyMatrix4(_m); return g;
+}
+function xfQ(g, pos, quat, s = 1, sy) { _s.set(s, sy ?? s, s); _m.compose(pos, quat, _s); g.applyMatrix4(_m); return g; }
+function colorize(g, col) { const c = col.isColor ? col : new THREE.Color(col), n = g.attributes.position.count, a = new Float32Array(n * 3); for (let i = 0; i < n; i++) { a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); return g; }
+function colorBy(g, fn) { const p = g.attributes.position, n = g.attributes.normal, a = new Float32Array(p.count * 3); for (let i = 0; i < p.count; i++) { const c = fn(p.getX(i), p.getY(i), p.getZ(i), n.getX(i), n.getY(i), n.getZ(i)); a[i * 3] = c.r; a[i * 3 + 1] = c.g; a[i * 3 + 2] = c.b; } g.setAttribute('color', new THREE.BufferAttribute(a, 3)); return g; }
+function mergeAll(list) {
+  let nv = 0, ni = 0; for (const g of list) { nv += g.attributes.position.count; ni += g.index.count; }
+  const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3), C = new Float32Array(nv * 3), I = new Uint32Array(ni); let vo = 0, io = 0;
+  for (const g of list) {
+    const n = g.attributes.position.count; P.set(g.attributes.position.array.subarray(0, n * 3), vo * 3); N.set(g.attributes.normal.array.subarray(0, n * 3), vo * 3); C.set(g.attributes.color.array.subarray(0, n * 3), vo * 3);
+    const gi = g.index.array; for (let k = 0; k < gi.length; k++) I[io + k] = gi[k] + vo; vo += n; io += gi.length; g.dispose();
+  }
+  const m = new THREE.BufferGeometry(); m.setAttribute('position', new THREE.BufferAttribute(P, 3)); m.setAttribute('normal', new THREE.BufferAttribute(N, 3)); m.setAttribute('color', new THREE.BufferAttribute(C, 3)); m.setIndex(new THREE.BufferAttribute(I, 1)); m.computeBoundingSphere(); return m;
+}
+function normalizeH(g) { g.computeBoundingBox(); const h = g.boundingBox.max.y; g.scale(1 / h, 1 / h, 1 / h); g.computeBoundingSphere(); return g; }
+function tube(pts, r, col, seg = 16, rad = 5) { const curve = new THREE.CatmullRomCurve3(pts.map(p => new V3(p[0], p[1], p[2]))); return { g: colorize(new THREE.TubeGeometry(curve, seg, r, rad, false), col), curve }; }
+const sphere = (r, w, h, col) => colorize(new THREE.SphereGeometry(r, w, h), col);
+function makeNoise(seed) {
+  const r = rng(seed), p = [...Array(256).keys()]; for (let i = 255; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
+  const P = new Uint8Array(512); for (let i = 0; i < 512; i++) P[i] = p[i & 255];
+  const G = [[1, 1], [-1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]], gr = (h, x, y) => { const q = G[h & 7]; return q[0] * x + q[1] * y; };
+  function n2(x, y) { const fx = Math.floor(x), fy = Math.floor(y), X = fx & 255, Y = fy & 255; x -= fx; y -= fy; const u = x * x * (3 - 2 * x), v = y * y * (3 - 2 * y); const a = gr(P[X + P[Y]], x, y), b = gr(P[X + 1 + P[Y]], x - 1, y), c = gr(P[X + P[Y + 1]], x, y - 1), d = gr(P[X + 1 + P[Y + 1]], x - 1, y - 1); const ab = a + (b - a) * u, cd = c + (d - c) * u; return ab + (cd - ab) * v; }
+  return { n2, fbm(x, y, o = 4) { let s = 0, a = .5, f = 1; for (let i = 0; i < o; i++) { s += a * n2(x * f, y * f); f *= 2.03; a *= .5; } return s; } };
+}
+const hsl = (c, dh, ds, dl) => { const o = new THREE.Color(c), h = {}; o.getHSL(h); return o.setHSL((h.h + dh + 1) % 1, clamp(h.s + ds, 0, 1), clamp(h.l + dl, 0, 1)); };
+
+/* ============ wind + grow-in, one shader patch for every plant ============
+   plant geometry is normalised to height 1: position.y = how far up the plant */
+const WIND = { uTime: { value: 0 }, uDir: { value: new THREE.Vector2(.82, .57).normalize() } };
+const GROW = { value: 0 }, GROWN = { value: 9 };
+function windify(mat, amp, grow = GROW) {
+  mat.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { uTime: WIND.uTime, uDir: WIND.uDir, uAmp: { value: amp }, uGrow: grow });
+    sh.vertexShader = 'uniform float uTime; uniform vec2 uDir; uniform float uAmp; uniform float uGrow;\n' + sh.vertexShader.replace('#include <project_vertex>', `
+      vec4 mvPosition = vec4( transformed, 1.0 );
+      #ifdef USE_INSTANCING
+        vec3 org = ( instanceMatrix * vec4( 0.0, 0.0, 0.0, 1.0 ) ).xyz;
+        float dly = clamp( length( org.xz - vec2( 0.0, -1.7 ) ) / 2.4, 0.0, 1.0 ) * 0.55 + fract( sin( dot( org.xz, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 ) * 0.15;
+        float g = smoothstep( dly, dly + 0.35, uGrow );
+        mvPosition = instanceMatrix * vec4( transformed * g, 1.0 );
+        float stiff = 0.6 + 0.8 * fract( sin( dot( org.xz, vec2( 39.3468, 11.135 ) ) ) * 24634.6345 );
+      #else
+        vec3 org = vec3( 0.0 ); float stiff = 1.0;
+      #endif
+      {
+        float hh = clamp( position.y, 0.0, 1.3 );
+        vec2 wp = mvPosition.xz;
+        float along = dot( wp, uDir );
+        float gust = 0.5 + 0.5 * sin( uTime * 0.42 + along * 0.45 );
+        float w = 0.5 + 0.6 * sin( along * 2.1 - uTime * 2.0 * stiff ) + 0.3 * sin( org.x * 9.1 + org.z * 7.3 + uTime * 3.1 * stiff );
+        vec2 off = uDir * w * ( 0.35 + 0.65 * gust ) * uAmp * hh * hh * stiff;
+        off += vec2( -uDir.y, uDir.x ) * sin( uTime * 1.7 * stiff + org.x * 5.0 ) * uAmp * 0.35 * hh * hh;
+        mvPosition.xz += off;
+        mvPosition.y -= dot( off, off ) * 2.5;
+      }
+      mvPosition = modelViewMatrix * mvPosition;
+      gl_Position = projectionMatrix * mvPosition;`);
+  };
+  mat.customProgramCacheKey = () => 'wind-' + amp + (grow === GROW ? 'g' : 'n');
+  return mat;
+}
+
+/* ============ the petal ============ */
+function petalGeometry(o) {
+  const L = o.length ?? 1, HW = o.hw ?? .3, cup = o.cup ?? .2, bend = o.bend ?? 0, tip = o.tipBend ?? 0, notch = o.notch ?? 0, ruffle = o.ruffle ?? 0, rf = o.ruffleFreq ?? 5, roll = o.edgeRoll ?? 0;
+  const pw = o.pw ?? .6, vmax = o.vmax ?? .55, base = o.base ?? .15, SU = o.segU ?? 8, SV = o.segV ?? 10, sExp = Math.log(.5) / Math.log(vmax);
+  const width = v => { v = clamp(v, 0, 1); const sv = Math.max(Math.sin(Math.PI * Math.pow(v, sExp)), 0); return HW * (base * (1 - v) + (1 - base) * Math.pow(sv, pw)); };
+  const NT = 32, sp = []; let y = 0, z = 0;
+  for (let k = 0; k <= NT; k++) { const v = k / NT, th = bend * v + tip * v * v * v; sp.push([y, z, th]); y += Math.cos(th) * L / NT; z += Math.sin(th) * L / NT; }
+  const spine = v => { const f = clamp(v, 0, 1) * NT, i = Math.min(Math.floor(f), NT - 1), t = f - i, a = sp[i], b = sp[i + 1]; return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; };
+  const cB = new THREE.Color(o.cBase), cT = new THREE.Color(o.cTip), cE = new THREE.Color(o.cEdge ?? o.cTip), c = new THREE.Color(), pos = [], col = [], idx = [];
+  for (let j = 0; j <= SV; j++) {
+    const v = j / SV, w = width(v);
+    for (let i = 0; i <= SU; i++) {
+      const u = i / SU * 2 - 1, x = u * w, sm = v < .7 ? 0 : (v - .7) / .3, smv = sm * sm * (3 - 2 * sm);
+      const [py, pz, th] = spine(v - notch * Math.exp(-u * u * 9) * smv);
+      const zc = -cup * HW * u * u + roll * HW * Math.pow(Math.abs(u), 3) * v + ruffle * HW * Math.sin(u * rf + v * 4) * v * v * Math.abs(u);
+      pos.push(x, py - Math.sin(th) * zc, pz + Math.cos(th) * zc);
+      const tc = Math.pow(v, .9); c.copy(cB).lerp(cT, tc * tc * (3 - 2 * tc)); c.lerp(cE, Math.min(1, (o.edgeMix ?? 0) * u * u * (.3 + v))); col.push(c.r, c.g, c.b);
+    }
+  }
+  for (let j = 0; j < SV; j++) for (let i = 0; i < SU; i++) { const a = j * (SU + 1) + i, b = a + 1, d = a + SU + 1, e = d + 1; idx.push(a, d, b, b, d, e); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.setIndex(idx); g.computeVertexNormals(); return g;
+}
+const leaf = (len, hw, c1 = '#2f5f2c', c2 = '#6a9a4c', o = {}) => petalGeometry({ length: len, hw, cup: .35, bend: .4, tipBend: .25, pw: .8, vmax: .4, base: .2, cBase: c1, cTip: c2, segU: 5, segV: 8, ...o });
+
+/* ============ flowers, with bloom stages (open: 0 = bud, 1 = full bloom) ============ */
+const GREEN = '#2e5b2b';
+function tulipHead(pal, r, open) {
+  const head = [];
+  for (let k = 0; k < 6; k++) {
+    const inner = k % 2 === 1, a = k * Math.PI / 3 + (r() - .5) * .12;
+    head.push(xf(petalGeometry({ length: (inner ? .5 : .54) * (.82 + .18 * open), hw: .21, cup: .62, bend: -.08, tipBend: -.72 + .55 * open, pw: .65, vmax: .58, base: .35, segU: 8, segV: 10, cBase: pal.base, cTip: pal.tip, cEdge: pal.edge, edgeMix: .45 }),
+      { rx: (inner ? .03 : .06) + open * (inner ? .3 : .44), ry: a, rz: (r() - .5) * .12, x: Math.sin(a) * .035, z: Math.cos(a) * .035 }));
+  }
+  head.push(xf(colorize(new THREE.CylinderGeometry(.012, .016, .2, 6), '#e7e3a8'), { y: .1 }));
+  return mergeAll(head);
+}
+function buildTulip(pal, seed, open) {
+  const r = rng(seed), parts = [], H = 2.2 + r() * .5, lx = (r() - .5) * .5, lz = (r() - .5) * .4;
+  const st = tube([[0, 0, 0], [lx * .2 + .04, H * .35, lz * .2], [lx * .7, H * .75, lz * .7], [lx, H, lz]], .032, '#3b6e33', 20, 5); parts.push(st.g);
+  for (let k = 0; k < 2; k++) parts.push(xf(leaf(.9 + r() * .4, .13, '#2f5f2c', '#79a65a', { cup: .7, bend: .3 + r() * .3, tipBend: .5 + r() * .4, pw: .9, vmax: .32, base: .55, segU: 5, segV: 10 }), { rx: .15 + r() * .2, ry: r() * TAU, y: .02 }));
+  parts.push(xf(tulipHead(pal, r, open), { rx: lz * .4 + .08, rz: -lx * .4, x: lx, y: H, z: lz }));
+  return normalizeH(mergeAll(parts));
+}
+function roseHead(pal, seed, open) {
+  const r = rng(seed), head = [], n = Math.round(11 + 13 * open);
+  for (let i = 0; i < n; i++) {
+    const t = i / (n - 1), len = (.15 + .31 * Math.pow(t, .85)) * (.72 + .28 * open), a = i * 2.39996, rad = .012 + .05 * t;
+    head.push(xf(petalGeometry({ length: len, hw: len * (.52 + .1 * t), cup: .95 - .5 * t * open, bend: -1.2 * (1 - t) + .2 * t * open, tipBend: 1.4 * t * t * open, edgeRoll: 1.0 * t * t * open, pw: .42, vmax: .62, base: .3, segU: 8, segV: 9, cBase: pal.base, cTip: pal.tip, cEdge: pal.edge, edgeMix: .55 }),
+      { rz: (r() - .5) * .25, rx: .04 + 1.28 * Math.pow(t, 1.6) * (.28 + .72 * open), ry: a, x: Math.sin(a) * rad, z: Math.cos(a) * rad, y: -.06 * t }));
+  }
+  for (let k = 0; k < 5; k++) head.push(xf(petalGeometry({ length: .17, hw: .03, cup: .3, bend: .9, pw: 1, vmax: .3, base: .5, cBase: GREEN, cTip: '#3f7a35', segU: 3, segV: 5 }), { rx: 1.9 - .6 * (1 - open), ry: k * TAU / 5 + .3, y: -.07 }));
+  head.push(xf(sphere(.05, 8, 6, GREEN), { y: -.09, sy: .8 }));
+  return mergeAll(head);
+}
+function buildRoseStem(pal, seed, open) { // a single long-stem rose
+  const r = rng(seed), parts = [], H = 2.4, lx = (r() - .5) * .5, lz = (r() - .5) * .4;
+  const st = tube([[0, 0, 0], [lx * .2, H * .4, lz * .3], [lx * .8, H * .8, lz * .7], [lx, H, lz]], .025, GREEN, 18, 5); parts.push(st.g);
+  for (let k = 0; k < 4; k++) { const p = st.curve.getPoint(.3 + k * .15); parts.push(xf(leaf(.32, .14, '#28512a', '#4f8a3d', { ruffle: .12, ruffleFreq: 16 }), { rx: 1.0, ry: r() * TAU, x: p.x, y: p.y, z: p.z })); }
+  parts.push(xf(roseHead(pal, seed + 7, open), { rx: .25 + lz * .3, rz: -lx * .3, x: lx, y: H + .05, z: lz }));
+  return normalizeH(mergeAll(parts));
+}
+function blossomGeo(pal, r, open = 1) {
+  const parts = [];
+  for (let k = 0; k < 5; k++) { const a = k * TAU / 5 + (r() - .5) * .15; parts.push(xf(petalGeometry({ length: .15, hw: .078, cup: .3 + .3 * (1 - open), bend: .35, notch: .14, pw: .45, vmax: .6, base: .22, segU: 6, segV: 7, cBase: pal.base, cTip: pal.tip, cEdge: pal.edge, edgeMix: .6 }), { rx: .35 + .85 * open + r() * .2, ry: a, x: Math.sin(a) * .008, z: Math.cos(a) * .008 })); }
+  for (let j = 0; j < 6; j++) { const len = .06 + r() * .03, rx = .35 + r() * .4, ry = r() * TAU, cy = new THREE.CylinderGeometry(.003, .003, len, 3, 1); cy.translate(0, len / 2, 0); parts.push(xf(colorize(cy, '#fbe3ec'), { rx, ry })); parts.push(xf(sphere(.009, 4, 3, '#e8b84a'), { x: Math.sin(ry) * Math.sin(rx) * len, y: Math.cos(rx) * len, z: Math.cos(ry) * Math.sin(rx) * len })); }
+  parts.push(sphere(.018, 5, 4, '#d65a7d'));
+  return mergeAll(parts);
+}
+function buildCherry(pal, seed, per = 9) {
+  const r = rng(seed), parts = [], bark = '#4a332a';
+  const trunk = tube([[0, 0, 0], [.18, .6, .02], [-.06, 1.3, 0], [.12, 1.9, -.05], [.02, 2.4, 0]], .1, bark, 18, 7); parts.push(trunk.g);
+  parts.push(xf(colorize(new THREE.CylinderGeometry(.1, .2, .3, 7), bark), { y: .15 }));
+  const B = [[[-.06, 1.3, 0], [-.6, 1.7, .15], [-1.1, 2.0, .3], [-1.5, 2.15, .4]], [[.1, 1.7, -.03], [.65, 2.0, .1], [1.1, 2.35, .2], [1.45, 2.5, .15]], [[.04, 2.2, 0], [-.35, 2.65, .15], [-.6, 3.0, .25]], [[.02, 2.4, 0], [.35, 2.85, .1], [.55, 3.15, .05]], [[-.55, 1.7, .12], [-.65, 2.2, .5], [-.4, 2.6, .75]], [[.4, 1.85, 0], [.5, 2.3, -.5], [.25, 2.7, -.75]], [[-.25, 2.0, 0], [-.7, 2.4, -.45], [-.9, 2.7, -.6]], [[.65, 2.0, .1], [1.0, 2.1, .6], [1.25, 2.2, .85]]];
+  const curves = []; B.forEach((b, i) => { const t = tube(b, .05 - i * .003, bark, 10, 5); parts.push(t.g); curves.push(t.curve); });
+  const tpl = [blossomGeo(pal, r, 1), blossomGeo(pal, r, .55), blossomGeo(pal, r, .15)], up = new V3(0, 1, 0), q = new THREE.Quaternion();
+  for (const c of curves) for (let k = 0; k < per; k++) {
+    const t = clamp(.2 + .8 * (k / (per - 1)) + (r() - .5) * .08, 0, 1), p = c.getPoint(t).add(new V3(r() - .5, r() * .5, r() - .5).multiplyScalar(.38));
+    q.setFromUnitVectors(up, new V3(r() - .5, .35 + r() * .65, r() - .5).normalize());
+    const st = r(); parts.push(xfQ(tpl[st < .7 ? 0 : st < .88 ? 1 : 2].clone(), p, q, 2.1 * (.75 + r() * .45)));
+  }
+  tpl.forEach(t => t.dispose());
+  return normalizeH(mergeAll(parts));
+}
+function buildLavender(pal, seed) {
+  const r = rng(seed), parts = [], up = new V3(0, 1, 0), q = new THREE.Quaternion(), cB = new THREE.Color(pal.base), cT = new THREE.Color(pal.tip), bud = new THREE.SphereGeometry(.034, 4, 3);
+  const n = 7 + Math.floor(r() * 4);
+  for (let s = 0; s < n; s++) {
+    const bx = (r() - .5) * .3, bz = (r() - .5) * .25, h = 1.6 + r() * 1.1, tx = bx * 3 + (r() - .5) * .7, tz = bz * 2.6 + (r() - .5) * .5;
+    const st = tube([[bx, 0, bz], [(bx + tx) * .45, h * .5, (bz + tz) * .45], [tx, h, tz]], .014, '#71906a', 10, 3); parts.push(st.g);
+    const wh = 6 + Math.floor(r() * 4);
+    for (let w = 0; w < wh; w++) {
+      const t = .7 + .3 * (w / (wh - 1)), p = st.curve.getPoint(t), tan = st.curve.getTangent(t);
+      for (let b = 0; b < 4; b++) { const a = b * TAU / 4 + w * .8, radial = new V3(Math.cos(a), 0, Math.sin(a)); q.setFromUnitVectors(up, tan.clone().addScaledVector(radial, .9).normalize());
+        parts.push(xfQ(colorize(bud.clone(), cB.clone().lerp(cT, Math.min(1, w / wh * .9 + r() * .25))), p.clone().addScaledVector(radial, .03), q, 1, 1.7)); }
+    }
+  }
+  for (let k = 0; k < 8; k++) parts.push(xf(petalGeometry({ length: .5 + r() * .2, hw: .03, cup: .3, bend: .7, pw: 1, vmax: .3, base: .6, cBase: '#5d7a58', cTip: '#9db08f', segU: 2, segV: 6 }), { rx: .6 + r() * .5, ry: r() * TAU, x: (r() - .5) * .3, z: (r() - .5) * .3 }));
+  bud.dispose(); return normalizeH(mergeAll(parts));
+}
+function sunflowerHead(pal, seed, open, seeds = 130) {
+  const r = rng(seed), head = [], R = .25;
+  head.push(xf(colorize(new THREE.CylinderGeometry(R * 1.03, R * .75, .07, 24, 1), '#2a180b'), { y: -.02 }));
+  head.push(xf(colorize(new THREE.SphereGeometry(R * .98, 14, 6, 0, TAU, Math.PI / 2, Math.PI / 2), '#3f6a2a'), { y: -.04, sy: .5 }));
+  const sg = new THREE.SphereGeometry(.016, 4, 3), c0 = new THREE.Color('#6a5418'), c1 = new THREE.Color('#1c0f07');
+  for (let i = 0; i < seeds; i++) { const rr = R * .96 * Math.sqrt((i + .5) / seeds), a = i * 2.39996, k = rr / R; head.push(xf(colorize(sg.clone(), c0.clone().lerp(c1, Math.min(1, k * 1.6))), { x: Math.cos(a) * rr, z: Math.sin(a) * rr, y: .03 * (1 - k * k) + .015, sy: .7 })); }
+  sg.dispose();
+  for (let ring = 0; ring < 2; ring++) for (let k = 0; k < 18; k++) {
+    const a = k * TAU / 18 + ring * TAU / 36;
+    head.push(xf(petalGeometry({ length: (.4 - ring * .05) * (.55 + .45 * open), hw: .075, cup: .25, bend: .12, tipBend: -.15 + r() * .2, ruffle: .1, ruffleFreq: 5, pw: .8, vmax: .42, base: .35, segU: 4, segV: 7, cBase: pal.base, cTip: pal.tip, cEdge: pal.edge, edgeMix: .25 }),
+      { rz: (r() - .5) * .14, rx: .25 + (1.17 - ring * .18) * open + (r() - .5) * .12, ry: a, x: Math.sin(a) * R * .93, z: Math.cos(a) * R * .93, y: -ring * .012 }));
+  }
+  for (let k = 0; k < 16; k++) { const a = k * TAU / 16 + .1; head.push(xf(petalGeometry({ length: .12, hw: .03, cup: .2, bend: .4, pw: 1, vmax: .35, base: .4, cBase: '#3d6a29', cTip: '#58873a', segU: 3, segV: 4 }), { rx: 1.75, ry: a, x: Math.sin(a) * R * .85, z: Math.cos(a) * R * .85, y: -.05 })); }
+  return mergeAll(head);
+}
+function buildSunflower(pal, seed, open) {
+  const r = rng(seed), parts = [], H = 2.3 + r() * .4, lx = (r() - .5) * .3;
+  const st = tube([[0, 0, 0], [.05, H * .35, 0], [lx * .6, H * .7, .03], [lx, H, .08]], .05, '#4c7a33', 18, 6); parts.push(st.g);
+  for (const [t, yaw] of [[.3, .8 + r()], [.5, -2.3 + r()], [.7, 2.2 + r()]]) { const p = st.curve.getPoint(t); parts.push(xf(leaf(.55, .23, '#335f26', '#6f9b3b', { ruffle: .08, ruffleFreq: 12, pw: .6, vmax: .38, base: .12, bend: .7, tipBend: .3 }), { rx: 1.0, ry: yaw, x: p.x, y: p.y, z: p.z })); }
+  parts.push(xf(sunflowerHead(pal, seed + 3, open), { rx: .95 + .3 * open + (r() - .5) * .2, rz: -lx * .5, x: lx, y: H + .02, z: .1 }));
+  return normalizeH(mergeAll(parts));
+}
+function blobCluster(blobs, light, dark, seed) {
+  const r = rng(seed), parts = [], cl = new THREE.Color(light), cd = new THREE.Color(dark), tmp = new THREE.Color();
+  for (const [bx, by, bz, br] of blobs) {
+    const g = new THREE.SphereGeometry(1, 14, 10), p = g.attributes.position;
+    for (let v = 0; v < p.count; v++) { const x = p.getX(v), y = p.getY(v), z = p.getZ(v), f = 1 + .09 * Math.sin(x * 9.1 + y * 3.3 + bx * 7) * Math.sin(z * 7.7 + x * 2.1) + .05 * Math.sin(y * 13 + z * 5); p.setXYZ(v, x * f, y * f, z * f); }
+    g.computeVertexNormals(); const jit = (r() - .5) * .12; colorBy(g, (x, y, z, nx, ny) => tmp.copy(cd).lerp(cl, clamp(.5 + .45 * ny + jit, 0, 1)).clone()); parts.push(xf(g, { x: bx, y: by, z: bz, s: br }));
+  }
+  return parts;
+}
+const roundTreeGeo = () => normalizeH(mergeAll([tube([[0, 0, 0], [.03, .35, 0], [-.02, .7, .02]], .05, '#5b4330', 6, 6).g, ...blobCluster([[0, .95, 0, .34], [.25, .85, .1, .26], [-.24, .88, -.06, .27], [.06, .82, -.26, .25], [-.05, .84, .26, .25], [.14, 1.18, .04, .24], [-.15, 1.12, .08, .22]], '#b3d273', '#4c7a33', 3)]));
+const shrubGeo = () => normalizeH(mergeAll(blobCluster([[0, .32, 0, .34], [.26, .25, .06, .26], [-.24, .26, -.04, .27], [.04, .26, .24, .24], [-.04, .24, -.24, .24]], '#7fa653', '#2a4a22', 8)));
+function tuftGeo() {
+  const r = rng(17), parts = [];
+  for (let k = 0; k < 14; k++) {
+    const a = r() * TAU, d = r() * .05, h = .6 + r() * .4, seg = 4, pos = [], col = [], idx = [];
+    for (let i = 0; i <= seg; i++) { const t = i / seg, w = .012 * (1 - t) + .001, bx = t * t * (.15 + r() * .1); pos.push(-w, t * h, bx, w, t * h, bx); const kk = .35 + .65 * t; col.push(kk, kk, kk, kk, kk, kk); }
+    for (let i = 0; i < seg; i++) { const q = i * 2; idx.push(q, q + 1, q + 2, q + 1, q + 3, q + 2); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3)); g.setIndex(idx); g.computeVertexNormals();
+    parts.push(xf(g, { ry: a, x: Math.cos(a) * d, z: Math.sin(a) * d }));
+  }
+  return normalizeH(mergeAll(parts));
+}
+function wildGeo() {
+  const parts = [xf(colorize(new THREE.CylinderGeometry(.012, .012, 1, 4, 1), '#355c2a'), { y: .5 })];
+  for (let k = 0; k < 5; k++) parts.push(xf(petalGeometry({ length: .16, hw: .075, cup: .25, bend: .3, pw: .5, vmax: .6, base: .25, segU: 3, segV: 3, cBase: '#ffffff', cTip: '#ffffff' }), { rx: 1.2, ry: k * TAU / 5, y: 1 }));
+  parts.push(xf(sphere(.05, 6, 4, '#f2c94c'), { y: 1.01 }));
+  return normalizeH(mergeAll(parts));
+}
+function rockGeo(seed) {
+  const g = new THREE.SphereGeometry(1, 9, 7), p = g.attributes.position;
+  for (let v = 0; v < p.count; v++) { const f = 1 + .16 * Math.sin(p.getX(v) * 4 + seed) * Math.cos(p.getZ(v) * 3 + seed) + .06 * Math.sin(p.getY(v) * 9); p.setXYZ(v, p.getX(v) * f, p.getY(v) * f, p.getZ(v) * f); }
+  g.computeVertexNormals(); const tmp = new THREE.Color(); return colorBy(g, (x, y, z, nx, ny) => tmp.set('#8d877b').lerp(new THREE.Color('#c9c2b3'), clamp(.4 + .5 * ny, 0, 1)).lerp(new THREE.Color('#6f8a4a'), ny > .6 ? .35 : 0).clone());
+}
+
+/* ============ shared materials ============ */
+const plantMat = windify(new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .55 }), .07);
+const headMat = windify(new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .5 }), .025);
+const treeMat = windify(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .85 }), .04);
+const grassMat = windify(new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .8 }), .1);
+const plainMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95 });
+const SHARED = { round: roundTreeGeo(), shrub: shrubGeo(), tuft: tuftGeo(), wild: wildGeo(), rock: rockGeo(3),
+  petal: petalGeometry({ length: .06, hw: .035, cup: .35, bend: .3, notch: .1, pw: .5, vmax: .6, base: .3, segU: 3, segV: 4, cBase: '#ffffff', cTip: '#ffffff' }) };
+const CACHE = {}; const cached = (k, f) => CACHE[k] || (CACHE[k] = f());
+function instanced(geo, mat, list, colors) {
+  const m = new THREE.InstancedMesh(geo, mat, Math.max(1, list.length));
+  list.forEach((d, i) => { _e.set(d[7] || 0, d[3], d[8] || 0, 'YXZ'); _q.setFromEuler(_e); _p.set(d[0], d[1], d[2]); _s.set(d[4], d[5], d[6]); m.setMatrixAt(i, _m.compose(_p, _q, _s)); if (colors) m.setColorAt(i, colors[i]); });
+  m.count = list.length; m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; return m;
+}
+const softTex = (stops, size = 128) => { const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2); stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, size, size); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+const mistTex = softTex([[0, 'rgba(255,255,255,.9)'], [.5, 'rgba(255,255,255,.35)'], [1, 'rgba(255,255,255,0)']]);
+const wingTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.translate(0, 64);
+  const wing = (sx, sy, rx, ry, rot) => { x.save(); x.translate(sx, sy); x.rotate(rot); x.beginPath(); x.ellipse(rx * .55, 0, rx * .6, ry, 0, 0, TAU); x.restore(); };
+  x.fillStyle = '#fff'; wing(4, -14, 110, 34, -.45); x.fill(); wing(4, 16, 80, 26, .5); x.fill();
+  x.strokeStyle = 'rgba(40,25,30,.85)'; x.lineWidth = 5; wing(4, -14, 110, 34, -.45); x.stroke(); wing(4, 16, 80, 26, .5); x.stroke();
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+
+
+/* ============ light & air ============ */
+function makeEnv(R) {
+  const pm = new THREE.PMREMGenerator(R), es = new THREE.Scene(), sky = new THREE.SphereGeometry(10, 32, 16), pa = sky.attributes.position, cols = [], cT = new THREE.Color('#bcd3ff'), cH = new THREE.Color('#fff4ea'), cG = new THREE.Color('#e9d9cf');
+  for (let i = 0; i < pa.count; i++) { const y = pa.getY(i) / 10, c = y > 0 ? cH.clone().lerp(cT, Math.pow(y, .5)) : cH.clone().lerp(cG, Math.min(1, -y * 3)); cols.push(c.r, c.g, c.b); }
+  sky.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3)); es.add(new THREE.Mesh(sky, new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true })));
+  const sunM = new THREE.Mesh(new THREE.SphereGeometry(.9, 16, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color('#fff4dc').multiplyScalar(26) })); sunM.position.set(4, 8, 5); es.add(sunM);
+  const box = new THREE.BoxGeometry(1, 1, 1); for (const [p, k] of [[[-6, 3, 3], 5], [[0, 4, -7], 4], [[0, -6, 0], 2]]) { const m = new THREE.Mesh(box, new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffffff').multiplyScalar(k) })); m.position.set(...p); m.scale.set(3, 2, .2); m.lookAt(0, 0, 0); es.add(m); }
+  const t = pm.fromScene(es, .02).texture; pm.dispose(); return t;
+}
+scene.environment = makeEnv(renderer); scene.environmentIntensity = .6;
+scene.add(new THREE.HemisphereLight('#f3f6ff', '#d9c7b5', 1.15));
+const sun = new THREE.DirectionalLight('#fff1dc', 2.9); sun.position.set(4, 9, 5); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(coarse ? 1536 : 2048, coarse ? 1536 : 2048);
+Object.assign(sun.shadow.camera, { left: -4, right: 4, top: 4, bottom: -4, near: 1, far: 25 }); sun.shadow.camera.updateProjectionMatrix();
+sun.shadow.bias = -.0004; sun.shadow.normalBias = .02;
+const rimLight = new THREE.DirectionalLight('#ffd8ea', 1.1); rimLight.position.set(-5, 3, -6); scene.add(rimLight);
+
+// soft out-of-focus lights floating far behind
+const bokehMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, uniforms: { uT: WIND.uTime, uPR: { value: renderer.getPixelRatio() } },
+  vertexShader: `attribute float aS; attribute vec3 aC; uniform float uT, uPR; varying vec3 vC; varying float vA;
+    void main(){ vec3 p = position; p.y += sin(uT * 0.15 + aS * 20.0) * 0.5; p.x += cos(uT * 0.11 + aS * 13.0) * 0.5;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv; vC = aC; vA = 0.28 + 0.22 * sin(uT * 0.5 + aS * 30.0); gl_PointSize = (90.0 + aS * 170.0) * uPR * 9.0 / -mv.z; }`,
+  fragmentShader: `varying vec3 vC; varying float vA; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard;
+      float disc = smoothstep(1.0, 0.85, d); float ring = smoothstep(0.78, 0.92, d) * smoothstep(1.0, 0.92, d); gl_FragColor = vec4(vC, (disc * 0.5 + ring * 0.45) * vA); }`
+});
+const bokeh = new THREE.Points(new THREE.BufferGeometry(), bokehMat); bokeh.frustumCulled = false; scene.add(bokeh);
+function setBokeh(pal, accent) {
+  const n = 54, P = new Float32Array(n * 3), S = new Float32Array(n), Cc = new Float32Array(n * 3), cols = [pal.tip, pal.edge, '#ffffff', accent, '#fff3c8'].map(c => new THREE.Color(c)), r = rng(99);
+  for (let i = 0; i < n; i++) { const th = r() * TAU, ph = Math.acos(2 * r() - 1), rr = 11 + r() * 7; P[i * 3] = Math.sin(ph) * Math.cos(th) * rr; P[i * 3 + 1] = Math.cos(ph) * rr * .7; P[i * 3 + 2] = Math.sin(ph) * Math.sin(th) * rr; S[i] = r(); const c = cols[Math.floor(r() * cols.length)]; Cc[i * 3] = c.r; Cc[i * 3 + 1] = c.g; Cc[i * 3 + 2] = c.b; }
+  const g = bokeh.geometry; g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('aS', new THREE.BufferAttribute(S, 1)); g.setAttribute('aC', new THREE.BufferAttribute(Cc, 3));
+}
+const moteMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, uniforms: { uT: WIND.uTime, uPR: { value: renderer.getPixelRatio() } },
+  vertexShader: `attribute float aS; uniform float uT, uPR; varying float vA;
+    void main(){ vec3 p = position; float t = uT * 0.1 + aS * 40.0; p.x += sin(t * 1.3 + aS * 9.0) * 0.3; p.y += mod(uT * 0.05 * (0.4 + aS) + aS, 1.0) * 0.9; p.z += cos(t * 1.1 + aS * 4.0) * 0.3;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0); gl_Position = projectionMatrix * mv; vA = (0.35 + 0.65 * (0.5 + 0.5 * sin(uT * 1.3 + aS * 60.0))) * sin(mod(uT * 0.05 * (0.4 + aS) + aS, 1.0) * 3.14159); gl_PointSize = (2.0 + aS * 4.0) * uPR * 4.0 / -mv.z; }`,
+  fragmentShader: `varying float vA; void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d); gl_FragColor = vec4(1.0, 0.97, 0.86, a * a * vA * 0.9); }`
+});
+const flowTex = (() => {
+  const c = document.createElement('canvas'); c.width = 64; c.height = 256; const x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 64, 0); g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(.5, 'rgba(255,255,255,.05)'); g.addColorStop(1, 'rgba(255,255,255,.35)'); x.fillStyle = g; x.fillRect(0, 0, 64, 256);
+  const r = rng(5); for (let i = 0; i < 60; i++) { x.strokeStyle = `rgba(255,255,255,${.25 + r() * .5})`; x.lineWidth = 1 + r() * 2; const px = 6 + r() * 52, py = r() * 256; x.beginPath(); x.moveTo(px, py); x.lineTo(px + (r() - .5) * 4, py + 10 + r() * 26); x.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
+})();
+const miniBloom = (() => { const parts = []; for (let k = 0; k < 5; k++) parts.push(xf(petalGeometry({ length: .5, hw: .24, cup: .25, bend: .3, notch: .06, pw: .5, vmax: .6, base: .25, segU: 4, segV: 4, cBase: '#ffffff', cTip: '#ffffff' }), { rx: 1.15, ry: k * TAU / 5 })); parts.push(xf(sphere(.13, 6, 4, '#f2c94c'), { y: .04 })); return mergeAll(parts); })();
+const vineLeaf = petalGeometry({ length: 1, hw: .42, cup: .3, bend: .25, pw: .7, vmax: .45, base: .2, cBase: '#3f6e33', cTip: '#86b25a', segU: 4, segV: 5 });
+const flatMat = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .6 });
+
+/* ============ butterflies ============ */
+const wingGeo = new THREE.PlaneGeometry(.06, .06).translate(.03, 0, 0).rotateX(-Math.PI / 2), flyBodyGeo = new THREE.CylinderGeometry(.0035, .0025, .04, 5).rotateX(Math.PI / 2);
+const flyBodyMat = new THREE.MeshStandardMaterial({ color: '#2a1f22', roughness: .6 }), wingMats = {};
+const wingMat = col => wingMats[col] || (wingMats[col] = new THREE.MeshStandardMaterial({ map: wingTex, color: new THREE.Color(col), side: THREE.DoubleSide, alphaTest: .5, roughness: .65 }));
+function makeButterfly(col, s = 1) {
+  const b = new THREE.Group(), R1 = new THREE.Mesh(wingGeo, wingMat(col)), L1 = new THREE.Mesh(wingGeo, wingMat(col)); L1.scale.x = -1; R1.castShadow = L1.castShadow = true;
+  b.add(R1, L1, new THREE.Mesh(flyBodyGeo, flyBodyMat)); b.scale.setScalar(s); return { b, R1, L1 };
+}
+// a butterfly wanders, glides now and then, and settles on a flower for a while
+function flutter(f, t, dt, ground) {
+  f.rest = (f.rest || 0) - dt;
+  if (f.rest > 0) { const k = Math.sin(t * 2.2 + f.ph) * .35 + .6; f.R1.rotation.z = k; f.L1.rotation.z = -k; return; }
+  const x = f.cx + Math.sin(t * f.w1 + f.ph) * f.ax + Math.sin(t * f.w1 * 2.3 + f.ph * 3) * .08, z = f.cz + Math.sin(t * f.w2 + f.ph * 1.7) * f.az + Math.cos(t * f.w2 * 1.9) * .06;
+  const y = ground(x, z) + f.hy + Math.sin(t * 1.6 + f.ph) * .07 + Math.sin(t * 5.3 + f.ph) * .015;
+  const dx = x - f.b.position.x, dz = z - f.b.position.z; if (dx * dx + dz * dz > 1e-8) f.b.rotation.y = Math.atan2(dx, dz); f.b.position.set(x, y, z);
+  const glide = Math.sin(t * .7 + f.ph) > .75, flap = glide ? .25 + Math.sin(t * 3) * .1 : Math.sin(t * 19 + f.ph) * .95 + .25; f.R1.rotation.z = flap; f.L1.rotation.z = -flap;
+  if (Math.random() < dt * .04) { f.rest = 2 + Math.random() * 3; f.b.position.y = ground(x, z) + f.hy * .55; }
+}
+const BUTTERFLY_COLS = ['#ffffff', '#fff3b0', '#ffd27a', '#bfe3ff', '#f7c3d6', '#d9c8ff'];
+
+/* ============ tiny guests: miniature people who stroll, chat and picnic in the gardens ============ */
+const personGeo = {
+  leg: new THREE.CylinderGeometry(.042, .036, .44, 7).translate(0, -.22, 0), shoe: new THREE.BoxGeometry(.075, .04, .12).translate(0, -.44, .025),
+  torso: new THREE.CylinderGeometry(.115, .13, .38, 12).translate(0, .63, 0), skirt: new THREE.CylinderGeometry(.12, .25, .44, 16, 1, true).translate(0, .4, 0),
+  arm: new THREE.CylinderGeometry(.034, .028, .36, 7).translate(0, -.18, 0), hand: new THREE.SphereGeometry(.035, 8, 6).translate(0, -.37, 0),
+  neck: new THREE.CylinderGeometry(.04, .045, .06, 8).translate(0, .84, 0), head: new THREE.SphereGeometry(.1, 16, 12).translate(0, .95, 0),
+  hair: new THREE.SphereGeometry(.107, 16, 10, 0, TAU, 0, Math.PI * .58).translate(0, .955, -.008), bun: new THREE.SphereGeometry(.05, 10, 8).translate(0, 1.0, -.09),
+  brim: new THREE.CylinderGeometry(.21, .21, .012, 24).translate(0, 1.02, 0), crown: new THREE.CylinderGeometry(.095, .105, .08, 18).translate(0, 1.065, 0)
+};
+const pMats = {}, pMat = (c, rough = .8) => pMats[c + rough] || (pMats[c + rough] = new THREE.MeshStandardMaterial({ color: c, roughness: rough }));
+const SKIN = ['#f3cfae', '#e0ac85', '#b9805a', '#8a5a3c', '#5e3b28'], HAIR = ['#2a1d17', '#4a3020', '#8a5a2e', '#c9a46a', '#1a1414', '#9a9690'];
+function makePerson(r, look) {
+  const pal = look.outfit, g = new THREE.Group(), add = (geo, c, p, rough) => { const m = new THREE.Mesh(geo, pMat(c, rough)); m.castShadow = true; m.receiveShadow = true; (p || g).add(m); return m; };
+  const skin = SKIN[Math.floor(r() * SKIN.length)], hair = HAIR[Math.floor(r() * HAIR.length)], top = pal[Math.floor(r() * pal.length)], low = r() < .5 ? pal[Math.floor(r() * pal.length)] : '#f4efe6', dress = r() < .5;
+  const hips = new THREE.Group(); hips.position.y = .46; g.add(hips);
+  const legs = [-1, 1].map(s => { const l = new THREE.Group(); l.position.x = s * .058; hips.add(l); add(personGeo.leg, dress ? skin : low, l); add(personGeo.shoe, '#3a2b25', l, .5); return l; });
+  const body = new THREE.Group(); g.add(body);
+  add(personGeo.torso, top, body); if (dress) add(personGeo.skirt, top, body).material.side = THREE.DoubleSide;
+  add(personGeo.neck, skin, body); add(personGeo.head, skin, body, .6); add(personGeo.hair, hair, body, .7); if (r() < .35) add(personGeo.bun, hair, body, .7);
+  if (look.hats && r() < .55) { const hc = r() < .6 ? '#e8d6a8' : pal[0]; add(personGeo.brim, hc, body, .9); add(personGeo.crown, hc, body, .9); }
+  const arms = [-1, 1].map(s => { const a = new THREE.Group(); a.position.set(s * .15, .8, 0); a.rotation.z = s * .1; body.add(a); add(personGeo.arm, top, a); add(personGeo.hand, skin, a, .6); return a; });
+  return { g, legs, arms, body, hips, ph: r() * TAU, gest: 0 };
+}
+function posePerson(p, t, dt, walking, speed = 1) {
+  if (walking) { p.ph += dt * 7.5 * speed; const s = Math.sin(p.ph) * .55; p.legs[0].rotation.x = s; p.legs[1].rotation.x = -s; p.arms[0].rotation.x = -s * .75; p.arms[1].rotation.x = s * .75; p.body.position.y = Math.abs(Math.cos(p.ph)) * .025; }
+  else if (p.sitting) { p.legs.forEach(l => l.rotation.x = -1.45); p.body.position.y = 0; p.arms.forEach((a, i) => a.rotation.x = -.35 - Math.sin(t * .9 + p.ph + i) * .06); }
+  else { p.legs.forEach(l => l.rotation.x *= .9); p.body.position.y = 0; p.gest = Math.max(0, Math.sin(t * .55 + p.ph * 3)); const k = Math.pow(p.gest, 3);
+    p.arms[0].rotation.x = -k * .9; p.arms[1].rotation.x = Math.sin(t * .8 + p.ph) * .05; p.body.rotation.y = Math.sin(t * .4 + p.ph) * .12; }
+}
+const OUTFITS = { 'cherry-blossom': ['#f7d5df', '#fffaf6', '#e9a3b8', '#c9d8e6', '#8fa98a'], tulip: ['#ffb38a', '#ffe08a', '#f5f0e6', '#7aa6d6', '#e86a6a'],
+  rose: ['#2b2230', '#f2ece4', '#8b1e3f', '#1f2a3d', '#d9b37a'], lavender: ['#e9e4f7', '#b6a6e6', '#f7f2ea', '#6f8f86', '#3f3a5c'], sunflower: ['#ffd23a', '#fff7e1', '#e98a2c', '#6fa1d2', '#4a7a3c'] };
+const blanketTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'); x.fillStyle = '#fbf6ee'; x.fillRect(0, 0, 64, 64); x.fillStyle = 'rgba(200,70,80,.75)';
+  for (let i = 0; i < 8; i++) { x.fillRect(i * 8, 0, 4, 64); x.fillRect(0, i * 8, 64, 4); } const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2, 2); return t; })();
+personGeo.stick = new THREE.CylinderGeometry(.012, .012, .62, 6).translate(0, 1.05, 0); personGeo.canopy = new THREE.ConeGeometry(.42, .16, 16, 1, true).translate(0, 1.42, 0);
+function addParasol(p, col) { const g = new THREE.Group(); g.position.set(.13, 0, .04); g.rotation.z = -.12; const st = new THREE.Mesh(personGeo.stick, pMat('#6b4a3a')), cn = new THREE.Mesh(personGeo.canopy, pMat(col, .9));
+  cn.material.side = THREE.DoubleSide; st.castShadow = cn.castShadow = true; g.add(st, cn); p.body.add(g); p.arms[1].rotation.z = .5; p.parasol = g; }
+const SHARED_EXTRA = new Set([wingGeo, flyBodyGeo, ...Object.values(personGeo)]);
+
+/* ================================================================
+   THE LIVING INVITATION — a rectangular card with a garden growing on it
+   ================================================================ */
+const CW = 3.4, CL = 6.0, CT = .09, MARG = .2, GB = -.62, TZ0 = -.5, TZ1 = CL / 2 - .08;
+const VAR = {
+  tulip: [{ base: '#fff0f3', tip: '#f48fb1', edge: '#e5658f' }, { base: '#fff6c8', tip: '#ffd84d', edge: '#f2ad00' }, { base: '#f6f4ea', tip: '#ffffff', edge: '#f3dfe8' }, { base: '#ffe3d2', tip: '#ff9d73', edge: '#f2706a' }],
+  rose: [{ base: '#f9ded9', tip: '#f6b9bd', edge: '#ec94a0' }, { base: '#fff6ee', tip: '#fde9de', edge: '#f2cdbd' }]
+};
+function roundedRect(w, h, r) { const s = new THREE.Shape(), x = -w / 2, y = -h / 2; s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h); s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y); return s; }
+
+function buildCard(index) {
+  const inv = INV[index], key = inv.key, PET = inv.petals, seed = 5200 + index * 97, r = rng(seed), NZ = makeNoise(seed);
+  const group = new THREE.Group(), own = [], keep = m => { own.push(m); group.add(m); return m; };
+  const paper = new THREE.Color(inv.card.paper), dark = !!inv.dark;
+
+  /* ---- the shape of the land ---- */
+  const hills = []; for (let k = 0; k < 3; k++) hills.push({ x: (k - 1) * 1.05 + (r() - .5) * .5, z: -2.45 + r() * 1.1, h: .2 + r() * .22, rad: .42 + r() * .3 });
+  const sx0 = (r() - .5) * 1.4, px = (r() - .5) * 1.3, pz = GB - .4, ph = r() * TAU, poolR = .27;
+  const stream = []; for (let k = 0; k <= 30; k++) { const t = k / 30, z = (-CL / 2 + MARG + .02) * (1 - t) + pz * t, x = sx0 * (1 - t) + px * t + Math.sin(t * Math.PI * 2.2 + ph) * .28 * Math.sin(Math.PI * t); stream.push([x, z]); }
+  function streamD(x, z) { let m = 9; for (let k = 0; k < stream.length - 1; k++) { const [ax, az] = stream[k], [bx, bz] = stream[k + 1], dx = bx - ax, dz = bz - az, t = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz), 0, 1); m = Math.min(m, Math.hypot(x - ax - dx * t, z - az - dz * t)); } return m; }
+  const poolD = (x, z) => Math.hypot(x - px, z - pz);
+  function mask(x, z) {
+    const e = smooth(0, .3, Math.min(CW / 2 - MARG - Math.abs(x), z - (-CL / 2 + MARG)));
+    const b = smooth(GB + .2, GB - .3, z + NZ.n2(x * 1.4, 3.3) * .17 + NZ.n2(x * 4.2, 9) * .05);
+    return e * b;
+  }
+  function H(x, z) {
+    const g = mask(x, z); if (g <= 0) return 0;
+    let h = .05 + NZ.fbm(x * .8 + 2, z * .8 - 1, 4) * .1 + NZ.fbm(x * 2.8, z * 2.8, 2) * .025;
+    for (const k of hills) h += k.h * Math.exp(-((x - k.x) ** 2 + (z - k.z) ** 2) / (k.rad * k.rad));
+    h = g * h - g * (.055 * smooth(.13, .02, streamD(x, z)) + .07 * smooth(poolR + .07, poolR * .4, poolD(x, z)));
+    return Math.max(h, g * .012);
+  }
+  const wet = (x, z) => streamD(x, z) < .085 || poolD(x, z) < poolR + .03;
+
+  /* ---- the card itself: thick paper with gilded edges ---- */
+  const base = new THREE.ExtrudeGeometry(roundedRect(CW, CL, .1), { depth: CT, bevelEnabled: true, bevelThickness: .006, bevelSize: .006, bevelSegments: 2, curveSegments: 10 });
+  base.rotateX(-Math.PI / 2); base.translate(0, -CT - .006, 0);
+  const paperMat = new THREE.MeshPhysicalMaterial({ color: paper, roughness: .8, sheen: .3, sheenColor: new THREE.Color('#ffffff') });
+  const giltMat = new THREE.MeshPhysicalMaterial({ color: '#d8b26a', metalness: 1, roughness: .25, clearcoat: .5 });
+  const card = keep(new THREE.Mesh(base, [paperMat, giltMat])); card.castShadow = true; card.receiveShadow = true; own.push(paperMat, giltMat);
+  // back of the card
+  const bc = PrintArt.back(inv, CW - .04, CL - .04, 'color', 1), bm = PrintArt.back(inv, CW - .04, CL - .04, 'mr', .5);
+  const bMap = new THREE.CanvasTexture(bc); bMap.colorSpace = THREE.SRGBColorSpace; bMap.anisotropy = maxAniso; const bMR = new THREE.CanvasTexture(bm);
+  const backMat = new THREE.MeshStandardMaterial({ map: bMap, metalnessMap: bMR, roughnessMap: bMR, metalness: 1, roughness: 1 }); own.push(bMap, bMR, backMat);
+  const backPlane = keep(new THREE.Mesh(new THREE.PlaneGeometry(CW - .04, CL - .04).rotateX(Math.PI / 2), backMat)); backPlane.position.y = -CT - .016;
+
+  /* ---- the land, rising out of the paper ---- */
+  {
+    const SX = coarse ? 100 : 150, SZ = coarse ? 170 : 260, tg = new THREE.PlaneGeometry(CW - .1, CL - .1, SX, SZ); tg.rotateX(-Math.PI / 2);
+    const tp = tg.attributes.position, tc = new Float32Array(tp.count * 3), c = new THREE.Color(), m1 = new THREE.Color('#577a33'), m2 = new THREE.Color('#9ab65a'), soil = new THREE.Color('#6e5a3c'), bed = new THREE.Color('#4f7d78'), goldC = new THREE.Color('#d9b36a');
+    for (let i = 0; i < tp.count; i++) {
+      const x = tp.getX(i), z = tp.getZ(i), g = mask(x, z), h = H(x, z); tp.setY(i, h + .003);
+      c.copy(m1).lerp(m2, clamp(.4 + NZ.n2(x * 2, z * 2) * .5 + h * 1.2, 0, 1)).lerp(soil, Math.max(0, NZ.n2(x * 3 + 7, z * 3) - .25));
+      if (wet(x, z)) c.lerp(bed, .7);
+      const t = smooth(.04, .42, g + NZ.n2(x * 6, z * 6) * .12); c.lerp(paper, 1 - t);
+      if (t > .05 && t < .5 && NZ.n2(x * 40, z * 40) > .45) c.copy(goldC);   // gold leaf flecks where paper becomes land
+      tc[i * 3] = c.r; tc[i * 3 + 1] = c.g; tc[i * 3 + 2] = c.b;
+    }
+    tg.setAttribute('color', new THREE.BufferAttribute(tc, 3)); tg.computeVertexNormals();
+    const tm = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95 }); own.push(tm);
+    const land = keep(new THREE.Mesh(tg, tm)); land.receiveShadow = true; land.castShadow = true;
+  }
+  /* ---- the printed invitation below the garden ---- */
+  {
+    const w = CW - .2, h = TZ1 - TZ0, pc = PrintArt.front(inv, w, h, 'color', 1), pm = PrintArt.front(inv, w, h, 'mr', .5);
+    const map = new THREE.CanvasTexture(pc); map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = maxAniso; const mr = new THREE.CanvasTexture(pm);
+    const mat = new THREE.MeshStandardMaterial({ map, metalnessMap: mr, roughnessMap: mr, metalness: 1, roughness: 1, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }); own.push(map, mr, mat);
+    const print = keep(new THREE.Mesh(new THREE.PlaneGeometry(w, h).rotateX(-Math.PI / 2), mat)); print.position.set(0, .006, (TZ0 + TZ1) / 2); print.receiveShadow = true;
+  }
+  /* ---- a little stream that runs into a pool ---- */
+  const water = new THREE.MeshStandardMaterial({ color: '#a6e1ea', map: flowTex.clone(), transparent: true, opacity: .86, roughness: .08, metalness: .05, envMapIntensity: 1.6, depthWrite: false });
+  water.map.needsUpdate = true; own.push(water, water.map);
+  {
+    const curve = new THREE.CatmullRomCurve3(stream.map(([x, z]) => new V3(x, 0, z))), N = 120, pos = [], uv = [], idx = []; let len = 0, prev = null;
+    for (let k = 0; k <= N; k++) {
+      const t = k / N, p = curve.getPoint(t), tan = curve.getTangent(t), nx = -tan.z, nz = tan.x, w = .05 + .02 * Math.sin(t * 9) + .03 * t;
+      if (prev) len += p.distanceTo(prev); prev = p.clone();
+      const y = H(p.x, p.z) + .03;
+      pos.push(p.x - nx * w, y, p.z - nz * w, p.x + nx * w, y, p.z + nz * w); uv.push(0, len * 3, 1, len * 3);
+      if (k < N) { const a = k * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); }
+    }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
+    keep(new THREE.Mesh(g, water)).receiveShadow = true;
+    const pool = keep(new THREE.Mesh(new THREE.CircleGeometry(poolR + .02, 40).rotateX(-Math.PI / 2), water)); pool.position.set(px, H(px, pz) + .03, pz);
+  }
+
+  /* ---- where things grow: everything keeps its own space ---- */
+  const cell = .1, grid = new Map(), gk = (i, j) => i * 10007 + j;
+  function room(x, z, rr, f = .9) {
+    const gi = Math.floor(x / cell), gj = Math.floor(z / cell), reach = Math.ceil((rr + .6) / cell);
+    for (let di = -reach; di <= reach; di++) for (let dj = -reach; dj <= reach; dj++) { const a = grid.get(gk(gi + di, gj + dj)); if (a) for (const p of a) if ((p.x - x) ** 2 + (p.z - z) ** 2 < ((p.r + rr) * f) ** 2) return false; }
+    return true;
+  }
+  function claim(x, z, rr) { const k = gk(Math.floor(x / cell), Math.floor(z / cell)); (grid.get(k) || grid.set(k, []).get(k)).push({ x, z, r: rr }); }
+  const X0 = -CW / 2 + MARG + .05, X1 = CW / 2 - MARG - .05, Z0 = -CL / 2 + MARG + .05, Z1 = GB + .15;
+  function scatter(n, tries, radius, accept) { const out = []; for (let t = 0; t < tries && out.length < n; t++) { const x = X0 + r() * (X1 - X0), z = Z0 + r() * (Z1 - Z0); if (mask(x, z) < .55 || wet(x, z) || !accept(x, z)) continue; const rr = radius(x, z); if (!room(x, z, rr)) continue; claim(x, z, rr); out.push({ x, z, r: rr }); } return out; }
+  const drift = (x, z) => NZ.n2(x * 1.15 + 11, z * 1.15 - 4);                     // where flowers gather and where clearings open
+  const lists = {}, colors = {}, geos = {};
+  const push = (k, d, c) => { (lists[k] = lists[k] || []).push(d); (colors[k] = colors[k] || []).push(c || new THREE.Color(1, 1, 1)); };
+  const stage = () => { const s = r(); return s < .12 ? 0 : s < .34 ? 1 : 2; }, OPEN = [0, .5, 1];
+  const tint = () => new THREE.Color().setHSL(.02 + (r() - .5) * .04, .12, .94 + r() * .06);
+  const y0 = (x, z) => H(x, z) - .008;
+  // a few stones by the water
+  { const S = []; for (let k = 0; k < 26; k++) { const t = r(), p = stream[Math.floor(t * (stream.length - 1))], a = r() * TAU, d = .09 + r() * .05, x = p[0] + Math.cos(a) * d, z = p[1] + Math.sin(a) * d; if (mask(x, z) < .4 || wet(x, z)) continue; const s = .025 + r() * .03; S.push([x, H(x, z) + s * .2, z, r() * TAU, s * 1.4, s * .7, s]); claim(x, z, s); }
+    for (let k = 0; k < 10; k++) { const a = k / 10 * TAU, x = px + Math.cos(a) * (poolR + .06), z = pz + Math.sin(a) * (poolR + .06), s = .03 + r() * .035; S.push([x, H(x, z) + s * .2, z, r() * TAU, s * 1.4, s * .7, s]); claim(x, z, s); }
+    keep(instanced(SHARED.rock, plainMat, S)); }
+
+  let trees = [];
+  if (key === 'cherry-blossom') {
+    const T = scatter(3, 400, () => .5, (x, z) => z < -1.2);
+    T.forEach((p, k) => { const h = 1.25 + r() * .4, gk2 = `cherry-${k % 2}`; geos[gk2] = () => buildCherry(PET, 1000 + k % 2, k % 2 ? 7 : 9); push(gk2, [p.x, y0(p.x, p.z) - .02, p.z, r() * TAU, h, h, h]); trees.push([p.x, H(p.x, p.z), p.z, h]); });
+    const tints = [new THREE.Color('#ffd1df'), new THREE.Color('#ffffff'), new THREE.Color('#f7b6cb'), new THREE.Color('#ffe8f0')];
+    scatter(Math.round(560 * Q), 9000, () => .028 + r() * .012, (x, z) => drift(x, z) > -.45).forEach(p => { const h = .07 + r() * .07; push('wild', [p.x, y0(p.x, p.z), p.z, r() * TAU, h, h, h, (r() - .5) * .3, (r() - .5) * .3], tints[Math.floor(r() * 4)]); });
+  } else if (key === 'tulip') {
+    const pal = [PET, ...VAR.tulip];
+    scatter(Math.round(430 * Q), 16000, (x, z) => .045 + r() * .02, (x, z) => r() < smooth(-.35, .15, drift(x, z))).forEach(p => {
+      const cn = NZ.n2(p.x * .9 - 3, p.z * .9 + 6), vi = r() < .12 ? Math.floor(r() * pal.length) : clamp(Math.floor((cn + .55) / 1.1 * pal.length), 0, pal.length - 1), st = stage(), sv = Math.floor(r() * 3), k = `tulip-${vi}-${st}-${sv}`;
+      geos[k] = () => buildTulip(pal[vi], 300 + vi * 11 + st * 3 + sv, OPEN[st]);
+      const h = (.25 + r() * .2) * (1 + smooth(-.1, .5, drift(p.x, p.z)) * .25); push(k, [p.x, y0(p.x, p.z), p.z, r() * TAU, h, h, h, (r() - .5) * .22, (r() - .5) * .22], tint());
+    });
+  } else if (key === 'rose') {
+    const pal = [PET, ...VAR.rose];
+    // full, generous bushes with big blooms, and long-stem roses rising between them
+    scatter(Math.round(54 * Q), 8000, () => .17 + r() * .06, (x, z) => r() < smooth(-.4, .1, drift(x, z))).forEach(p => {
+      const bh = .24 + r() * .16, bw = bh * 1.12; push('shrub', [p.x, y0(p.x, p.z) - .015, p.z, r() * TAU, bw, bh, bw], new THREE.Color().setHSL(.3, .3, .42 + r() * .12));
+      const cn = NZ.n2(p.x * 1.1 + 4, p.z * 1.1), vi = cn > .25 ? 1 : cn < -.3 ? 2 : 0, nH = 3 + Math.floor(r() * 3), up = new V3(0, 1, 0), q = new THREE.Quaternion();
+      for (let k = 0; k < nH; k++) {
+        const a = r() * TAU, el = .45 + r() * .85, d = new V3(Math.cos(a) * Math.cos(el), Math.sin(el), Math.sin(a) * Math.cos(el)); q.setFromUnitVectors(up, d); _e.setFromQuaternion(q, 'YXZ');
+        const st = stage(), k2 = `rose-${vi}-${st}`; geos[k2] = () => roseHead(pal[vi], 500 + vi * 7 + st, OPEN[st]); const s = (.085 + r() * .035) * (st === 0 ? .72 : 1);
+        push(k2, [p.x + d.x * bw * .42, H(p.x, p.z) + bh * .5 + d.y * bh * .4, p.z + d.z * bw * .42, _e.y, s, s, s, _e.x, _e.z], tint());
+      }
+    });
+    scatter(Math.round(40 * Q), 7000, () => .075, (x, z) => r() < smooth(-.55, .05, drift(x, z))).forEach(p => {
+      const st = stage(), vi = r() < .6 ? 0 : 1 + Math.floor(r() * 2), k = `roseStem-${vi}-${st}`; geos[k] = () => buildRoseStem(pal[vi], 700 + vi * 5 + st, OPEN[Math.max(1, st)]);
+      const h = .34 + r() * .16; push(k, [p.x, y0(p.x, p.z) - .01, p.z, r() * TAU, h, h, h, (r() - .5) * .22, (r() - .5) * .22], tint());
+    });
+  } else if (key === 'lavender') {
+    scatter(Math.round(170 * Q), 12000, () => .085 + r() * .03, (x, z) => r() < smooth(-.4, .1, drift(x, z))).forEach(p => { const sv = Math.floor(r() * 3), k = `lav-${sv}`; geos[k] = () => buildLavender(PET, 800 + sv); const h = .26 + r() * .16; push(k, [p.x, y0(p.x, p.z) - .01, p.z, r() * TAU, h, h, h, (r() - .5) * .15, (r() - .5) * .15], new THREE.Color().setHSL(.72, .2 + r() * .2, .88 + r() * .12)); });
+  } else if (key === 'sunflower') {
+    scatter(Math.round(70 * Q), 9000, () => .11 + r() * .03, (x, z) => r() < smooth(-.4, .1, drift(x, z))).forEach(p => { const st = r() < .14 ? 0 : r() < .28 ? 1 : 2, sv = Math.floor(r() * 2), k = `sun-${st}-${sv}`; geos[k] = () => buildSunflower(PET, 900 + st * 5 + sv, OPEN[st]); const h = .5 + r() * .32; push(k, [p.x, y0(p.x, p.z) - .01, p.z, .3 + (r() - .5) * .7, h, h, h, (r() - .5) * .12, (r() - .5) * .12], tint()); });
+  }
+  for (const k in lists) {
+    const geo = k === 'shrub' ? SHARED.shrub : k === 'wild' ? SHARED.wild : cached(k, geos[k]);
+    const mat = k.startsWith('cherry') || k === 'shrub' ? treeMat : k.startsWith('rose-') ? headMat : plantMat;
+    keep(instanced(geo, mat, lists[k], colors[k]));
+  }
+  /* grass tufts in the gaps and tiny wildflowers */
+  {
+    const T = [], TC = [], c1 = new THREE.Color('#3f6326'), c2 = new THREE.Color('#b2cf6c');
+    scatter(Math.round(900 * Q), 14000, () => .03, (x, z) => r() < .35 + .5 * smooth(.2, -.4, drift(x, z)) + .4 * smooth(.25, .1, streamD(x, z))).forEach(p => { const h = .06 + r() * .09; T.push([p.x, H(p.x, p.z) - .006, p.z, r() * TAU, .5 + r() * .4, h, .5 + r() * .4]); TC.push(c1.clone().lerp(c2, .3 + r() * .7)); });
+    const tm = keep(instanced(SHARED.tuft, grassMat, T, TC)); tm.castShadow = false;
+    if (key !== 'cherry-blossom') { const W = [], WC = [], wc = ['#ffffff', '#fff3b0', PET.tip].map(c => new THREE.Color(c));
+      scatter(Math.round(240 * Q), 6000, () => .028, () => true).forEach(p => { const h = .05 + r() * .05; W.push([p.x, H(p.x, p.z) - .004, p.z, r() * TAU, h, h, h, (r() - .5) * .3, (r() - .5) * .3]); WC.push(wc[Math.floor(r() * 3)]); });
+      keep(instanced(SHARED.wild, plantMat, W, WC)).castShadow = false; }
+  }
+
+  /* ---- vines that grow down the margins and frame the words ---- */
+  const vines = [];
+  {
+    const bloomCol = new THREE.Color(key === 'sunflower' ? '#ffd23a' : PET.tip), leafM = [], blM = [], leafT = [], blT = [], tubes = [];
+    for (const side of [-1, 1]) {
+      const pts = []; const xE = side * (CW / 2 - .15), ph2 = r() * TAU;
+      for (let k = 0; k <= 40; k++) { const t = k / 40, z = (GB - .1) * (1 - t) + (TZ1 - .2) * t; pts.push(new V3(xE + Math.sin(t * 20 + ph2) * .03, .014 + Math.sin(t * 31) * .004, z)); }
+      for (let k = 1; k <= 8; k++) { const a = k / 8 * Math.PI * 1.25, rr = .14 * (1 - k / 10); pts.push(new V3(xE - side * (.14 - Math.cos(a) * rr), .014, TZ1 - .2 + Math.sin(a) * rr)); }
+      const curve = new THREE.CatmullRomCurve3(pts), tg = new THREE.TubeGeometry(curve, 260, .008, 5, false); colorize(tg, '#4c7536');
+      const m = keep(new THREE.Mesh(tg, flatMat)); m.castShadow = true; tubes.push({ m, total: tg.index.count });
+      const L = curve.getLength();
+      for (let s = .03; s < L - .02; s += .055) {
+        const t = s / L, p = curve.getPointAt(t), tan = curve.getTangentAt(t), side2 = Math.floor(s / .055) % 2 ? 1 : -1, yaw = Math.atan2(tan.x, tan.z) + side2 * (1.1 + r() * .3);
+        leafM.push([p.x, p.y, p.z, yaw, .055 + r() * .03, t]);
+        if (Math.floor(s / .055) % 5 === 2) blT.push([p.x + Math.sin(yaw) * .03, p.y + .01, p.z + Math.cos(yaw) * .03, r() * TAU, key === 'cherry-blossom' ? .17 + r() * .08 : .045 + r() * .025, t]);
+      }
+    }
+    const lm = new THREE.InstancedMesh(vineLeaf, flatMat, leafM.length), bmI = new THREE.InstancedMesh(key === 'cherry-blossom' ? cached('vblossom', () => blossomGeo(PET, rng(3), 1)) : miniBloom, flatMat, blT.length);
+    lm.frustumCulled = bmI.frustumCulled = false; lm.castShadow = true; keep(lm); keep(bmI);
+    blT.forEach((b, i) => bmI.setColorAt(i, key === 'cherry-blossom' ? new THREE.Color(1, 1, 1) : bloomCol.clone().lerp(new THREE.Color('#ffffff'), r() * .35)));
+    vines.push({ tubes, lm, bmI, leafM, blT });
+  }
+  function growVines(p) {
+    const v = vines[0];
+    v.tubes.forEach(t => t.m.geometry.setDrawRange(0, Math.floor(t.total * clamp(p * 1.05, 0, 1) / 6) * 6));
+    v.leafM.forEach(([x, y, z, yaw, s, t], i) => { const g = smooth(t - .02, t + .06, p) * s; _e.set(1.35, yaw, 0, 'YXZ'); _q.setFromEuler(_e); v.lm.setMatrixAt(i, _m.compose(_p.set(x, y, z), _q, _s.set(g + 1e-4, g + 1e-4, g + 1e-4))); });
+    v.blT.forEach(([x, y, z, yaw, s, t], i) => { const g = smooth(t, t + .1, p) * s; _e.set(0, yaw, 0); _q.setFromEuler(_e); v.bmI.setMatrixAt(i, _m.compose(_p.set(x, y, z), _q, _s.set(g + 1e-4, g + 1e-4, g + 1e-4))); });
+    v.lm.instanceMatrix.needsUpdate = true; v.bmI.instanceMatrix.needsUpdate = true;
+  }
+  growVines(0);
+
+  /* ---- air: motes, drifting petals, butterflies, a glow beneath ---- */
+  { const n = 160, P = new Float32Array(n * 3), S = new Float32Array(n); for (let i = 0; i < n; i++) { P[i * 3] = (r() - .5) * (CW - .4); P[i * 3 + 1] = .05 + r() * .5; P[i * 3 + 2] = -CL / 2 + .3 + r() * 2.6; S[i] = r(); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(P, 3)); g.setAttribute('aS', new THREE.BufferAttribute(S, 1)); const pts = new THREE.Points(g, moteMat); pts.frustumCulled = false; keep(pts); }
+  const glowM = new THREE.SpriteMaterial({ map: mistTex, color: new THREE.Color((UI.LOOK[key] || {}).accent || '#ffffff').lerp(new THREE.Color('#ffffff'), .55), transparent: true, opacity: .55, depthWrite: false }); own.push(glowM);
+  const glow = new THREE.Sprite(glowM); glow.scale.set(9, 9, 1); glow.position.set(0, -.6, 0); glow.renderOrder = -2; group.add(glow);
+  const pm = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .6, color: key === 'sunflower' ? '#ffd23a' : PET.tip }); own.push(pm);
+  if (trees.length) { const G = []; for (let k = 0; k < Math.round(380 * Q); k++) { const [tx, , tz] = trees[Math.floor(r() * trees.length)], a = r() * TAU, d = Math.sqrt(r()) * .75, x = tx + Math.cos(a) * d, z = tz + Math.sin(a) * d; if (mask(x, z) < .3) continue; const s = .45 + r() * .4; G.push([x, (wet(x, z) ? H(x, z) + .032 : H(x, z) + .008), z, r() * TAU, s, s, s, -1.45 + (r() - .5) * .4, (r() - .5) * .4]); } keep(instanced(SHARED.petal, pm, G)).castShadow = false; }
+  const NF = Math.round(46 * Q), fm = new THREE.InstancedMesh(SHARED.petal, pm, NF); fm.frustumCulled = false; keep(fm);
+  const top = trees.length ? 1.8 : key === 'sunflower' ? 1.2 : .9;
+  const F = [], spawn = (p, first) => { p.x = (Math.random() - .5) * (CW - .3); p.z = -CL / 2 + .2 + Math.random() * (CL - .4); p.y = first ? Math.random() * top : top * (.7 + Math.random() * .5); p.vy = .05 + Math.random() * .07; p.ph = Math.random() * TAU; p.rx = Math.random() * TAU; p.ry = Math.random() * TAU; p.land = 0; return p; };
+  for (let k = 0; k < NF; k++) F.push(spawn({}, true));
+  const flies = [];
+  for (let k = 0; k < 7; k++) { const f = makeButterfly(k < 3 ? new THREE.Color(PET.tip).lerp(new THREE.Color('#ffffff'), .3 + k * .15).getStyle() : BUTTERFLY_COLS[Math.floor(r() * BUTTERFLY_COLS.length)], .9 + r() * .4);
+    group.add(f.b); flies.push(Object.assign(f, { cx: (r() - .5) * 1.8, cz: -2.4 + r() * 2.0 + (k > 4 ? 2.4 : 0), ax: .3 + r() * .5, az: .25 + r() * .45, w1: .2 + r() * .2, w2: .25 + r() * .25, ph: r() * TAU, hy: .26 + r() * .14 })); }
+  /* guests: a couple strolling arm in arm, a walker in a sun hat, two friends chatting, and a picnic */
+  const guests = [], look = { outfit: OUTFITS[key] || OUTFITS.rose, hats: key === 'sunflower' || key === 'tulip' || key === 'lavender' || r() < .5 }, PS = .24;
+  const dry = (x, z) => mask(x, z) > .7 && !wet(x, z) && streamD(x, z) > .16 && poolD(x, z) > poolR + .14;
+  const pick = (accept, tries = 400) => { for (let k = 0; k < tries; k++) { const x = X0 + .2 + r() * (X1 - X0 - .4), z = Z0 + .2 + r() * (Z1 - Z0 - .1); if (dry(x, z) && accept(x, z)) return [x, z]; } return null; };
+  function loop(n0) { const P = []; for (let k = 0; k < n0; k++) { const p = pick((x, z) => drift(x, z) < .05 && P.every(q => Math.hypot(q[0] - x, q[1] - z) > .5)); if (p) P.push(p); }
+    if (P.length < 3) return null; const cx = P.reduce((a, p) => a + p[0], 0) / P.length, cz = P.reduce((a, p) => a + p[1], 0) / P.length; P.sort((a, b) => Math.atan2(a[1] - cz, a[0] - cx) - Math.atan2(b[1] - cz, b[0] - cx));
+    return new THREE.CatmullRomCurve3(P.map(([x, z]) => new V3(x, 0, z)), true, 'centripetal'); }
+  const guest = () => { const p = makePerson(r, look); p.g.scale.setScalar(PS); group.add(p.g); return p; };
+  const walkers = [];
+  { const c = loop(4); if (c) { const a = guest(), b2 = guest(); walkers.push({ c, len: c.getLength(), s: r(), v: .045, ppl: [[a, -.045], [b2, .045]] }); } }
+  { const c = loop(4); if (c) walkers.push({ c, len: c.getLength(), s: r(), v: -.06, ppl: [[guest(), 0]] }); }
+  const still = [];
+  { const p = pick((x, z) => drift(x, z) < -.1); if (p) { const a0 = r() * TAU; for (const sd of [-1, 1]) { const q = guest(), x = p[0] + Math.cos(a0) * .055 * sd, z = p[1] + Math.sin(a0) * .055 * sd; q.g.position.set(x, H(x, z) - .004, z); q.g.rotation.y = Math.atan2(p[0] - x, p[1] - z); still.push(q); } } }
+  { const p = pick((x, z) => drift(x, z) < -.15 && z > Z0 + .5); if (p) {
+      const bm = new THREE.MeshStandardMaterial({ map: blanketTex, roughness: .95 }), bl = new THREE.Mesh(new THREE.PlaneGeometry(.2, .16).rotateX(-Math.PI / 2), bm); own.push(bm, bl.geometry); bl.position.set(p[0], H(p[0], p[1]) + .006, p[1]); bl.rotation.y = r() * TAU; bl.receiveShadow = true; group.add(bl);
+      const bk = new THREE.Mesh(new THREE.BoxGeometry(.04, .025, .028), pMat('#b8864e')); bk.position.set(p[0] + .05, H(p[0], p[1]) + .02, p[1] - .03); bk.castShadow = true; own.push(bk.geometry); group.add(bk);
+      for (const sd of [-1, 1]) { const q = guest(); q.sitting = true; const x = p[0] + sd * .045, z = p[1] + .02; q.g.position.set(x, H(x, z) + .006 - .4 * PS, z); q.g.rotation.y = Math.PI + sd * .5; still.push(q); } } }
+  const people = [...walkers.flatMap(w => w.ppl.map(e => e[0])), ...still]; people.forEach(p => p.g.visible = false);
+  function updatePeople(dt, t, age) {
+    const show = smooth(2.2, 3.2, age); people.forEach(p => { p.g.visible = show > .01; p.g.scale.setScalar(PS * Math.max(.001, show)); });
+    for (const w of walkers) { w.s = (w.s + w.v * dt / w.len + 1) % 1; const P = w.c.getPointAt(w.s), T = w.c.getTangentAt(w.s).multiplyScalar(Math.sign(w.v));
+      for (const [p, off] of w.ppl) { const x = P.x - T.z * off, z = P.z + T.x * off; p.g.position.set(x, H(x, z) - .004, z); p.g.rotation.y = Math.atan2(T.x, T.z); posePerson(p, t, dt, true, Math.abs(w.v) / .05); } }
+    for (const p of still) posePerson(p, t, dt, false);
+  }
+
+  let vineP = 0;
+  function update(dt, t, age) {
+    water.map.offset.y -= dt * .45;
+    if (vineP < 1 && age > 1.1) { vineP = Math.min(1, vineP + dt / 3.4); growVines(vineP); }
+    for (let k = 0; k < F.length; k++) {
+      const p = F[k];
+      if (p.land > 0) { p.land -= dt; if (p.land <= 0) spawn(p, false); }
+      else { p.y -= p.vy * dt; p.x += Math.sin(t * 1.7 + p.ph) * .06 * dt + .03 * dt; p.z += Math.cos(t * 1.3 + p.ph) * .05 * dt; p.rx += dt * 2.1; p.ry += dt * 1.3;
+        const floor = Math.abs(p.x) < CW / 2 && Math.abs(p.z) < CL / 2 ? H(p.x, p.z) + .006 : -3;
+        if (p.y < floor) { p.y = floor; p.rx = -Math.PI / 2; p.land = 3 + Math.random() * 4; } }
+      _e.set(p.rx, p.ry, 0); _q.setFromEuler(_e); fm.setMatrixAt(k, _m.compose(_p.set(p.x, p.y, p.z), _q, _s.set(.7, .7, .7)));
+    }
+    fm.instanceMatrix.needsUpdate = true;
+    const gnd = (x, z) => Math.abs(x) < CW / 2 && Math.abs(z) < CL / 2 ? H(x, z) : 0;
+    for (const f of flies) flutter(f, t, dt, gnd);
+    updatePeople(dt, t, age);
+  }
+  function dispose() {
+    const shared = new Set([...Object.values(SHARED), ...Object.values(CACHE), miniBloom, vineLeaf, ...SHARED_EXTRA]);
+    group.traverse(o => { if (o.isInstancedMesh) o.dispose(); if ((o.isMesh || o.isPoints) && !shared.has(o.geometry)) o.geometry.dispose(); });
+    own.forEach(o => o.dispose && !o.isMesh && !o.isPoints && o.dispose());
+  }
+  return { group, update, dispose, index };
+}
+
+/* ============ camera: drag to turn the card; scroll or swipe up to open it ============ */
+const controls = new OrbitControls(camera, canvas);
+Object.assign(controls, { enableDamping: true, dampingFactor: .07, zoomToCursor: true, enablePan: false, minDistance: .45, maxDistance: 20, minPolarAngle: .02, maxPolarAngle: Math.PI - .02, rotateSpeed: .75, zoomSpeed: .9 });
+const HOME = { t: new V3(0, .28, -1.7), polar: 1.0, az: .42, w: 3.9, h: 3.1 };
+let camTween = null, idleAt = 0, time = 0, fH = 1, fW = 1;
+const tanV = () => Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+function layout() {
+  const W = innerWidth, H = innerHeight; renderer.setSize(W, H, false); camera.aspect = W / H;
+  const sheet = document.getElementById('sheet').getBoundingClientRect(), bottom = H - sheet.top + 10, top = Math.min(110, H * .13);
+  fH = Math.max(.3, (H - bottom - top) / H); fW = W >= 900 ? .82 : 1;
+  camera.setViewOffset(W, H, 0, (bottom - top) / 2, W, H); camera.updateProjectionMatrix();
+  rFit();
+}
+function pose() {
+  const P = HOME, d = Math.max(P.h / (2 * tanV() * fH), P.w / (2 * tanV() * camera.aspect * fW)) * 1.02;
+  return { t: P.t.clone(), p: new V3().setFromSphericalCoords(d, P.polar, P.az).add(P.t) };
+}
+function flyTo(dur = 1.5) { const q = pose(); camTween = { t: 0, dur, fp: camera.position.clone(), ft: controls.target.clone(), tp: q.p, tt: q.t }; }
+addEventListener('resize', () => { layout(); });
+new ResizeObserver(layout).observe(document.getElementById('sheet'));
+controls.addEventListener('start', () => { camTween = null; idleAt = time; });
+controls.addEventListener('end', () => { idleAt = time; });
+
+/* ============ switching invitations ============ */
+let active = null, current = UI.initial, building = false;
+const leaving = [];
+const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, easeOut = t => 1 - Math.pow(1 - t, 3);
+async function show(i) {
+  if (building) return; building = true; UI.busy(true);
+  await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
+  const c = buildCard(i); UI.busy(false); building = false;
+  if (active) { active.out = 0; leaving.push(active); }
+  c.age = 0; c.group.position.y = -1.2; scene.add(c.group); active = c;
+  setBokeh(INV[i].petals, (UI.LOOK[INV[i].key] || {}).accent || '#ffffff');
+  renderer.compile(scene, camera); GROW.value = 0;
+}
+function go(i) {
+  i = ((i % NS) + NS) % NS; if (building || (active && active.index === i)) return;
+  current = i; UI.setStation(i); UI.hideHint(); try { history.replaceState(null, '', '#' + INV[i].key); } catch (e) {}
+  if (book && book.index !== i) { rScene.remove(book.group); book.dispose(); book = null; }
+  show(i).then(() => flyTo(2));
+}
+
+/* ================================================================
+   THE READER — the invitation opens into four pages you swipe through,
+   each with flowers growing in its frame
+   ================================================================ */
+const PW = 3.0, PH = 4.3, PT = .045, NP = PrintArt.PAGES || 5, STEP = PH, R_POLAR = .1, RT = .052, RB = .022;
+const rScene = new THREE.Scene(); rScene.environment = scene.environment; rScene.environmentIntensity = .55;
+rScene.add(new THREE.HemisphereLight('#f6f4ff', '#dcc8b8', 1.05));
+const rKey = new THREE.DirectionalLight('#fff1dc', 2.5); rKey.castShadow = true; rKey.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
+Object.assign(rKey.shadow.camera, { left: -3.6, right: 3.6, top: 3.6, bottom: -3.6, near: .5, far: 20 }); rKey.shadow.camera.updateProjectionMatrix();
+rKey.shadow.bias = -.0004; rKey.shadow.normalBias = .015; rScene.add(rKey, rKey.target);
+const rRim = new THREE.DirectionalLight('#ffd8ea', .7); rScene.add(rRim, rRim.target);
+const rBokeh = new THREE.Object3D();
+const rCam = new THREE.PerspectiveCamera(30, 1, .05, 120);
+const velvet = { vertexColors: true, side: THREE.DoubleSide, sheen: .6, sheenRoughness: .45, sheenColor: new THREE.Color('#ffffff') };
+const pStand = windify(new THREE.MeshPhysicalMaterial({ ...velvet, roughness: .55 }), .045, GROWN);
+const pHead = windify(new THREE.MeshPhysicalMaterial({ ...velvet, roughness: .5 }), .016, GROWN);
+const pLeaf = windify(new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .6 }), .012, GROWN);
+const pGrass = windify(new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .8 }), .06, GROWN);
+const pTree = windify(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .85 }), .03, GROWN);
+const twigMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .7 });
+
+// paper fibres plus raised foil, read from the foil map (blue = gold)
+function paperBump(src) {
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height; const x = c.getContext('2d'); x.drawImage(src, 0, 0);
+  const im = x.getImageData(0, 0, c.width, c.height), d = im.data, r = rng(41);
+  for (let i = 0; i < d.length; i += 4) { const v = 90 + d[i + 2] * .5 + (r() - .5) * 10; d[i] = d[i + 1] = d[i + 2] = v; }
+  x.putImageData(im, 0, 0); x.globalAlpha = .08; x.strokeStyle = '#fff'; for (let k = 0; k < 500; k++) { const px = r() * c.width, py = r() * c.height, a = r() * TAU, l = 4 + r() * 14; x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke(); }
+  return c;
+}
+function buildBook(index) {
+  const inv = INV[index], key = inv.key, PET = inv.petals, r = rng(7100 + index * 31);
+  const group = new THREE.Group(), own = [], pages = [], paperC = new THREE.Color(inv.card.paper);
+  const palT = [PET, ...VAR.tulip], palR = [PET, ...VAR.rose], OPEN = [0, .5, 1];
+  const stage = () => { const s = r(); return s < .15 ? 0 : s < .38 ? 1 : 2; };
+  const E = (x, y, z, s, t, rx = 0, ry = 0, rz = 0, c, sy = s) => ({ x, y, z, rx, ry, rz, sx: s, sy, sz: s, t, c });
+  const body = new THREE.ExtrudeGeometry(roundedRect(PW, PH, .07), { depth: PT, bevelEnabled: true, bevelThickness: .005, bevelSize: .005, bevelSegments: 2, curveSegments: 8 });
+  body.rotateX(-Math.PI / 2); body.translate(0, -PT - .006, 0);
+  const paperMat = new THREE.MeshPhysicalMaterial({ color: paperC, roughness: .8, sheen: .3, sheenColor: new THREE.Color('#ffffff') });
+  const giltMat = new THREE.MeshPhysicalMaterial({ color: '#d8b26a', metalness: 1, roughness: .25, clearcoat: .5 });
+  const petalMat = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .6, color: key === 'sunflower' ? '#ffd23a' : PET.tip });
+  const fillMat = new THREE.MeshStandardMaterial({ vertexColors: true, side: THREE.DoubleSide, roughness: .55 });
+  own.push(body, paperMat, giltMat, petalMat, fillMat);
+  const tipC = new THREE.Color(key === 'sunflower' ? '#ffd23a' : PET.tip), white = new THREE.Color('#ffffff');
+  /* a raised gilt frame of this invitation's own shape, with gilded blooms set into it */
+  const FI = PrintArt.frameInner(key, PW, PH), FC = (PrintArt.FR[key] || PrintArt.FR.rose).gilt;
+  function sdFrame(x, z) {
+    let d = 1e9, inside = false;
+    for (let i = 0, j = FI.length - 1; i < FI.length; j = i++) {
+      const [ax, az] = FI[j], [bx, bz] = FI[i], dx = bx - ax, dz = bz - az, t = clamp(((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1), 0, 1);
+      d = Math.min(d, Math.hypot(x - ax - dx * t, z - az - dz * t)); if ((az > z) !== (bz > z) && x < dx * (z - az) / dz + ax) inside = !inside;
+    }
+    return inside ? -d : d;
+  }
+  const rimY = () => 0;
+  function decor(pg, n) {
+    const G = {}, grows = [], occ = [];
+    let headLift = 0;
+    const add = (gk, geo, mat, e, shadow = true) => { e.y += rimY(e.x, e.z) + headLift; (G[gk] = G[gk] || { geo, mat, list: [], shadow }).list.push(e); };
+    const free = (x, z, rr) => !occ.some(q => (q.x - x) ** 2 + (q.z - z) ** 2 < ((q.r + rr) * .9) ** 2);
+    const claim = (x, z, rr) => occ.push({ x, z, r: rr });
+    const inPage = (x, z, m = .1) => Math.abs(x) < PW / 2 - m && Math.abs(z) < PH / 2 - m;
+
+    /* a soft rise of moss and soil where a bed grows, fading into the paper with flecks of gold */
+    function bed(cx, cz, rx, rz, peak, t0) {
+      const N = makeNoise(500 + n * 7 + index * 3 + cx * 10), sx = Math.round(rx * 64), sz = Math.round(rz * 64);
+      const m = (x, z) => smooth(1, .3, Math.pow(Math.abs(x - cx) / rx, 4) + Math.pow(Math.abs(z - cz) / rz, 4) + N.n2(x * 3, z * 3) * .35);
+      const hh = (x, z) => peak * m(x, z) * (.7 + .6 * clamp(N.fbm(x * 2.5, z * 2.5, 3) + .5, 0, 1));
+      const g = new THREE.PlaneGeometry(rx * 2.3, rz * 2.3, sx, sz); g.rotateX(-Math.PI / 2); g.translate(cx, 0, cz);
+      const P = g.attributes.position, C = new Float32Array(P.count * 3), c = new THREE.Color(), m1 = new THREE.Color('#577a33'), m2 = new THREE.Color('#9ab65a'), soil = new THREE.Color('#6e5a3c'), goldC = new THREE.Color('#d9b36a');
+      for (let i = 0; i < P.count; i++) {
+        const x = clamp(P.getX(i), -PW / 2 + .04, PW / 2 - .04), z = clamp(P.getZ(i), -PH / 2 + .04, PH / 2 - .04), k = m(x, z), y = hh(x, z); P.setXYZ(i, x, .0004 + y, z);
+        c.copy(m1).lerp(m2, clamp(.45 + N.n2(x * 5, z * 5) * .5 + y * 6, 0, 1)).lerp(soil, Math.max(0, N.n2(x * 7 + 3, z * 7) - .3));
+        const t = smooth(.05, .5, k + N.n2(x * 9, z * 9) * .12); c.lerp(paperC, 1 - t); if (t > .05 && t < .55 && N.n2(x * 45, z * 45) > .42) c.copy(goldC);
+        C[i * 3] = c.r; C[i * 3 + 1] = c.g; C[i * 3 + 2] = c.b;
+      }
+      g.setAttribute('color', new THREE.BufferAttribute(C, 3)); g.computeVertexNormals();
+      const bm = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .95 }); own.push(g, bm);
+      const mesh = new THREE.Mesh(g, bm); mesh.receiveShadow = true; pg.add(mesh);
+      grows.push(p => { const k = smooth(t0, t0 + .28, p); mesh.scale.y = Math.max(1e-3, k); mesh.visible = k > .002; });
+      return { m, h: (x, z) => .0004 + hh(x, z), cx, cz, rx, rz };
+    }
+    /* one standing plant of this garden's flower; returns the room it needs */
+    const RAD = { tulip: .065, rose: .085, lavender: .085, sunflower: .11, 'cherry-blossom': .05 };
+    function stand(x, y, z, t, big = 1) {
+      const sv = Math.floor(r() * 3), st = stage(), tl = () => (r() - .5) * .2;
+      if (key === 'tulip') { const vi = r() < .55 ? 0 : 1 + Math.floor(r() * 4), gk = `tulip-${vi}-${st}-${sv}`; add(gk, cached(gk, () => buildTulip(palT[vi], 300 + vi * 11 + st * 3 + sv, OPEN[st])), pStand, E(x, y - .006, z, (.28 + r() * .14) * big, t, tl(), r() * TAU, tl())); }
+      else if (key === 'rose') { const vi = r() < .6 ? 0 : 1 + Math.floor(r() * 2), gk = `roseStem-${vi}-${st}`; add(gk, cached(gk, () => buildRoseStem(palR[vi], 700 + vi * 5 + st, OPEN[Math.max(1, st)])), pStand, E(x, y - .006, z, (.3 + r() * .13) * big, t, tl(), r() * TAU, tl())); }
+      else if (key === 'lavender') { const gk = `lav-${sv}`; add(gk, cached(gk, () => buildLavender(PET, 800 + sv)), pStand, E(x, y - .006, z, (.28 + r() * .11) * big, t, tl() * .7, r() * TAU, tl() * .7, new THREE.Color().setHSL(.72, .2 + r() * .2, .88 + r() * .12))); }
+      else if (key === 'sunflower') { const s2 = r() < .14 ? 0 : r() < .3 ? 1 : 2, v2 = Math.floor(r() * 2), gk = `sun-${s2}-${v2}`; add(gk, cached(gk, () => buildSunflower(PET, 900 + s2 * 5 + v2, OPEN[s2])), pStand, E(x, y - .006, z, (.42 + r() * .14) * big, t, tl() * .5, (r() - .5) * .6, tl() * .5)); }
+      else { const h = .07 + r() * .06, tints = ['#ffd1df', '#ffffff', '#f7b6cb', '#ffe8f0']; add('wild', SHARED.wild, pStand, E(x, y - .004, z, h, t, tl(), r() * TAU, tl(), new THREE.Color(tints[Math.floor(r() * 4)]))); }
+    }
+    function fillBed(B, count, t0, t1, o = {}) {
+      const rr0 = RAD[key] * (o.big || 1) * .85, big = o.big || 1;
+      if (key === 'cherry-blossom' && o.trees) for (const [tx, tz] of o.trees) { const h = (.55 + r() * .12) * big;
+        add('cherry-0', cached('cherry-0', () => buildCherry(PET, 1000, 9)), pTree, E(tx, B.h(tx, tz) - .01, tz, h, t0 + .05, 0, r() * TAU, 0)); claim(tx, tz, .14); }
+      let placed = 0; const want = key === 'cherry-blossom' ? count * 2 : count;
+      const plant = (x, z) => { claim(x, z, rr0); placed++; stand(x, B.h(x, z), z, t0 + (t1 - t0) * clamp(Math.abs(x - B.cx) / B.rx * .7 + r() * .3, 0, 1), big * (.9 + r() * .2)); };
+      if (o.rows) { const nr = o.rows, sp = rr0 * 2.05; for (let k = 0; k < nr; k++) { const z = B.cz + (k - (nr - 1) / 2) * B.rz * 1.5 / Math.max(1, nr - 1) * .9; for (let x = B.cx - B.rx + sp * (k % 2 ? .5 : .2); x < B.cx + B.rx; x += sp) { const xx = x + (r() - .5) * .03, zz = z + (r() - .5) * .03; if (inPage(xx, zz, .1) && B.m(xx, zz) > .3) plant(xx, zz); } } }
+      for (let k = 0; k < 4000 && placed < want; k++) {
+        const x = B.cx + (r() * 2 - 1) * B.rx, z = B.cz + (r() * 2 - 1) * B.rz; if (!inPage(x, z, .1) || B.m(x, z) < .4 || !free(x, z, rr0)) continue; plant(x, z);
+      }
+      // the ground between them is all small flowers and a little grass, so no moss shows bare
+      const c1 = new THREE.Color('#3f6326'), c2 = new THREE.Color('#b2cf6c'), wc = (key === 'cherry-blossom' ? ['#ffd1df', '#ffffff', '#f7b6cb'] : ['#ffffff', '#fff3b0', PET.tip, PET.edge]).map(c => new THREE.Color(c));
+      for (let k = 0, g = 0; k < 3000 && g < count * 4 + 30; k++) {
+        const x = B.cx + (r() * 2 - 1) * B.rx * 1.08, z = B.cz + (r() * 2 - 1) * B.rz * 1.1; if (!inPage(x, z, .08) || B.m(x, z) < .15 || !free(x, z, .02)) continue; g++; claim(x, z, .012);
+        const t = t0 + (t1 - t0) * r(), q = r();
+        if (q < .35) add('tuft', SHARED.tuft, pGrass, { x, y: B.h(x, z) - .004, z, rx: 0, ry: r() * TAU, rz: 0, sx: .22 + r() * .18, sy: .04 + r() * .06, sz: .22 + r() * .18, t, c: c1.clone().lerp(c2, .3 + r() * .7) }, false);
+        else if (q < .75) { const h = .04 + r() * .06; add('wild', SHARED.wild, pStand, E(x, B.h(x, z) - .003, z, h, t, (r() - .5) * .3, r() * TAU, (r() - .5) * .3, wc[Math.floor(r() * wc.length)]), false); }
+        else { const sc = .05 + r() * .03; add('mini', miniBloom, fillMat, E(x, B.h(x, z) + .004, z, sc, t, (r() - .5) * .4, r() * TAU, (r() - .5) * .4, tipC.clone().lerp(white, .15 + r() * .6)), false); }
+      }
+      if (key === 'rose' && o.bushes) for (let k = 0; k < o.bushes; k++) {       // low rose bushes heavy with blooms
+        const x = B.cx + (r() * 2 - 1) * B.rx * .85, z = B.cz + (r() - .5) * B.rz, bh = .16 + r() * .08, bw = bh * 1.2;
+        add('shrub', SHARED.shrub, pTree, E(x, B.h(x, z) - .01, z, bw, t0 + .1, 0, r() * TAU, 0, new THREE.Color().setHSL(.3, .3, .42 + r() * .12), bh));
+        for (let j = 0; j < 4; j++) { const a = r() * TAU, d = bw * .4; head(x + Math.cos(a) * d, z + Math.sin(a) * d, .62 + r() * .2, t0 + .25 + r() * .2, a, bh * .7); }
+      }
+    }
+    /* a bloom lying on the paper, as if laid there; s = 1 is a medium bloom; yaw = which way it points */
+    function head(x, z, s, t, yaw, lift = 0) {
+      if (!inPage(x, z, .07)) return; headLift = lift;
+      if (key === 'rose') { const st = r() < .18 ? 0 : r() < .45 ? 1 : 2, vi = r() < .65 ? 0 : 1 + Math.floor(r() * 2), gk = `pr-${vi}-${st}`, sc = .3 * s * (st ? 1 : .68);
+        add(gk, cached(gk, () => roseHead(palR[vi], 520 + vi * 7 + st, OPEN[st])), pHead, E(x, .03 * sc / .3, z, sc, t, (r() - .5) * .5, r() * TAU, (r() - .5) * .5)); }
+      else if (key === 'tulip') { const vi = r() < .55 ? 0 : 1 + Math.floor(r() * 4), o = r() < .35 ? 0 : 1, gk = `pt-${vi}-${o}`, sc = .34 * s;
+        add(gk, cached(gk, () => tulipHead(palT[vi], rng(90 + vi * 3 + o), [.4, .85][o])), pHead, E(x, .15 * sc, z, sc, t, 1.38, yaw, (r() - .5) * .3)); }
+      else if (key === 'lavender') { const sv = Math.floor(r() * 3), gk = `lav-${sv}`;
+        const e = E(x, .014, z, .36 * s, t, 1.42, yaw, 0, new THREE.Color().setHSL(.72, .2 + r() * .2, .88 + r() * .12)); e.sz *= .35; add('flat-' + gk, cached(gk, () => buildLavender(PET, 800 + sv)), pHead, e); }
+      else if (key === 'sunflower') { const st = r() < .15 ? 0 : r() < .35 ? 1 : 2, gk = `ps-${st}`, sc = .27 * s * (st ? 1 : .7);
+        add(gk, cached(gk, () => sunflowerHead(PET, 950 + st, OPEN[st], 110)), pHead, E(x, .17 * sc, z, sc, t, (r() - .5) * .35, r() * TAU, (r() - .5) * .35)); }
+      else { const nb = 2 + Math.floor(r() * 2);
+        for (let k = 0; k < nb; k++) { const v = r() < .7 ? 0 : r() < .6 ? 1 : 2, gk = `pb-${v}`, a = r() * TAU, d = k ? .05 * s + r() * .03 : 0;
+          add(gk, cached(gk, () => blossomGeo(PET, rng(60 + v), [1, .6, .2][v])), pHead, E(x + Math.cos(a) * d, .012, z + Math.sin(a) * d, (.5 + r() * .25) * s * (v ? .8 : 1), t + k * .03, (r() - .5) * .6, r() * TAU, (r() - .5) * .6)); } }
+      claim(x, z, .1 * s); headLift = 0;
+    }
+    const filler = (x, z, t) => { if (!inPage(x, z, .09)) return; const s = .05 + r() * .025; add('mini', miniBloom, fillMat, E(x, .012, z, s, t, (r() - .5) * .4, r() * TAU, (r() - .5) * .4, tipC.clone().lerp(white, .2 + r() * .5)), false); };
+    const leafAt = (x, y, z, yaw, s, t) => add('leaf', vineLeaf, pLeaf, E(x, y, z, s, t, 1.32 + (r() - .5) * .2, yaw, 0, new THREE.Color().setHSL(.27 + (r() - .5) * .04, .25, .82 + r() * .18)));
+    /* a vine (or a twig, for the cherry) drawn across the paper; it grows from its first point to its last */
+    function vine(pts, t0, t1, o = {}) {
+      const twig = key === 'cherry-blossom', curve = new THREE.CatmullRomCurve3(pts.map(([x, z]) => new V3(x, (twig ? .014 : .011) + rimY(x, z), z)));
+      const L = curve.getLength(), tg = new THREE.TubeGeometry(curve, Math.max(40, Math.round(L * 70)), o.r || (twig ? .013 : .008), 5, false);
+      if (twig) colorBy(tg, (x, y, z) => new THREE.Color('#4a332a').lerp(new THREE.Color('#7a5646'), .5 + .5 * Math.sin(x * 40 + z * 31))); else colorize(tg, '#4c7536');
+      const mesh = new THREE.Mesh(tg, twig ? twigMat : flatMat); mesh.castShadow = true; mesh.receiveShadow = true; pg.add(mesh); own.push(tg);
+      const total = tg.index.count; grows.push(p => tg.setDrawRange(0, Math.floor(total * clamp((p - t0) / (t1 - t0), 0, 1) / 6) * 6));
+      const step = o.leafStep || (twig ? .15 : .06);
+      for (let s = .03, i = 0; s < L - .02; s += step * (.85 + r() * .3), i++) {
+        const u = s / L, p = curve.getPointAt(u), tan = curve.getTangentAt(u), side = i % 2 ? 1 : -1, yaw = Math.atan2(tan.x, tan.z) + side * (1.05 + r() * .35);
+        if (inPage(p.x, p.z, .09)) leafAt(p.x, p.y, p.z, yaw, (twig ? .05 : .06 + r() * .035) * (o.leaf || 1), t0 + (t1 - t0) * u);
+      }
+      const at = u => { const p = curve.getPointAt(clamp(u, 0, 1)), tan = curve.getTangentAt(clamp(u, 0, 1)); return { x: p.x, z: p.z, nx: -tan.z, nz: tan.x, t: t0 + (t1 - t0) * u }; };
+      return { at, L };
+    }
+    // blooms along a vine: list of [u, size]; out = which side of the vine they lean to (+1 / -1 / 0 both)
+    function bloomAlong(V, spots, out = 0) {
+      spots.forEach(([u, s], i) => { const a = V.at(u), side = out || (i % 2 ? 1 : -1), off = .035 * s * side, x = a.x + a.nx * off, z = a.z + a.nz * off;
+        head(x, z, s, a.t + .04, Math.atan2(a.nx * side, a.nz * side) + (r() - .5) * .6);
+        if (i < spots.length - 1) { const b = V.at((u + spots[i + 1][0]) / 2); filler(b.x - b.nx * .03 * side, b.z - b.nz * .03 * side, b.t + .02); } });
+    }
+    // a gathered posy: one focal bloom with others around it and leaves tucked underneath
+    function cluster(cx, cz, s, t, fan = [0, TAU]) {
+      const nL = 7; for (let k = 0; k < nL; k++) { const a = fan[0] + (fan[1] - fan[0]) * (k + .5) / nL + (r() - .5) * .3; leafAt(cx + Math.sin(a) * .08 * s, .011, cz + Math.cos(a) * .08 * s, a, (.08 + r() * .03) * s, t); }
+      head(cx, cz, s * 1.25, t + .04, fan[0] + (fan[1] - fan[0]) / 2);
+      const nH = 5; for (let k = 0; k < nH; k++) { const a = fan[0] + (fan[1] - fan[0]) * (k + .5) / nH + (r() - .5) * .25, d = .2 * s; head(cx + Math.sin(a) * d, cz + Math.cos(a) * d, s * (.7 + r() * .2), t + .08 + k * .03, a); }
+      for (let k = 0; k < 6; k++) { const a = r() * TAU, d = (.12 + r() * .14) * s; filler(cx + Math.sin(a) * d, cz + Math.cos(a) * d, t + .15); }
+    }
+    const wav = (n0, f) => { const out = []; for (let k = 0; k <= n0; k++) out.push(f(k / n0)); return out; };
+    const ph = r() * TAU;
+    // a path just inside the frame, by angle around the page centre (0 = top middle, clockwise)
+    function rayHit(a) { const dx = Math.sin(a), dz = -Math.cos(a); let best = 3;
+      for (let i = 0, j = FI.length - 1; i < FI.length; j = i++) { const [ax, az] = FI[j], ex = FI[i][0] - ax, ez = FI[i][1] - az, det = -dx * ez + ex * dz; if (Math.abs(det) < 1e-9) continue;
+        const t = (-ax * ez + ex * az) / det, u = (dx * az - dz * ax) / det; if (u >= 0 && u <= 1 && t > 0) best = Math.min(best, t); }
+      return [dx * best, dz * best]; }
+    const fpath = (a0, a1, inset = .07) => { const out = [], n0 = Math.max(6, Math.round(Math.abs(a1 - a0) / .04)); for (let k = 0; k <= n0; k++) { const [x, z] = rayHit(a0 + (a1 - a0) * k / n0), L = Math.hypot(x, z); out.push([x * (1 - inset / L), z * (1 - inset / L)]); } return out; };
+    const spotsN = (n0, s0, s1, u0 = .06, u1 = .94) => wav(n0 - 1, u => [u0 + (u1 - u0) * u, s0 + (s1 - s0) * u]);
+    const frameVine = (a0, a1, t0, t1, spots, o) => { const V = vine(fpath(a0, a1, o && o.inset), t0, t1, o); bloomAlong(V, spots); return V; };
+    // a fan of stems from one point: a bouquet, a spray, a sunrise
+    function fan(bx, bz, th0, th1, n0, len, s, t0) {
+      for (let k = 0; k < n0; k++) {
+        const th = th0 + (th1 - th0) * (n0 > 1 ? k / (n0 - 1) : .5) + (r() - .5) * .08, dx = Math.sin(th), dz = -Math.cos(th), L = len * (.82 + r() * .3), tx = bx + dx * L, tz = bz + dz * L, yaw = Math.atan2(dx, dz);
+        if (key === 'lavender') { head(bx + dx * .02, bz + dz * .02, L / .36, t0 + k * .02, yaw); continue; }
+        const V = vine([[bx, bz], [bx + dx * L * .5 - dz * .05, bz + dz * L * .5 + dx * .05], [tx, tz]], t0, t0 + .3, { leafStep: key === 'cherry-blossom' ? .12 : .1, leaf: .9 });
+        if (key === 'cherry-blossom') bloomAlong(V, [[.45, s * .7], [.75, s * .8], [.97, s]]); else head(tx, tz, s * (.85 + r() * .3), t0 + .32, yaw);
+      }
+      filler(bx, bz, t0 + .3);
+    }
+    // a twig or vine with side shoots, laden with blooms (the cherry's branches)
+    function branch(pts, t0, t1, dense = 1) {
+      const V = vine(pts, t0, t1, { r: key === 'cherry-blossom' ? .016 : .009 }); const n0 = Math.round(10 * dense);
+      bloomAlong(V, wav(n0 - 1, u => [.12 + .86 * u, .55 + .45 * Math.sin(u * Math.PI * .9 + .3)]));
+      for (const u of [.3, .55, .78]) { const a = V.at(u), side = r() < .5 ? 1 : -1, L = .25 + r() * .2, ex = a.x + a.nx * side * L + (r() - .5) * .1, ez = a.z + a.nz * side * L + (r() - .5) * .1;
+        const S = vine([[a.x, a.z], [(a.x + ex) / 2 + (r() - .5) * .06, (a.z + ez) / 2 + (r() - .5) * .06], [ex, ez]], a.t, a.t + .2, { r: key === 'cherry-blossom' ? .009 : .006 }); bloomAlong(S, [[.4, .6], [.75, .7], [.98, .8]]); }
+      return V;
+    }
+    // a closed or open wreath along any curve
+    const along = (f, n0, t0, t1, spots, o) => { const V = vine(wav(n0, f), t0, t1, o); bloomAlong(V, spots); return V; };
+    const heart = (cx, cz, sc, side) => u => { const t = side * Math.PI * u; return [cx + 16 * Math.pow(Math.sin(t), 3) * sc, cz - (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * sc]; };
+    const sprigs = (x0, z0, x1, z1, n0, yaw, s, t0, alt = .25) => { for (let k = 0; k < n0; k++) { const u = n0 > 1 ? k / (n0 - 1) : .5; head(x0 + (x1 - x0) * u + (r() - .5) * .04, z0 + (z1 - z0) * u, s * (.85 + r() * .3), t0 + u * .3, yaw + (k % 2 ? alt : -alt)); } };
+    const corner = (sx, sz, s, t) => cluster(sx * 1.16, sz * 1.84, s, t, sz < 0 ? [Math.PI * .5 - sx * .9, Math.PI * 1.5 + sx * .9] : [-Math.PI * .5 - sx * .9, Math.PI * .5 + sx * .9]);
+    const UP = Math.PI, DOWN = 0;                            // head yaw that points up / down the page
+
+    // where the words are, page by page (z of the top and bottom of the text)
+    const TXT = [[-1.5, 1.29], [-1.83, 1.55], [-1.59, 1.72], [-1.81, 1.38], [-1.5, 1.05]][n];
+    const C = {
+      'cherry-blossom': [
+        () => { branch([[-1.45, 2.05], [-.9, 1.7], [-.1, 1.58], [.6, 1.46], [1.15, 1.5]], .05, .55, 1.4); branch([[1.45, -2.05], [1.0, -1.86], [.45, -1.92], [0, -1.8]], .2, .6, .8); },
+        () => { branch([[-1.45, 2.08], [-.7, 1.86], [.2, 1.92], [1.05, 1.76]], .05, .6, 1.2); branch([[1.45, -2.08], [1.2, -1.98], [.95, -2.02]], .3, .6, .4); },
+        () => { branch([[-1.45, -2.08], [-.6, -1.84], [.3, -1.94], [1.1, -1.8]], .05, .55, 1.2); branch([[1.45, 2.08], [1.0, 1.92], [.55, 1.98]], .3, .7, .5); },
+        () => { const B = bed(.85, 1.82, .5, .2, .04, .05); fillBed(B, 5, .2, .6, { trees: [[.9, 1.75]], big: 1 }); branch([[-1.45, 2.08], [-1.0, 1.7], [-.4, 1.62], [.1, 1.8]], .2, .7, .9); },
+        () => { branch([[-1.45, -2.05], [-.8, -1.78], [0, -1.86], [.7, -1.72], [1.2, -1.8]], .05, .55, 1.4); branch([[1.45, 2.05], [.9, 1.55], [.3, 1.5], [-.25, 1.35]], .3, .75, 1); fan(-1.2, 1.9, .2, 1.0, 3, .45, .8, .5); }
+      ],
+      tulip: [
+        () => { frameVine(-1.25, 1.25, .05, .5, spotsN(11, .55, .55).map(([u]) => [u, .5 + .3 * Math.sin(u * Math.PI)])); fillBed(bed(0, 1.8, 1.38, .28, .045, .3), 48, .35, .95, { rows: 2 }); },
+        () => { fillBed(bed(0, 1.92, 1.38, .15, .03, .2), 26, .3, .9, { rows: 1 }); },
+        () => { frameVine(-1.0, 1.0, .05, .5, spotsN(9, .5, .5).map(([u]) => [u, .45 + .2 * Math.sin(u * Math.PI)])); for (const sx of [-1, 1]) fan(sx * 1.3, 2.05, -sx * .45 - .3, -sx * .45 + .3, 3, .32, .6, .4); },
+        () => { fan(0, 2.04, -1.3, 1.3, 11, .62, .8, .1); },
+        () => { fillBed(bed(-.78, 1.8, .58, .28, .045, .2), 18, .3, .8); fillBed(bed(.88, 1.82, .48, .26, .045, .25), 14, .35, .85); fan(0, -2.04, Math.PI - .95, Math.PI + .95, 7, .42, .65, .1); }
+      ],
+      rose: [
+        () => { along(u => { const [x, z] = rayHit(u * TAU); const L = Math.hypot(x, z); return [x * (1 - .06 / L), z * (1 - .06 / L)]; }, 90, .05, .65, wav(17, u => [.03 + .94 * u, .5 + .2 * Math.sin(u * TAU * 4)]));
+          fillBed(bed(0, 1.76, 1.2, .26, .045, .3), 18, .4, .95, { bushes: 4 }); },
+        () => { along(u => [-1.38 + 2.76 * u, 1.98 - .16 * Math.sin(u * Math.PI) + .02 * Math.sin(u * 19)], 18, .1, .6, wav(8, u => [.05 + .9 * u, .5 + .25 * Math.sin(u * Math.PI)])); for (const sx of [-1, 1]) cluster(sx * 1.2, 1.88, .6, .45); },
+        () => { for (const s0 of [-1, 1]) along(u => [s0 * (1.42 - 1.42 * u), -2.02 + .26 * Math.sin(u * Math.PI * 2) * (u < .5 ? 1 : .5) + .02 * Math.sin(u * 17)], 16, .05, .5, wav(6, u => [.08 + .88 * u, .45 + .25 * Math.sin(u * Math.PI)]));
+          for (const sx of [-1, 1]) cluster(sx * 1.2, 1.92, .5, .4); },
+        () => { for (const sd of [-1, 1]) { along(heart(0, 1.72, .021, sd), 22, .05, .6, wav(7, u => [.05 + .9 * u, .62 - .2 * u])); } cluster(0, 2.0, .45, .55, [Math.PI * .7, Math.PI * 1.3]); },
+        () => { cluster(-1.1, -1.8, 1.0, .05, [0, TAU]); cluster(1.1, 1.75, 1.15, .1, [0, TAU]);
+          frameVine(-.55, .9, .1, .6, spotsN(7, .65, .4)); frameVine(-.62, -2.0, .12, .6, spotsN(7, .65, .4)); frameVine(Math.PI - .55, Math.PI + .9, .15, .65, spotsN(7, .7, .45)); frameVine(Math.PI - .62, 1.2, .15, .65, spotsN(7, .65, .4)); }
+      ],
+      lavender: [
+        () => { fillBed(bed(0, 1.78, 1.36, .3, .04, .3), 44, .35, .95, { rows: 3 }); fan(0, -1.86, -1.95, -1.15, 4, .5, 1, .05); fan(0, -1.86, 1.15, 1.95, 4, .5, 1, .08); for (let k = 0; k < 6; k++) filler((r() - .5) * .14, -1.86 + (r() - .5) * .1, .3); },
+        () => { fan(0, 1.94, -1.95, -1.2, 5, .6, 1, .1); fan(0, 1.94, 1.2, 1.95, 5, .6, 1, .12); for (let k = 0; k < 6; k++) filler((r() - .5) * .14, 1.94 + (r() - .5) * .1, .4); },
+        () => { for (const sx of [-1, 1]) fan(sx * 1.24, -1.96, Math.PI + sx * .45, Math.PI + sx * 1.25, 5, .42, 1, .05 + (sx > 0 ? .1 : 0)); fillBed(bed(0, 1.98, 1.3, .1, .025, .3), 20, .35, .9, { rows: 1 }); },
+        () => { const cz = 1.5; for (const sd of [-1, 1]) for (let k = 0; k < 8; k++) { const u = k / 7, a = Math.PI / 2 + sd * (Math.PI / 2 - .25) * u, x = Math.cos(a) * .7, z = cz + Math.sin(a) * .5, tx = -Math.sin(a) * sd, tz = Math.cos(a) * sd;
+            head(x, z, .62 - .2 * u, .05 + u * .4, Math.atan2(-tx, -tz)); } fan(0, 2.0, -.7, .7, 5, .3, 1, .5); },
+        () => { for (const sx of [-1, 1]) { sprigs(sx * 1.2, -1.75, sx * 1.2, 1.6, 9, UP + sx * .12, .9, .1, .3); fan(sx * 1.1, 1.94, -sx * .4 - .25, -sx * .4 + .25, 3, .35, 1, .5); } }
+      ],
+      sunflower: [
+        () => { for (const sx of [-1, 1]) fillBed(bed(sx * 1.04, 1.8, .36, .3, .045, .1), 4, .2, .5, { big: 1.4 }); fillBed(bed(0, 1.86, .7, .2, .03, .3), 6, .4, .9);
+          frameVine(-.95, .95, .05, .55, spotsN(7, .7, .7).map(([u]) => [u, .55 + .3 * Math.sin(u * Math.PI)])); },
+        () => { along(u => [-1.3 + 2.6 * u, 1.96 + .03 * Math.sin(u * 13)], 14, .05, .6, wav(7, (u, i) => [.04 + .92 * u, .55 + .15 * Math.cos(u * 40)])); },
+        () => { frameVine(-.95, .95, .05, .55, spotsN(7, .6, .6).map(([u]) => [u, .45 + .25 * Math.sin(u * Math.PI)])); for (const sx of [-1, 1]) head(sx * 1.18, 1.94, .75, .4, 0); },
+        () => { for (const [R, n0, sc, t] of [[.55, 7, .75, .05], [.28, 3, .6, .25]]) for (let k = 0; k < n0; k++) { const a = -1.3 + 2.6 * k / (n0 - 1), x = Math.sin(a) * R, z = 2.06 - Math.cos(a) * R * .95;
+            for (let j = 0; j < 2; j++) leafAt(x - Math.sin(a + (j - .5) * .7) * .05, .011, z + Math.cos(a + (j - .5) * .7) * .05, a + Math.PI + (j - .5) * .8, .08, t); head(x, z, sc * (.9 + r() * .2), t + .05 + k * .02, Math.atan2(Math.sin(a), -Math.cos(a))); } },
+        () => { fan(-1.42, 2.06, .35, 1.3, 7, .95, .9, .05); cluster(1.12, -1.8, .85, .25, [Math.PI * .4, Math.PI * 1.6]); frameVine(.75, -.3, .3, .7, spotsN(4, .4, .3)); }
+      ]
+    };
+    (C[key] || C.rose)[n]();
+    // petals that have already fallen onto the paper
+    for (let k = 0; k < 28; k++) { const o = occ[Math.floor(r() * occ.length)]; if (!o) break; const a = r() * TAU, d = o.r + .05 + r() * .25, x = o.x + Math.cos(a) * d, z = o.z + Math.sin(a) * d; if (!inPage(x, z, .1)) continue;
+      add('fallen', SHARED.petal, petalMat, E(x, .004, z, 1.1 + r() * .5, .5 + r() * .5, -1.5 + (r() - .5) * .3, r() * TAU, (r() - .5) * .3), false); }
+
+    const sets = [];
+    for (const k in G) {
+      const { geo, mat, list, shadow } = G[k], m = new THREE.InstancedMesh(geo, mat, list.length); m.frustumCulled = false; m.castShadow = shadow; m.receiveShadow = true; pg.add(m);
+      list.forEach((e, i) => e.c && m.setColorAt(i, e.c));
+      sets.push(p => { list.forEach((e, i) => { const k2 = smooth(e.t, e.t + .2, p), g = k2 * (1 + .14 * Math.sin(k2 * Math.PI)) + 1e-4; _e.set(e.rx, e.ry, e.rz, 'YXZ'); _q.setFromEuler(_e); m.setMatrixAt(i, _m.compose(_p.set(e.x, e.y, e.z), _q, _s.set(e.sx * g, e.sy * g, e.sz * g))); }); m.instanceMatrix.needsUpdate = true; });
+    }
+    const set = p => { grows.forEach(f => f(p)); sets.forEach(f => f(p)); };
+    set(0); return set;
+  }
+
+  {
+    const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d'), rr = rng(9); x.fillStyle = inv.card.paper; x.fillRect(0, 0, 512, 512);
+    for (let i = 0; i < 1900; i++) { x.fillStyle = rr() > .5 ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.035)'; x.fillRect(rr() * 512, rr() * 512, 1 + rr() * 2, 1 + rr() * 2); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; const SW = 80, SL = NP * PH + 80; t.repeat.set(SW / 1.28, SL / 1.28); t.anisotropy = maxAniso;
+    const m = new THREE.MeshStandardMaterial({ map: t, roughness: .92, metalness: 0 }), g = new THREE.PlaneGeometry(SW, SL).rotateX(-Math.PI / 2); own.push(t, m, g);
+    const sheet = new THREE.Mesh(g, m); sheet.position.set(0, -.0005, (NP - 1) * PH / 2); sheet.receiveShadow = true; group.add(sheet);
+  }
+  for (let n = 0; n < NP; n++) {
+    const pg = new THREE.Group(); pg.position.z = n * STEP; group.add(pg);
+    const w = PW, h = PH, map = new THREE.CanvasTexture(PrintArt.page(inv, n, w, h, 'color', coarse ? .85 : 1)), mr = new THREE.CanvasTexture(PrintArt.page(inv, n, w, h, 'mr', .5));
+    map.colorSpace = THREE.SRGBColorSpace; map.anisotropy = maxAniso;
+    const bump = new THREE.CanvasTexture(paperBump(mr.image)); own.push(bump);
+    const mat = new THREE.MeshStandardMaterial({ map, metalnessMap: mr, roughnessMap: mr, metalness: 1, roughness: 1, bumpMap: bump, bumpScale: .8 }), pl = new THREE.PlaneGeometry(w, h).rotateX(-Math.PI / 2); own.push(map, mr, mat, pl);
+    const print = new THREE.Mesh(pl, mat); print.position.y = .0005; print.receiveShadow = true; pg.add(print);
+    pages.push({ g: pg, set: decor(pg, n), p: 0 });
+  }
+
+  /* petals drifting down onto whichever page is open, and motes of light above it */
+  const NF = Math.round((key === 'cherry-blossom' ? 34 : 20) * (coarse ? .7 : 1)), fm = new THREE.InstancedMesh(SHARED.petal, petalMat, NF); fm.frustumCulled = false; group.add(fm);
+  const F = [], spawn = (p, cz, first) => { p.x = (Math.random() - .5) * (PW + .6); p.z = cz + (Math.random() - .5) * PH * 1.3; p.y = first ? Math.random() * 1.8 : 1.4 + Math.random() * .6; p.vy = .07 + Math.random() * .08; p.ph = Math.random() * TAU; p.rx = Math.random() * TAU; p.ry = Math.random() * TAU; p.land = 0; return p; };
+  for (let k = 0; k < NF; k++) F.push(spawn({}, 0, true));
+  const mg = new THREE.BufferGeometry(), nm = 90, MP = new Float32Array(nm * 3), MS = new Float32Array(nm); const r2 = rng(77);
+  for (let i = 0; i < nm; i++) { MP[i * 3] = (r2() - .5) * PW; MP[i * 3 + 1] = .08 + r2() * .55; MP[i * 3 + 2] = (r2() - .5) * PH * 1.4; MS[i] = r2(); }
+  mg.setAttribute('position', new THREE.BufferAttribute(MP, 3)); mg.setAttribute('aS', new THREE.BufferAttribute(MS, 1)); own.push(mg);
+  const motes = new THREE.Points(mg, moteMat); motes.frustumCulled = false; group.add(motes);
+  const pflies = []; for (let k = 0; k < 6; k++) { const f = makeButterfly(k < 3 ? new THREE.Color(PET.tip).lerp(new THREE.Color('#ffffff'), .25 + k * .2).getStyle() : BUTTERFLY_COLS[k], 1.3 + Math.random() * .4);
+    group.add(f.b); pflies.push(Object.assign(f, { cx: (Math.random() - .5) * 2.2, cz: 0, oz: (Math.random() - .5) * 3.2, ax: .3 + Math.random() * .4, az: .3 + Math.random() * .5, w1: .2 + Math.random() * .2, w2: .25 + Math.random() * .25, ph: Math.random() * TAU, hy: .12 + Math.random() * .12 })); }
+  /* guests on the pages: a couple strolling, a picnic, two dancing, a walker with a parasol, friends chatting */
+  const scenes = [], look = { outfit: OUTFITS[key] || OUTFITS.rose, hats: true }, PSp = .3, rp = rng(300 + index);
+  const guest = n => { const p = makePerson(rp, look); p.g.scale.setScalar(.001); pages[n].g.add(p.g); return p; };
+  const walkLine = (n, z, x0, x1, v, k) => { const ppl = []; for (let i = 0; i < k; i++) ppl.push(guest(n)); return { n, ppl, u: rp(), v, upd(dt, t) {
+      this.u += this.v * dt / (x1 - x0); if (this.u > 1 || this.u < 0) { this.v = -this.v; this.u = clamp(this.u, 0, 1); }
+      const x = x0 + (x1 - x0) * this.u, dir = Math.sign(this.v); ppl.forEach((p, i) => { p.g.position.set(x, .001, z + (i - (k - 1) / 2) * .075); p.g.rotation.y = dir * Math.PI / 2; posePerson(p, t, dt, true, .8); }); } }; };
+  const pageScenes = [
+    n => scenes.push(walkLine(n, 1.42, -.95, .95, .07, 2)),
+    n => { const x = -.82, z = 1.68, bm = new THREE.MeshStandardMaterial({ map: blanketTex, roughness: .95 }), bl = new THREE.Mesh(new THREE.PlaneGeometry(.36, .27).rotateX(-Math.PI / 2), bm);
+      own.push(bm, bl.geometry); bl.position.set(x, .0015, z); bl.rotation.y = .25; bl.receiveShadow = true; pages[n].g.add(bl);
+      const bk = new THREE.Mesh(new THREE.BoxGeometry(.06, .04, .045), pMat('#b8864e')); own.push(bk.geometry); bk.position.set(x + .1, .02, z - .06); bk.castShadow = true; pages[n].g.add(bk);
+      const ppl = [-1, 1].map(sd => { const p = guest(n); p.sitting = true; p.g.position.set(x + sd * .07, .002 - .4 * PSp, z + .03); p.g.rotation.y = Math.PI + sd * .55; return p; });
+      scenes.push({ n, ppl, upd(dt, t) { ppl.forEach(p => posePerson(p, t, dt, false)); } }); },
+    n => { const cx = 0, cz = 1.86, ppl = [guest(n), guest(n)]; scenes.push({ n, ppl, a: 0, upd(dt, t) { this.a += dt * 1.1;
+        ppl.forEach((p, i) => { const a = this.a + i * Math.PI; p.g.position.set(cx + Math.cos(a) * .055, .001, cz + Math.sin(a) * .055); p.g.rotation.y = Math.atan2(cx - p.g.position.x, cz - p.g.position.z); posePerson(p, t, dt, true, .45); p.arms.forEach(m => m.rotation.x = -1.1); }); } }); },
+    n => { const w = walkLine(n, 1.5, -.9, .9, -.06, 1); addParasol(w.ppl[0], (OUTFITS[key] || OUTFITS.rose)[0]); scenes.push(w); },
+    n => { const ppl = [guest(n), guest(n)]; ppl.forEach((p, i) => { const x = -.55 + (i ? .09 : -.09); p.g.position.set(x, .001, 1.22); p.g.rotation.y = i ? -Math.PI / 2 : Math.PI / 2; });
+      scenes.push({ n, ppl, upd(dt, t) { ppl.forEach(p => posePerson(p, t, dt, false)); } }); }
+  ];
+  pageScenes.forEach((f, n) => n < NP && f(n));
+  function updateGuests(dt, t) { for (const sc of scenes) { const P = pages[sc.n]; if (!P.g.visible) continue; const k = smooth(.45, .9, P.p); sc.ppl.forEach(p => p.g.scale.setScalar(PSp * Math.max(.001, k))); if (k > 0) sc.upd(dt, t); } }
+  function scatterPetals(cx) { F.forEach(p => spawn(p, cx, true)); }
+  function update(dt, t, cx) {
+    motes.position.z = cx;
+    for (let k = 0; k < F.length; k++) {
+      const p = F[k];
+      if (p.land > 0) { p.land -= dt; if (p.land <= 0) spawn(p, cx, false); }
+      else { p.y -= p.vy * dt; p.x += Math.sin(t * 1.7 + p.ph) * .07 * dt + .025 * dt; p.z += Math.cos(t * 1.3 + p.ph) * .05 * dt; p.rx += dt * 2.1; p.ry += dt * 1.3;
+        const floor = .006;
+        if (p.y < floor) { p.y = floor; p.rx = -Math.PI / 2; p.land = 3 + Math.random() * 4; } }
+      _e.set(p.rx, p.ry, 0); _q.setFromEuler(_e); fm.setMatrixAt(k, _m.compose(_p.set(p.x, p.y, p.z), _q, _s.set(1.2, 1.2, 1.2)));
+    }
+    fm.instanceMatrix.needsUpdate = true;
+    for (const f of pflies) { f.cz += (cx + f.oz - f.cz) * Math.min(1, dt * .4); flutter(f, t, dt, () => .02); }
+    updateGuests(dt, t);
+  }
+  function dispose() {
+    const shared = new Set([...Object.values(SHARED), ...Object.values(CACHE), miniBloom, vineLeaf, body, ...SHARED_EXTRA]);
+    group.traverse(o => { if (o.isInstancedMesh) o.dispose(); else if ((o.isMesh || o.isPoints) && !shared.has(o.geometry)) o.geometry.dispose(); });
+    own.forEach(o => o.dispose && o.dispose());
+  }
+  return { group, pages, update, dispose, scatterPetals, index };
+}
+
+/* ---- opening, scrolling, zooming and closing the pages ---- */
+let book = null, reading = false, fading = false, rPage = 0, rScroll = 0, rTarget = 0, rVel = 0, rDist = 12, drag = null, rZoom = 1, rZoomT = 1, rPanX = 0, rPanXT = 0, lastTap = 0;
+const rPar = new THREE.Vector2(), rParT = new THREE.Vector2(), RMAX = (NP - 1) * STEP, ptrs = new Map(), tapAt = { x: 0, y: 0 }; let pinch = null;
+function rFit() {
+  const W = innerWidth, H = innerHeight, bar = document.getElementById('rbar'); rCam.aspect = W / H;
+  const bottom = bar ? H - bar.getBoundingClientRect().top + 12 : 150, top = Math.min(78, H * .09), fh = Math.max(.35, (H - top - bottom) / H);
+  rCam.setViewOffset(W, H, 0, (bottom - top) / 2, W, H); rCam.updateProjectionMatrix();
+  const tv = Math.tan(THREE.MathUtils.degToRad(rCam.fov / 2));
+  rDist = Math.max(PH * .78 / (2 * tv * fh), (PW + .04) / (2 * tv * rCam.aspect));
+}
+const wpp = () => 2 * Math.tan(THREE.MathUtils.degToRad(rCam.fov / 2)) * rDist / innerHeight / rZoom;   // world units per screen pixel
+const maxPan = z => Math.max(0, PW / 2 + .15 - Math.tan(THREE.MathUtils.degToRad(rCam.fov / 2)) * rCam.aspect * rDist / z);
+// zoom about a point on the screen, so whatever is under the fingers stays under them
+function zoomAt(z2, sx, sy, direct) {
+  z2 = clamp(z2, 1, 4); const z1 = rZoomT, k = wpp() * rZoom / z1, ox = (sx - innerWidth / 2) * k, oz = (sy - innerHeight / 2) * k;
+  rZoomT = z2; rPanXT += ox * (1 - z1 / z2); rTarget += oz * (1 - z1 / z2); rPanXT = clamp(rPanXT, -maxPan(z2), maxPan(z2));
+  if (z2 <= 1.001) rPanXT = 0; if (direct) { rZoom = rZoomT; rPanX = rPanXT; rScroll = rTarget; }
+}
+function fade(fn) {
+  if (fading) return; fading = true; document.body.classList.add('fading');
+  setTimeout(async () => { try { await fn(); } finally { requestAnimationFrame(() => requestAnimationFrame(() => { document.body.classList.remove('fading'); fading = false; })); } }, 400);
+}
+function read(n = 0) {
+  if (reading || building || !active) return; UI.hideHint();
+  fade(async () => {
+    if (!book || book.index !== active.index) {
+      UI.busy(true); await new Promise(res => requestAnimationFrame(() => setTimeout(res, 0)));
+      if (book) { rScene.remove(book.group); book.dispose(); }
+      book = buildBook(active.index); rScene.add(book.group); UI.busy(false);
+    }
+    book.pages.forEach(P => { P.p = 0; P.set(0); });
+    rPage = clamp(n, 0, NP - 1); rScroll = rTarget = rPage * STEP; rVel = 0; drag = null; pinch = null; ptrs.clear(); rZoom = rZoomT = 1; rPanX = rPanXT = 0;
+    book.scatterPetals(rScroll); reading = true; controls.enabled = false; UI.reader(true, rPage); rFit();
+    renderer.compile(rScene, rCam);
+  });
+}
+function closeReader() { if (!reading) return; fade(() => { reading = false; drag = null; pinch = null; ptrs.clear(); controls.enabled = true; UI.reader(false); idleAt = time; }); }
+function turn(n) { if (!reading) return; rTarget = clamp(n, 0, NP - 1) * STEP; rVel = 0; }
+function readerFrame(dt) {
+  if (!drag && !pinch) {
+    rTarget += rVel * dt; rVel *= Math.pow(.05, dt);
+    if (rTarget < 0) { rTarget *= Math.pow(.003, dt); if (rVel < 0) rVel *= .5; }
+    else if (rTarget > RMAX) { rTarget = RMAX + (rTarget - RMAX) * Math.pow(.003, dt); if (rVel > 0) rVel *= .5; }
+    rPanXT = clamp(rPanXT, -maxPan(rZoomT), maxPan(rZoomT));
+  }
+  const k = 1 - Math.pow(.0015, dt);
+  rScroll += (rTarget - rScroll) * k; rZoom += (rZoomT - rZoom) * k; rPanX += (rPanXT - rPanX) * k;
+  const z = rScroll, n0 = clamp(Math.round(z / STEP), 0, NP - 1); if (n0 !== rPage) { rPage = n0; UI.readerPage(n0); }
+  rPar.lerp(rParT, 1 - Math.pow(.05, dt));
+  const d = rDist / rZoom, px = rPanX + rPar.x * .08 / rZoom;
+  rCam.position.set(px, d * Math.cos(R_POLAR), z + d * Math.sin(R_POLAR) + rPar.y * .06 / rZoom); rCam.lookAt(px, 0, z);
+  rKey.position.set(-2.6, 7.5, z - 1.6); rKey.target.position.set(0, 0, z); rRim.position.set(-4, 3, z - 5); rRim.target.position.set(0, 0, z); rBokeh.position.z = z;
+  const f0 = z / STEP;
+  book.pages.forEach((P, n) => {
+    const f = Math.abs(n - f0); P.g.visible = f < 1.8;
+    if (P.p < 1.3 && f < .8) { P.p = Math.min(1.3, P.p + dt / 2.9); P.set(P.p); }
+  });
+  book.update(dt, time, z);
+}
+const NAV = new Set(['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'ArrowLeft', 'ArrowUp', 'PageUp', 'Home', 'End', 'Escape', '+', '=', '-', '0']);
+addEventListener('keydown', e => {
+  if (document.getElementById('modal').classList.contains('open') || fading) return;
+  if (reading) {
+    if (!NAV.has(e.key)) return; e.preventDefault();
+    if (e.key === 'Escape') { if (rZoomT > 1.01) zoomAt(1, innerWidth / 2, innerHeight / 2); else closeReader(); }
+    else if (e.key === '+' || e.key === '=') zoomAt(rZoomT * 1.4, innerWidth / 2, innerHeight / 2); else if (e.key === '-') zoomAt(rZoomT / 1.4, innerWidth / 2, innerHeight / 2); else if (e.key === '0') zoomAt(1, innerWidth / 2, innerHeight / 2);
+    else if (e.key === 'Home') turn(0); else if (e.key === 'End') turn(NP - 1);
+    else if (rZoomT > 1.01 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) rPanXT += (e.key === 'ArrowLeft' ? -.3 : .3) / rZoomT;
+    else turn(Math.round(rTarget / STEP) + (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key) ? -1 : 1));
+  } else if ((e.key === 'ArrowDown' || e.key === 'PageDown') && !document.getElementById('inv').classList.contains('open')) { e.preventDefault(); read(0); }
+});
+// on the cover, scrolling opens the pages; inside, it scrolls through them. Pinch or ctrl + scroll zooms either one.
+let wheelAcc = 0, wheelLock = 0;
+addEventListener('wheel', e => {
+  if (e.target !== canvas) return;
+  if (!reading && (e.ctrlKey || e.metaKey)) return;                        // the cover's own zoom
+  e.preventDefault(); e.stopPropagation(); const now = performance.now();
+  if (reading) {
+    let dy = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX; if (e.deltaMode === 1) dy *= 16; else if (e.deltaMode === 2) dy *= innerHeight;
+    if (e.ctrlKey || e.metaKey) { zoomAt(rZoomT * Math.exp(-dy * .006), e.clientX, e.clientY); return; }
+    if (rZoomT > 1.01 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) { rPanXT += e.deltaX * wpp(); return; }
+    let dd = dy * wpp(); if ((rTarget < 0 && dd < 0) || (rTarget > RMAX && dd > 0)) dd *= .3;
+    rTarget = clamp(rTarget + dd, -.5, RMAX + .5); rVel = 0;
+  } else { if (now < wheelLock) return; wheelAcc = Math.max(-80, wheelAcc + e.deltaY); if (wheelAcc > 60) { wheelAcc = 0; wheelLock = now + 1100; read(0); } }
+}, { capture: true, passive: false });
+let flick = null;
+canvas.addEventListener('pointerdown', e => {
+  if (!reading) { flick = { x: e.clientX, y: e.clientY, t: performance.now() }; return; }
+  if (fading) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { canvas.setPointerCapture(e.pointerId); } catch (er) {}
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: rZoomT, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; drag = null; return; }
+  if (ptrs.size === 1) {
+    const now = performance.now();
+    if (e.pointerType !== 'mouse' && now - lastTap < 320 && Math.hypot(e.clientX - tapAt.x, e.clientY - tapAt.y) < 40) { zoomAt(rZoomT > 1.3 ? 1 : 2.2, e.clientX, e.clientY); lastTap = 0; return; }
+    drag = { x: e.clientX, y: e.clientY, t0: rTarget, p0: rPanXT, ly: e.clientY, lt: now, v: 0, st: now }; rVel = 0;
+  }
+});
+canvas.addEventListener('dblclick', e => { if (reading) zoomAt(rZoomT > 1.3 ? 1 : 2.2, e.clientX, e.clientY); });
+canvas.addEventListener('pointermove', e => {
+  if (!reading) return;
+  if (e.pointerType === 'mouse') rParT.set(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1);
+  if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pinch && ptrs.size >= 2) {
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    zoomAt(pinch.z * d / pinch.d, mx, my, true); const w = wpp(); rPanXT -= (mx - pinch.mx) * w; rTarget -= (my - pinch.my) * w; rPanXT = clamp(rPanXT, -maxPan(rZoomT), maxPan(rZoomT)); rPanX = rPanXT; rScroll = rTarget; pinch.mx = mx; pinch.my = my; return;
+  }
+  if (!drag) return;
+  const w = wpp(); let t = drag.t0 - (e.clientY - drag.y) * w; if (t < 0) t *= .35; else if (t > RMAX) t = RMAX + (t - RMAX) * .35; rTarget = t;
+  if (rZoomT > 1.01) rPanXT = clamp(drag.p0 - (e.clientX - drag.x) * w, -maxPan(rZoomT), maxPan(rZoomT));
+  const now = performance.now(), dtt = Math.max(1, now - drag.lt); drag.v = drag.v * .7 + .3 * (e.clientY - drag.ly) / dtt * 1000; drag.ly = e.clientY; drag.lt = now;
+});
+function endPtr(e) {
+  ptrs.delete(e.pointerId);
+  if (pinch) { if (ptrs.size < 2) { pinch = null; if (rZoomT < 1.05) zoomAt(1, innerWidth / 2, innerHeight / 2); const p = [...ptrs.values()][0]; if (p) drag = { x: p.x, y: p.y, t0: rTarget, p0: rPanXT, ly: p.y, lt: performance.now(), v: 0, st: 0 }; } return; }
+  if (!drag) return; const now = performance.now(), moved = Math.hypot(e.clientX - drag.x, e.clientY - drag.y);
+  if (moved < 10 && now - drag.st < 260) { lastTap = now; tapAt.x = e.clientX; tapAt.y = e.clientY; } else lastTap = 0;
+  rVel = now - drag.lt > 90 ? 0 : clamp(-drag.v * wpp(), -14, 14); drag = null;
+}
+canvas.addEventListener('pointerup', e => {
+  if (reading) { endPtr(e); return; }
+  if (!flick) return; const dx = e.clientX - flick.x, dy = e.clientY - flick.y, dt = performance.now() - flick.t; flick = null;
+  if (e.pointerType !== 'mouse' && dt < 380 && dy < -60 && Math.abs(dy) > Math.abs(dx) * 1.4) read(0);
+});
+canvas.addEventListener('pointercancel', e => { if (reading) endPtr(e); flick = null; });
+canvas.addEventListener('pointerleave', () => rParT.set(0, 0));
+
+window.BloomScene = { go, read, close: closeReader, turn };
+
+/* ============ loop ============ */
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), .05); time += dt; WIND.uTime.value = time;
+  if (active) {
+    active.age += dt; const a = easeOut(Math.min(1, active.age / 1.4));
+    active.group.position.y = (1 - a) * -1.2 + Math.sin(time * .5) * .035; active.group.rotation.z = Math.sin(time * .37) * .008; active.group.rotation.x = Math.sin(time * .29) * .006;
+    active.group.scale.setScalar(.9 + .1 * a);
+    GROW.value = Math.min(2.2, Math.max(0, active.age - .5) / 2.4); active.update(dt, time, active.age);
+  }
+  for (let k = leaving.length - 1; k >= 0; k--) { const l = leaving[k]; l.out += dt / .7; const e = easeInOut(Math.min(1, l.out)); l.group.position.y = -e * 2.2; l.group.scale.setScalar(Math.max(.001, 1 - e * .6)); l.group.rotation.y = e * .5; if (l.out >= 1) { scene.remove(l.group); l.dispose(); leaving.splice(k, 1); } }
+  if (camTween) { camTween.t += dt / camTween.dur; const e = easeInOut(Math.min(1, camTween.t)); camera.position.lerpVectors(camTween.fp, camTween.tp, e); controls.target.lerpVectors(camTween.ft, camTween.tt, e); if (camTween.t >= 1) camTween = null; }
+  else if (time - idleAt > 10 && controls.target.distanceTo(HOME.t) + camera.position.distanceTo(pose().p) > .05) { idleAt = time; flyTo(2.4); }
+  if (reading && book) { readerFrame(dt); renderer.render(rScene, rCam); return; }
+  controls.update(dt);
+  renderer.render(scene, camera);
+}
+
+/* ============ start ============ */
+async function start() {
+  UI.message('Pressing the invitations…');
+  try { await Promise.race([Promise.all(['150px "Great Vibes"', '600 30px Cinzel', '500 40px "Cormorant Garamond"', 'italic 400 40px "Cormorant Garamond"', '600 40px "Cormorant Garamond"'].map(f => document.fonts.load(f))), new Promise(r => setTimeout(r, 4000))]); } catch (e) {}
+  UI.message(`Growing the ${INV[current].flower.toLowerCase()}…`);
+  await new Promise(r => setTimeout(r, 30));
+  layout();
+  const q = pose(); camera.position.copy(q.p.clone().multiplyScalar(1.8)); controls.target.copy(q.t);
+  UI.setStation(current);
+  await show(current);
+  flyTo(2.6);
+  renderer.setAnimationLoop(frame);
+  requestAnimationFrame(() => UI.ready());
+}
+start().catch(err => { console.error(err); UI.fallback(); });
+</script>
+</body>
+</html>
