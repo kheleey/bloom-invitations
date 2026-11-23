@@ -963,7 +963,7 @@ window.PrintArt = (function () {
   let showOthers=(v=>v===null?S.showOthers!==false:v==='1')(store('bloom-show-others'));
   let sb=null,sbLoad=null,chan=null,liveKey=null,lastPost=0;const shared={wishes:[]};
   function client(){if(!online)return Promise.resolve(null);
-    return sbLoad||(sbLoad=import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm').then(m=>(sb=m.createClient(S.supabaseUrl,S.supabaseKey,{auth:{persistSession:false}})))
+    return sbLoad||(sbLoad=import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/+esm').then(m=>(sb=m.createClient(S.supabaseUrl,S.supabaseKey,{auth:{persistSession:false}})))
       .catch(e=>{console.warn('Guestbook is offline:',e);$('#gtMode').textContent='Offline right now';return null;}));}
   async function post(row){const c=await client();if(!c)return false;const now=Date.now();if(now-lastPost<900&&row.kind!=='wish')return false;lastPost=now;
     const {error}=await c.from('bloom_events').insert(Object.assign({invite:C.invites[cur].key,client:me},row));
@@ -980,6 +980,7 @@ window.PrintArt = (function () {
   function incoming(r){
     if(!r||r.client===me)return;
     if(r.kind==='reset'){clearShared(r.item==='all');return;}
+    if(r.kind==='cheer'&&!WORDS.has(r.item))return;     // only the cheers on the tray, never free text
     if(r.kind==='wish'){shared.wishes.unshift(r);if(wishModal.classList.contains('open'))renderW();}
     if(r.kind==='gift')throwGift(r.item,{other:true,seed:r.id,visible:showOthers});
     if(!showOthers)return;
@@ -1000,9 +1001,11 @@ window.PrintArt = (function () {
   $('#ownerForm').addEventListener('submit',async e=>{e.preventDefault();const c=await client();if(!c){toast('Offline right now');return;}
     const btn=$('#ownerForm button[type=submit]'),all=$('#oWishes').checked;btn.disabled=true;
     const {data,error}=await c.rpc('bloom_reset',{p_invite:C.invites[cur].key,p_code:$('#oCode').value.trim(),p_wishes:all});btn.disabled=false;
+    if(!error&&data<0){toast(data===-2?'Too many wrong codes. Try again in 15 minutes':'That code isn’t right');return;}
     if(error){console.warn(error);toast(/wrong host code/i.test(error.message)?'That code isn’t right':/bloom_reset|function|schema cache/i.test(error.message)?'Run the latest supabase-setup.sql first':'Couldn’t clear it, please try again');return;}
     $('#oCode').value='';ownerModal.classList.remove('open');clearShared(all);toast(`Cleared ${data||0} ${all?'gifts, cheers and wishes':'gifts and cheers'}`);});
 
+  const WORDS=new Set([...tray.querySelectorAll('[data-word]')].map(b=>b.dataset.word));
   tray.querySelectorAll('[data-gift]').forEach(b=>b.onclick=()=>{const k=b.dataset.gift;openTray(false);   // step aside so the gift can be seen landing
     throwGift(k);post({kind:'gift',item:k});});
   tray.querySelectorAll('[data-word]').forEach(b=>b.onclick=()=>{cheer(esc(b.dataset.word));post({kind:'cheer',item:b.dataset.word});});
@@ -1332,7 +1335,9 @@ function instanced(geo, mat, list, colors) {
   m.count = list.length; m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; return m;
 }
 const softTex = (stops, size = 128) => { const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2); stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, size, size); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
-const mistTex = (() => {   // built pixel by pixel: a 2D-canvas gradient left colour noise that iPhones showed as sparkles
+// a soft white glow, built pixel by pixel: drawing it on a 2D canvas left faint colour noise in the
+// almost-transparent edge, which iPhones showed as coloured sparkles
+const mistTex = (() => {
   const N = 128, d = new Uint8Array(N * N * 4), A = r => r < .5 ? .9 + (.35 - .9) * r / .5 : r < 1 ? .35 * (1 - (r - .5) / .5) : 0;
   for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const r = Math.hypot(x + .5 - N / 2, y + .5 - N / 2) / (N / 2), k = (y * N + x) * 4; d[k] = d[k + 1] = d[k + 2] = 255; d[k + 3] = Math.round(A(r) * 255); }
   const t = new THREE.DataTexture(d, N, N); t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.needsUpdate = true; return t;

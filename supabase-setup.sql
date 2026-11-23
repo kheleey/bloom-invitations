@@ -21,18 +21,26 @@ create policy "guests can read" on public.bloom_events for select to anon, authe
 drop policy if exists "guests can add" on public.bloom_events;
 create policy "guests can add" on public.bloom_events for insert to anon, authenticated with check (
      (kind = 'gift'  and item in ('gift', 'bouquet', 'balloons', 'heart', 'cake') and name is null and message is null)
-  or (kind = 'cheer' and item is not null and name is null and message is null)
+  or (kind = 'cheer' and item in ('Congratulations!', 'Can’t wait!', 'So happy for you', 'Cheers!', 'See you there', 'With love') and name is null and message is null)
   or (kind = 'wish'  and char_length(trim(coalesce(name, ''))) > 0 and char_length(trim(coalesce(message, ''))) > 0)
 );
 
 -- 3. Slow down anyone sending too much at once
 create or replace function public.bloom_rate_limit() returns trigger language plpgsql security definer set search_path = public as $$
 begin
+  if new.kind = 'reset' then return new; end if;                -- the host's reset is never slowed down
   if (select count(*) from public.bloom_events where client = new.client and created_at > now() - interval '20 seconds') >= 8 then
     raise exception 'Too many in a short time. Please wait a moment.';
   end if;
   if new.kind = 'wish' and (select count(*) from public.bloom_events where client = new.client and kind = 'wish' and created_at > now() - interval '10 minutes') >= 3 then
     raise exception 'Too many wishes at once. Please wait a little.';
+  end if;
+  -- limits a made-up browser id can't get around: per invitation, and for the whole guestbook
+  if (select count(*) from public.bloom_events where invite = new.invite and created_at > now() - interval '1 minute') >= 90 then
+    raise exception 'Too many in a short time. Please wait a moment.';
+  end if;
+  if (select count(*) from public.bloom_events) >= 50000 then
+    raise exception 'The guestbook is full.';
   end if;
   return new;
 end $$;
@@ -62,14 +70,25 @@ create table if not exists public.bloom_owner (
 alter table public.bloom_owner enable row level security;      -- no policies, so guests can't read it
 revoke all on public.bloom_owner from anon, authenticated;
 
+-- wrong guesses are counted; after 8 in 15 minutes the reset stops checking codes for a while
+create table if not exists public.bloom_attempts (at timestamptz not null default now());
+alter table public.bloom_attempts enable row level security;
+revoke all on public.bloom_attempts from anon, authenticated;
+
+-- returns how many rows were removed, or -1 for a wrong code, -2 while locked after too many wrong codes
+drop function if exists public.bloom_reset(text, text, boolean);
 create or replace function public.bloom_reset(p_invite text, p_code text, p_wishes boolean default false)
 returns integer language plpgsql security definer set search_path = public, extensions as $$
 declare h text; n integer;
 begin
+  delete from public.bloom_attempts where at < now() - interval '1 day';
+  if (select count(*) from public.bloom_attempts where at > now() - interval '15 minutes') >= 8 then
+    return -2;
+  end if;
   select code_hash into h from public.bloom_owner where id = 1;
   if h is null or coalesce(p_code, '') = '' or crypt(p_code, h) <> h then
-    perform pg_sleep(1);                                         -- slows down guessing
-    raise exception 'Wrong host code';
+    insert into public.bloom_attempts default values;
+    return -1;
   end if;
   delete from public.bloom_events
    where invite = p_invite and (kind in ('gift', 'cheer', 'reset') or (p_wishes and kind = 'wish'));
@@ -83,5 +102,5 @@ grant execute on function public.bloom_reset(text, text, boolean) to anon, authe
 
 -- 7. Set your host code: put your own phrase between the quotes, select ONLY these lines and click Run.
 --    Run it again any time to change the code.
--- insert into public.bloom_owner (id, code_hash) values (1, extensions.crypt('your secret phrase here', extensions.gen_salt('bf')))
+-- insert into public.bloom_owner (id, code_hash) values (1, extensions.crypt('your secret phrase here', extensions.gen_salt('bf', 10)))
 -- on conflict (id) do update set code_hash = excluded.code_hash;
