@@ -12,7 +12,7 @@
 
 ### Screenshots
 
-<table><tr><td align="center"><img src="screenshot-1.jpg" width="200" alt="Cherry Blossom garden"><br><sub>Cherry Blossom garden</sub></td><td align="center"><img src="screenshot-2.jpg" width="200" alt="Rose: the invitation page"><br><sub>Rose: the invitation page</sub></td><td align="center"><img src="screenshot-3.jpg" width="200" alt="Lavender garden"><br><sub>Lavender garden</sub></td><td align="center"><img src="screenshot-4.jpg" width="200" alt="Sunflower: the reply page"><br><sub>Sunflower: the reply page</sub></td></tr></table>
+<table><tr><td align="center"><img src="screenshot-1.jpg" width="200" alt="Cherry Blossom garden"><br><sub>Cherry Blossom garden</sub></td><td align="center"><img src="screenshot-2.jpg" width="200" alt="Rose: the invitation page"><br><sub>Rose: the invitation page</sub></td><td align="center"><img src="screenshot-3.jpg" width="200" alt="Lavender garden"><br><sub>Lavender garden</sub></td><td align="center"><img src="screenshot-4.jpg" width="200" alt="Sunflower: the reply page"><br><sub>Sunflower: the reply page</sub></td></tr><tr><td align="center"><img src="screenshot-5.jpg" width="200" alt="The gift tray and cheers"><br><sub>The gift tray and cheers</sub></td><td align="center"><img src="screenshot-6.jpg" width="200" alt="A wish floating up"><br><sub>A wish floating up</sub></td><td></td><td></td></tr></table>
 
 Five event invitations, one per flower: Cherry Blossom, Tulip, Rose, Lavender and Sunflower. Each one is a living 3D card with its own garden growing on it. The garden has wind, butterflies and tiny guests strolling, chatting and picnicking.
 
@@ -27,6 +27,10 @@ Open a card and it unfolds into five pages you scroll through:
 Every invitation has its own frame shape and its own flower arrangements. You can pinch or double-tap to zoom in, add the event to Google Calendar, get directions, and send an RSVP.
 
 ## Gifts, cheers and wishes
+
+<p align="center"><img src="gifts.gif" width="260" alt="Throwing gifts and cheers"></p>
+
+<p align="center"><b><a href="https://kheleey.github.io/bloom-invitations/gifts.mp4">▶ Watch gifts, cheers and wishes in action</a></b></p>
 
 Tap the gift button above the invitation to send a little something:
 
