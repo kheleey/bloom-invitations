@@ -160,6 +160,7 @@ body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
 .flyicon{position:absolute;left:0;top:0;width:44px;height:44px}
 #wishModal,#ownerModal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #wishModal.open,#ownerModal.open{display:grid}
+.pw{position:relative}.pw input{padding-right:64px}.pw button{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:none;font:italic 14px var(--serif);color:#8a6a3a;padding:6px 8px;cursor:pointer}
 .paper label.chk{display:flex;align-items:center;gap:9px;margin:14px 0 4px;font-family:inherit;font-size:16px;letter-spacing:0;text-transform:none;color:inherit;cursor:pointer}.paper label.chk input{width:18px;height:18px;margin:0;accent-color:#3d2b33}
 .gt-owner{display:block;margin:8px auto 0;padding:4px 10px;font:italic 12px/1.3 var(--serif);color:var(--soft);background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.gt-owner[hidden]{display:none}
 .wlist{margin-top:18px}
@@ -263,7 +264,7 @@ body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
     <div class="lede" id="ownerLede">For the hosts only</div>
     <form id="ownerForm">
       <label for="oCode">Host code</label>
-      <input id="oCode" type="password" required maxlength="80" autocomplete="off" placeholder="The code you set in Supabase">
+      <div class="pw"><input id="oCode" type="password" required maxlength="80" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="The code you set in Supabase"><button type="button" id="oShow">Show</button></div>
       <label class="chk"><input type="checkbox" id="oWishes"> Remove the wishes too</label>
       <div class="row"><button class="btn primary" type="submit">Clear for everyone</button></div>
     </form>
@@ -993,11 +994,12 @@ window.PrintArt = (function () {
   function clearShared(all){if(scene()&&scene().clearGifts)scene().clearGifts();cheers.querySelectorAll('.cheer').forEach(e=>e.remove());
     if(all){shared.wishes=[];if(wishModal.classList.contains('open'))renderW();}}
   ownBtn.onclick=()=>{openTray(false);$('#ownerLede').textContent='For '+C.invites[cur].title;$('#oWishes').checked=false;ownerModal.classList.add('open');setTimeout(()=>$('#oCode').focus(),60);};
+  $('#oShow').onclick=()=>{const i=$('#oCode'),s=i.type==='password';i.type=s?'text':'password';$('#oShow').textContent=s?'Hide':'Show';};
   $('#oClose').onclick=()=>ownerModal.classList.remove('open');
   ownerModal.addEventListener('click',e=>{if(e.target===ownerModal)ownerModal.classList.remove('open');});
   $('#ownerForm').addEventListener('submit',async e=>{e.preventDefault();const c=await client();if(!c){toast('Offline right now');return;}
-    const btn=$('#ownerForm button'),all=$('#oWishes').checked;btn.disabled=true;
-    const {data,error}=await c.rpc('bloom_reset',{p_invite:C.invites[cur].key,p_code:$('#oCode').value,p_wishes:all});btn.disabled=false;
+    const btn=$('#ownerForm button[type=submit]'),all=$('#oWishes').checked;btn.disabled=true;
+    const {data,error}=await c.rpc('bloom_reset',{p_invite:C.invites[cur].key,p_code:$('#oCode').value.trim(),p_wishes:all});btn.disabled=false;
     if(error){console.warn(error);toast(/wrong host code/i.test(error.message)?'That code isn’t right':/bloom_reset|function|schema cache/i.test(error.message)?'Run the latest supabase-setup.sql first':'Couldn’t clear it, please try again');return;}
     $('#oCode').value='';ownerModal.classList.remove('open');clearShared(all);toast(`Cleared ${data||0} ${all?'gifts, cheers and wishes':'gifts and cheers'}`);});
 
