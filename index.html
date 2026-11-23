@@ -1085,9 +1085,10 @@ const Q = coarse ? .55 : 1;                       // fewer plants on phones
 /* ============ renderer ============ */
 const canvas = document.getElementById('scene');
 let renderer;
-try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+const QS = new URLSearchParams(location.search);    // ?debug opens a small test panel
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: !QS.has('noaa'), alpha: true, powerPreference: 'high-performance' }); }
 catch (e) { UI.fallback(); throw e; }
-renderer.setPixelRatio(Math.min(devicePixelRatio || 1, coarse ? 1.6 : 2)); renderer.setClearColor(0x000000, 0);
+renderer.setPixelRatio(QS.get('pr') ? +QS.get('pr') : Math.min(devicePixelRatio || 1, coarse ? 1.6 : 2)); renderer.setClearColor(0x000000, 0);
 renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.08; renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const maxAniso = renderer.capabilities.getMaxAnisotropy();
@@ -1738,7 +1739,7 @@ function paintBackdrop(i) {                       // same as the CSS: radial-gra
   const L = UI.LOOK[INV[i].key] || {}, x = bgCan.getContext('2d');
   x.setTransform(1.2 * 256, 0, 0, .9 * 256, .5 * 256, .4 * 256);
   const g = x.createRadialGradient(0, 0, 0, 0, 0, 1); g.addColorStop(0, L.bg1 || '#f7e3ea'); g.addColorStop(1, L.bg2 || '#ecccd8');
-  x.fillStyle = g; x.fillRect(-1, -1, 2, 2); bgTex.needsUpdate = true; scene.background = bgTex;
+  x.fillStyle = g; x.fillRect(-1, -1, 2, 2); bgTex.needsUpdate = true; if (!QS.has('clearbg')) scene.background = bgTex;
 }
 async function show(i) {
   if (building) return; building = true; UI.busy(true);
@@ -1762,7 +1763,7 @@ function go(i) {
    each with flowers growing in its frame
    ================================================================ */
 const PW = 3.0, PH = 4.3, PT = .045, NP = PrintArt.PAGES || 5, STEP = PH, R_POLAR = .1, RT = .052, RB = .022;
-const rScene = new THREE.Scene(); rScene.background = bgTex; rScene.environment = scene.environment; rScene.environmentIntensity = .55;
+const rScene = new THREE.Scene(); rScene.background = QS.has('clearbg') ? null : bgTex; rScene.environment = scene.environment; rScene.environmentIntensity = .55;
 rScene.add(new THREE.HemisphereLight('#f6f4ff', '#dcc8b8', 1.05));
 const rKey = new THREE.DirectionalLight('#fff1dc', 2.5); rKey.castShadow = true; rKey.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
 Object.assign(rKey.shadow.camera, { left: -3.6, right: 3.6, top: 3.6, bottom: -3.6, near: .5, far: 20 }); rKey.shadow.camera.updateProjectionMatrix();
@@ -2316,6 +2317,22 @@ function updateGifts(dt) {
 }
 window.BloomScene = { go, read, close: closeReader, turn, throwGift, setOthersVisible, clearGifts };
 
+/* ============ test panel: add ?debug to the link to switch parts of the 3D off one at a time ============ */
+const DBG = QS.has('debug') ? (() => {
+  const on = { bokeh: true, motes: true, sparkle: true, glow: true, instanced: true, meshes: true };
+  const names = { bokeh: 'Big soft circles', motes: 'Tiny light motes', sparkle: 'Gift sparkles', glow: 'Glow under the card', instanced: 'Flowers, grass & petals', meshes: 'Everything else' };
+  const cat = o => o.isPoints ? (o.material === bokehMat ? 'bokeh' : o.material === moteMat ? 'motes' : 'sparkle') : o.isSprite ? 'glow' : o.isInstancedMesh ? 'instanced' : o.isMesh ? 'meshes' : null;
+  const box = document.createElement('div'); box.style.cssText = 'position:fixed;left:8px;top:8px;z-index:60;background:rgba(255,255,255,.92);color:#333;font:13px/1.5 system-ui,sans-serif;padding:8px 10px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.2);max-width:230px';
+  let gpu = ''; try { const gl = renderer.getContext(), ext = gl.getExtension('WEBGL_debug_renderer_info'); gpu = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : ''; } catch (e) {}
+  const link = (q, t) => `<a href="?debug${q}" style="color:#a0365a">${t}</a>`;
+  box.innerHTML = '<b>Test panel</b><br>' + Object.keys(on).map(k => `<label style="display:block"><input type="checkbox" data-k="${k}" checked> ${names[k]}</label>`).join('') +
+    `<div style="margin-top:4px;font-size:12px">${link('&noaa', 'Reload: no smoothing')} · ${link('&pr=1', 'Reload: low res')} · ${link('&pr=3', 'Reload: full res')} · ${link('&clearbg', 'Reload: see-through')} · ${link('', 'Reload: normal')}</div>` +
+    `<div style="margin-top:4px;font-size:11px;color:#777">AA ${!QS.has('noaa')} · ratio ${renderer.getPixelRatio().toFixed(2)} / ${devicePixelRatio} · ${gpu}</div>`;
+  box.querySelectorAll('input').forEach(i => i.onchange = () => { on[i.dataset.k] = i.checked; });
+  document.body.appendChild(box);
+  return { apply(sc) { sc.traverse(o => { const k = cat(o); if (!k) return; if (!on[k]) { if (o.visible) { o.visible = false; o.userData.dbgHid = true; } } else if (o.userData.dbgHid) { o.visible = true; o.userData.dbgHid = false; } }); } };
+})() : null;
+
 /* ============ loop ============ */
 const clock = new THREE.Clock();
 function frame() {
@@ -2330,8 +2347,9 @@ function frame() {
   for (let k = leaving.length - 1; k >= 0; k--) { const l = leaving[k]; l.out += dt / .7; const e = easeInOut(Math.min(1, l.out)); l.group.position.y = -e * 2.2; l.group.scale.setScalar(Math.max(.001, 1 - e * .6)); l.group.rotation.y = e * .5; if (l.out >= 1) { scene.remove(l.group); l.dispose(); leaving.splice(k, 1); } }
   if (camTween) { camTween.t += dt / camTween.dur; const e = easeInOut(Math.min(1, camTween.t)); camera.position.lerpVectors(camTween.fp, camTween.tp, e); controls.target.lerpVectors(camTween.ft, camTween.tt, e); if (camTween.t >= 1) camTween = null; }
   else if (time - idleAt > 10 && controls.target.distanceTo(HOME.t) + camera.position.distanceTo(pose().p) > .05) { idleAt = time; flyTo(2.4); }
-  if (reading && book) { readerFrame(dt); renderer.render(rScene, rCam); return; }
+  if (reading && book) { readerFrame(dt); if (DBG) DBG.apply(rScene); renderer.render(rScene, rCam); return; }
   controls.update(dt);
+  if (DBG) DBG.apply(scene);
   renderer.render(scene, camera);
 }
 
