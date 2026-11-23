@@ -50,6 +50,13 @@ Without Supabase, everything still works but stays on each guest's own device.
    These two values are meant to be public. The setup script only lets guests add gifts, cheers and wishes. Nobody can edit or delete them except you.
 5. Commit and push. Done.
 
+**Clearing the garden (for the host):** you can remove every guest's gifts and cheers, and optionally the wishes, from one invitation, live on everyone's screen.
+1. Set a host code once: in Supabase's **SQL Editor**, run the two lines at the end of `supabase-setup.sql` (section 7) with your own phrase, after removing the `--` at the start of each line.
+2. Open the invitation with `#owner` at the end of the link, for example `https://YOUR-NAME.github.io/bloom-invitations/#owner`. A **Host: clear the garden…** link appears at the bottom of the gift tray. Guests don't see it, and it does nothing without the code.
+3. Pick the invitation, open the gift tray, click the link, enter your code and click **Clear for everyone**.
+
+The code is stored only as a bcrypt hash in a table guests can't read, and wrong guesses are slowed down. Use a phrase of a few words rather than a short password.
+
 **Removing something rude:** in Supabase, open **Table Editor → bloom_events**, select the row and delete it.
 
 **Staying awake:** free Supabase projects pause after a week without visitors. The included GitHub Action, [`.github/workflows/keep-supabase-awake.yml`](.github/workflows/keep-supabase-awake.yml), visits the database every three days so that never happens. It reads the settings from `index.html`, so there's nothing to configure. GitHub pauses scheduled actions in repositories with no commits for 60 days. It emails you first, and one click on **Enable workflow** in the Actions tab turns it back on.

@@ -6,7 +6,7 @@ create table if not exists public.bloom_events (
   id          bigint generated always as identity primary key,
   created_at  timestamptz not null default now(),
   invite      text not null check (char_length(invite) <= 40),          -- which invitation, e.g. 'rose'
-  kind        text not null check (kind in ('gift', 'cheer', 'wish')),
+  kind        text not null,                                             -- gift, cheer, wish, or reset (host only)
   item        text check (char_length(item) <= 40),                      -- the gift or the cheer
   name        text check (char_length(name) <= 40),                      -- wishes only
   message     text check (char_length(message) <= 240),                 -- wishes only
@@ -39,10 +39,49 @@ end $$;
 drop trigger if exists bloom_rate_limit on public.bloom_events;
 create trigger bloom_rate_limit before insert on public.bloom_events for each row execute function public.bloom_rate_limit();
 
+-- 3b. Which kinds are allowed (kept separate so older setups get updated when this runs again)
+alter table public.bloom_events drop constraint if exists bloom_events_kind_check;
+alter table public.bloom_events add constraint bloom_events_kind_check check (kind in ('gift', 'cheer', 'wish', 'reset'));
+
 -- 4. Send new rows to everyone who has the invitation open
 do $$ begin
   alter publication supabase_realtime add table public.bloom_events;
 exception when duplicate_object then null;
 end $$;
 
+-- 5. Let the page read and add (needed if 'grant API access automatically' was off)
 grant select, insert on public.bloom_events to anon, authenticated;
+
+-- 6. The host's "clear the garden" button
+--    The code is stored only as a scrambled hash, in a table guests can't read.
+create extension if not exists pgcrypto with schema extensions;
+create table if not exists public.bloom_owner (
+  id         int primary key default 1 check (id = 1),
+  code_hash  text not null
+);
+alter table public.bloom_owner enable row level security;      -- no policies, so guests can't read it
+revoke all on public.bloom_owner from anon, authenticated;
+
+create or replace function public.bloom_reset(p_invite text, p_code text, p_wishes boolean default false)
+returns integer language plpgsql security definer set search_path = public, extensions as $$
+declare h text; n integer;
+begin
+  select code_hash into h from public.bloom_owner where id = 1;
+  if h is null or coalesce(p_code, '') = '' or crypt(p_code, h) <> h then
+    perform pg_sleep(1);                                         -- slows down guessing
+    raise exception 'Wrong host code';
+  end if;
+  delete from public.bloom_events
+   where invite = p_invite and (kind in ('gift', 'cheer', 'reset') or (p_wishes and kind = 'wish'));
+  get diagnostics n = row_count;
+  insert into public.bloom_events (invite, kind, item, client)  -- tells open pages to clear too
+  values (p_invite, 'reset', case when p_wishes then 'all' else 'gifts' end, 'host');
+  return n;
+end $$;
+revoke all on function public.bloom_reset(text, text, boolean) from public;
+grant execute on function public.bloom_reset(text, text, boolean) to anon, authenticated;
+
+-- 7. Set your host code: put your own phrase between the quotes, select ONLY these lines and click Run.
+--    Run it again any time to change the code.
+-- insert into public.bloom_owner (id, code_hash) values (1, extensions.crypt('your secret phrase here', extensions.gen_salt('bf')))
+-- on conflict (id) do update set code_hash = excluded.code_hash;

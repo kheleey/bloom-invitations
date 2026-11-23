@@ -158,8 +158,10 @@ body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
 .cheer.wish{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.3;color:var(--ink);padding:9px 15px 10px}
 .cheer.wish b{display:block;font-family:var(--caps);font-style:normal;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
 .flyicon{position:absolute;left:0;top:0;width:44px;height:44px}
-#wishModal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-#wishModal.open{display:grid}
+#wishModal,#ownerModal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#wishModal.open,#ownerModal.open{display:grid}
+.paper label.chk{display:flex;align-items:center;gap:9px;margin:14px 0 4px;font-family:inherit;font-size:16px;letter-spacing:0;text-transform:none;color:inherit;cursor:pointer}.paper label.chk input{width:18px;height:18px;margin:0;accent-color:#3d2b33}
+.gt-owner{display:block;margin:8px auto 0;padding:4px 10px;font:italic 12px/1.3 var(--serif);color:var(--soft);background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.gt-owner[hidden]{display:none}
 .wlist{margin-top:18px}
 .wlist .wi{padding:13px 2px;border-top:1px solid #eadfcf}
 .wlist .wi b{font-family:var(--serif);font-weight:600;font-size:17px}
@@ -218,7 +220,7 @@ body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
 </div>
 <div id="cheers" aria-hidden="true"></div>
 <button id="giftBtn" aria-label="Send a gift or a cheer" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><rect x="3" y="7" width="18" height="3.6" rx="1"/><path d="M12 7v13"/><path d="M12 7c-2-3.6-6-3-5.2-.8S12 7 12 7zm0 0c2-3.6 6-3 5.2-.8S12 7 12 7z"/></svg></button>
-<div id="giftTray" role="dialog" aria-label="Send a gift or a cheer"><div class="gt-h"><span>Send a little something</span><button id="gtClose" aria-label="Close">×</button></div><div class="gt-gifts"><button data-gift="gift" aria-label="Throw a gift"><svg viewBox="0 0 32 32"><rect x="6" y="14" width="20" height="13" rx="2" fill="var(--accent)" opacity=".88"/><rect x="5" y="10" width="22" height="5" rx="1.6" fill="var(--accent)"/><rect x="14.6" y="10" width="2.8" height="17" fill="#fff" opacity=".9"/><path d="M16 10c-2.5-5-8-4.4-7-1.4S16 10 16 10zm0 0c2.5-5 8-4.4 7-1.4S16 10 16 10z" fill="none" stroke="#e7b75f" stroke-width="1.9" stroke-linejoin="round"/></svg><span>Gift</span></button><button data-gift="bouquet" aria-label="Throw a bouquet"><svg viewBox="0 0 32 32"><path d="M10 17l6 12 6-12z" fill="#eadcc4"/><path d="M13 22.5l3 1.6 3-1.6" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><path d="M9 14c2-4 4-3 5 0M23 14c-2-4-4-3-5 0" fill="none" stroke="#6c9a52" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="10" r="4.2" fill="var(--accent)"/><circle cx="10.5" cy="12.5" r="3.4" fill="var(--accent)" opacity=".7"/><circle cx="21.5" cy="12.5" r="3.4" fill="#f2c14e"/><circle cx="16" cy="10" r="1.5" fill="#fff" opacity=".7"/></svg><span>Bouquet</span></button><button data-gift="balloons" aria-label="Throw a balloons"><svg viewBox="0 0 32 32"><path d="M11 17q2 6 5 12M21 16q-2 7-5 13M16 13v16" fill="none" stroke="#9a8a80" stroke-width="1" /><ellipse cx="11" cy="11" rx="5" ry="6" fill="var(--accent)" opacity=".85"/><ellipse cx="21" cy="10" rx="5" ry="6" fill="#7fb5e0"/><ellipse cx="16" cy="7.5" rx="4.6" ry="5.5" fill="#f2c14e"/><ellipse cx="14.6" cy="5.6" rx="1.2" ry="1.8" fill="#fff" opacity=".6"/></svg><span>Balloons</span></button><button data-gift="heart" aria-label="Throw a heart"><svg viewBox="0 0 32 32"><path d="M16 27C6 20 4 14 6.4 9.6 8.8 5.4 14 6 16 10c2-4 7.2-4.6 9.6-.4C28 14 26 20 16 27z" fill="#e8506e"/><path d="M10 10.5c1-1.6 2.6-2 3.6-1.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>Heart</span></button><button data-gift="cake" aria-label="Throw a cake"><svg viewBox="0 0 32 32"><rect x="15" y="4" width="2" height="6" rx="1" fill="#f2c14e"/><ellipse cx="16" cy="3.6" rx="1.5" ry="2" fill="#ff9e3d"/><rect x="9" y="10" width="14" height="7" rx="2" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M9 12.5q2 2 3.5 0t3.5 0 3.5 0 3.5 0" fill="none" stroke="var(--accent)" stroke-width="1.6"/><rect x="5" y="17" width="22" height="10" rx="2.5" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M5 20q2.7 2.6 5.5 0t5.5 0 5.5 0 5.5 0" fill="none" stroke="var(--accent)" stroke-width="1.8"/></svg><span>Cake</span></button></div><div class="gt-words"><button data-word="Congratulations!">Congratulations!</button><button data-word="Can’t wait!">Can’t wait!</button><button data-word="So happy for you">So happy for you</button><button data-word="Cheers!">Cheers!</button><button data-word="See you there">See you there</button><button data-word="With love">With love</button></div><button class="gt-wish" id="gtWish">✎ Leave a wish</button><div class="gt-live"><label class="sw"><input type="checkbox" id="gtOthers" checked><i></i><span>Show guests’ gifts &amp; wishes</span></label><small id="gtMode"></small></div></div>
+<div id="giftTray" role="dialog" aria-label="Send a gift or a cheer"><div class="gt-h"><span>Send a little something</span><button id="gtClose" aria-label="Close">×</button></div><div class="gt-gifts"><button data-gift="gift" aria-label="Throw a gift"><svg viewBox="0 0 32 32"><rect x="6" y="14" width="20" height="13" rx="2" fill="var(--accent)" opacity=".88"/><rect x="5" y="10" width="22" height="5" rx="1.6" fill="var(--accent)"/><rect x="14.6" y="10" width="2.8" height="17" fill="#fff" opacity=".9"/><path d="M16 10c-2.5-5-8-4.4-7-1.4S16 10 16 10zm0 0c2.5-5 8-4.4 7-1.4S16 10 16 10z" fill="none" stroke="#e7b75f" stroke-width="1.9" stroke-linejoin="round"/></svg><span>Gift</span></button><button data-gift="bouquet" aria-label="Throw a bouquet"><svg viewBox="0 0 32 32"><path d="M10 17l6 12 6-12z" fill="#eadcc4"/><path d="M13 22.5l3 1.6 3-1.6" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><path d="M9 14c2-4 4-3 5 0M23 14c-2-4-4-3-5 0" fill="none" stroke="#6c9a52" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="10" r="4.2" fill="var(--accent)"/><circle cx="10.5" cy="12.5" r="3.4" fill="var(--accent)" opacity=".7"/><circle cx="21.5" cy="12.5" r="3.4" fill="#f2c14e"/><circle cx="16" cy="10" r="1.5" fill="#fff" opacity=".7"/></svg><span>Bouquet</span></button><button data-gift="balloons" aria-label="Throw a balloons"><svg viewBox="0 0 32 32"><path d="M11 17q2 6 5 12M21 16q-2 7-5 13M16 13v16" fill="none" stroke="#9a8a80" stroke-width="1" /><ellipse cx="11" cy="11" rx="5" ry="6" fill="var(--accent)" opacity=".85"/><ellipse cx="21" cy="10" rx="5" ry="6" fill="#7fb5e0"/><ellipse cx="16" cy="7.5" rx="4.6" ry="5.5" fill="#f2c14e"/><ellipse cx="14.6" cy="5.6" rx="1.2" ry="1.8" fill="#fff" opacity=".6"/></svg><span>Balloons</span></button><button data-gift="heart" aria-label="Throw a heart"><svg viewBox="0 0 32 32"><path d="M16 27C6 20 4 14 6.4 9.6 8.8 5.4 14 6 16 10c2-4 7.2-4.6 9.6-.4C28 14 26 20 16 27z" fill="#e8506e"/><path d="M10 10.5c1-1.6 2.6-2 3.6-1.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>Heart</span></button><button data-gift="cake" aria-label="Throw a cake"><svg viewBox="0 0 32 32"><rect x="15" y="4" width="2" height="6" rx="1" fill="#f2c14e"/><ellipse cx="16" cy="3.6" rx="1.5" ry="2" fill="#ff9e3d"/><rect x="9" y="10" width="14" height="7" rx="2" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M9 12.5q2 2 3.5 0t3.5 0 3.5 0 3.5 0" fill="none" stroke="var(--accent)" stroke-width="1.6"/><rect x="5" y="17" width="22" height="10" rx="2.5" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M5 20q2.7 2.6 5.5 0t5.5 0 5.5 0 5.5 0" fill="none" stroke="var(--accent)" stroke-width="1.8"/></svg><span>Cake</span></button></div><div class="gt-words"><button data-word="Congratulations!">Congratulations!</button><button data-word="Can’t wait!">Can’t wait!</button><button data-word="So happy for you">So happy for you</button><button data-word="Cheers!">Cheers!</button><button data-word="See you there">See you there</button><button data-word="With love">With love</button></div><button class="gt-wish" id="gtWish">✎ Leave a wish</button><div class="gt-live"><label class="sw"><input type="checkbox" id="gtOthers" checked><i></i><span>Show guests’ gifts &amp; wishes</span></label><small id="gtMode"></small></div><button class="gt-owner" id="gtOwner" hidden>Host: clear the garden…</button></div>
 <div id="busy">Growing…</div>
 
 <section class="sheet" id="sheet" aria-live="polite">
@@ -254,6 +256,20 @@ body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
 <div id="toast">Copied</div>
 <div id="loader"><div><div class="sprout"></div><div class="script">Planting the gardens</div><p id="loadMsg">Opening the gates…</p></div></div>
 
+<div id="ownerModal" role="dialog" aria-modal="true" aria-labelledby="ownerH">
+  <div class="paper">
+    <button class="close" id="oClose" aria-label="Close">×</button>
+    <h3 id="ownerH">Clear the garden</h3>
+    <div class="lede" id="ownerLede">For the hosts only</div>
+    <form id="ownerForm">
+      <label for="oCode">Host code</label>
+      <input id="oCode" type="password" required maxlength="80" autocomplete="off" placeholder="The code you set in Supabase">
+      <label class="chk"><input type="checkbox" id="oWishes"> Remove the wishes too</label>
+      <div class="row"><button class="btn primary" type="submit">Clear for everyone</button></div>
+    </form>
+    <p class="note">Removes every guest’s gifts and cheers from this invitation, on every screen. This can’t be undone.</p>
+  </div>
+</div>
 <div id="wishModal" role="dialog" aria-modal="true" aria-labelledby="wishH">
   <div class="paper">
     <button class="close" id="wClose" aria-label="Close">×</button>
@@ -816,7 +832,7 @@ window.PrintArt = (function () {
   let cur=fromHash(),ready=false;
   const faces={};
 
-  function fromHash(){const h=(location.hash||'').slice(1);const i=C.invites.findIndex(v=>v.key===h);return i<0?0:i;}
+  function fromHash(){const h=(location.hash||'').slice(1).replace(/[-&]?owner/i,'');const i=C.invites.findIndex(v=>v.key===h);return i<0?0:i;}
   function venueOf(v){return (v.venue||C.venue)+', '+(v.address||C.address);}
   function gcal(v){
     const d=v.date.replace(/-/g,''),s=v.start.replace(':','')+'00',e=v.end.replace(':','')+'00';
@@ -962,6 +978,7 @@ window.PrintArt = (function () {
   }
   function incoming(r){
     if(!r||r.client===me)return;
+    if(r.kind==='reset'){clearShared(r.item==='all');return;}
     if(r.kind==='wish'){shared.wishes.unshift(r);if(wishModal.classList.contains('open'))renderW();}
     if(r.kind==='gift')throwGift(r.item,{other:true,seed:r.id,visible:showOthers});
     if(!showOthers)return;
@@ -970,6 +987,19 @@ window.PrintArt = (function () {
   const sw=$('#gtOthers');sw.checked=showOthers;$('#gtMode').textContent=online?'Shared with all guests':'Kept on this device';
   sw.onchange=()=>{showOthers=sw.checked;store('bloom-show-others',showOthers?'1':'0');if(scene()&&scene().setOthersVisible)scene().setOthersVisible(showOthers);
     if(!showOthers)cheers.querySelectorAll('.cheer.other').forEach(e=>e.remove());};
+  // the host's reset: add #owner to the end of the link to see it (it still needs the host code)
+  const ownBtn=$('#gtOwner'),ownerModal=$('#ownerModal');
+  const ownerMode=()=>{let on=/owner/i.test(location.hash);try{if(on)sessionStorage.setItem('bloom-host','1');on=on||sessionStorage.getItem('bloom-host')==='1';}catch(e){}ownBtn.hidden=!(online&&on);};ownerMode();addEventListener('hashchange',ownerMode);
+  function clearShared(all){if(scene()&&scene().clearGifts)scene().clearGifts();cheers.querySelectorAll('.cheer').forEach(e=>e.remove());
+    if(all){shared.wishes=[];if(wishModal.classList.contains('open'))renderW();}}
+  ownBtn.onclick=()=>{openTray(false);$('#ownerLede').textContent='For '+C.invites[cur].title;$('#oWishes').checked=false;ownerModal.classList.add('open');setTimeout(()=>$('#oCode').focus(),60);};
+  $('#oClose').onclick=()=>ownerModal.classList.remove('open');
+  ownerModal.addEventListener('click',e=>{if(e.target===ownerModal)ownerModal.classList.remove('open');});
+  $('#ownerForm').addEventListener('submit',async e=>{e.preventDefault();const c=await client();if(!c){toast('Offline right now');return;}
+    const btn=$('#ownerForm button'),all=$('#oWishes').checked;btn.disabled=true;
+    const {data,error}=await c.rpc('bloom_reset',{p_invite:C.invites[cur].key,p_code:$('#oCode').value,p_wishes:all});btn.disabled=false;
+    if(error){console.warn(error);toast(/wrong host code/i.test(error.message)?'That code isn’t right':/bloom_reset|function|schema cache/i.test(error.message)?'Run the latest supabase-setup.sql first':'Couldn’t clear it, please try again');return;}
+    $('#oCode').value='';ownerModal.classList.remove('open');clearShared(all);toast(`Cleared ${data||0} ${all?'gifts, cheers and wishes':'gifts and cheers'}`);});
 
   tray.querySelectorAll('[data-gift]').forEach(b=>b.onclick=()=>{const k=b.dataset.gift;openTray(false);   // step aside so the gift can be seen landing
     throwGift(k);post({kind:'gift',item:k});});
@@ -983,7 +1013,7 @@ window.PrintArt = (function () {
     renderW();openTray(false);wishModal.classList.add('open');setTimeout(()=>$('#wName').focus(),60);}
   $('#gtWish').onclick=openWishes;$('#wClose').onclick=()=>wishModal.classList.remove('open');
   wishModal.addEventListener('click',e=>{if(e.target===wishModal)wishModal.classList.remove('open');});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){wishModal.classList.remove('open');openTray(false);}});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){wishModal.classList.remove('open');ownerModal.classList.remove('open');openTray(false);}});
   $('#wishForm').addEventListener('submit',async e=>{e.preventDefault();const n=$('#wName').value.trim().slice(0,40),m=$('#wMsg').value.trim().slice(0,240);if(!n||!m)return;
     if(online){const btn=e.submitter||$('#wishForm button');btn.disabled=true;const ok=await post({kind:'wish',name:n,message:m});btn.disabled=false;if(!ok)return;
       shared.wishes.unshift({name:n,message:m,client:me,created_at:new Date().toISOString()});}
@@ -2247,6 +2277,7 @@ function throwGift(kind, sx, sy, o = {}) {
   if (landed.length > 26) landed[0].state = 'gone';
   return true;
 }
+function clearGifts() { GIFTS.forEach(g => { if (g.m && g.state !== 'gone') { g.state = 'gone'; g.age2 = 0; } }); }
 function setOthersVisible(v) { GIFTS.forEach(g => { if (g.m && g.others) g.m.visible = v; }); }
 function updateGifts(dt) {
   for (let i = GIFTS.length - 1; i >= 0; i--) {
@@ -2271,7 +2302,7 @@ function updateGifts(dt) {
     if (g.state === 'gone') { g.age2 = (g.age2 || 0) + dt; m.scale.multiplyScalar(Math.max(0, 1 - dt * 3)); if (g.age2 > 1.2) { m.parent && m.parent.remove(m); GIFTS.splice(i, 1); } }
   }
 }
-window.BloomScene = { go, read, close: closeReader, turn, throwGift, setOthersVisible };
+window.BloomScene = { go, read, close: closeReader, turn, throwGift, setOthersVisible, clearGifts };
 
 /* ============ loop ============ */
 const clock = new THREE.Clock();
