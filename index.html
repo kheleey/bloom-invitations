@@ -116,6 +116,58 @@ body.reading .sheet,body.reading #dots,body.reading .top,body.reading #hint{opac
 .rbar .nav{font-size:17px;padding-bottom:0}
 @media (max-width:640px){.rtop{top:calc(env(safe-area-inset-top) + 16px);left:16px;right:20px}.rhint{top:calc(env(safe-area-inset-top) + 64px);font-size:14px}.rbar{bottom:calc(env(safe-area-inset-bottom) + 16px)}.rtitle{font-size:27px}}
 
+/* ---------- gifts, cheers and wishes: guests can throw something into the garden ---------- */
+#giftBtn{position:fixed;z-index:8;right:calc(env(safe-area-inset-right) + 22px);bottom:220px;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;color:var(--accent);
+  background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 26px rgba(80,40,60,.16);
+  transition:transform .25s,opacity .45s,bottom .45s cubic-bezier(.2,.8,.2,1)}
+#giftBtn svg{width:25px;height:25px}
+#giftBtn:active{transform:scale(.9)}
+#giftBtn::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--accent);opacity:0;animation:ping 4s ease-out 3s infinite;pointer-events:none}
+@keyframes ping{0%{opacity:.55;transform:scale(.85)}60%,100%{opacity:0;transform:scale(1.3)}}
+body.fading #giftBtn,body.fading #giftTray{opacity:0;pointer-events:none}
+#giftTray{position:fixed;z-index:9;right:calc(env(safe-area-inset-right) + 14px);bottom:280px;width:min(352px,calc(100vw - 28px));padding:13px 13px 12px;border-radius:22px;
+  background:rgba(255,255,255,.74);-webkit-backdrop-filter:blur(18px) saturate(1.35);backdrop-filter:blur(18px) saturate(1.35);border:1px solid rgba(255,255,255,.9);box-shadow:0 18px 44px rgba(80,40,60,.18);
+  opacity:0;transform:translateY(12px) scale(.97);transform-origin:bottom right;pointer-events:none;transition:opacity .3s,transform .4s cubic-bezier(.2,.8,.2,1)}
+#giftTray.open{opacity:1;transform:none;pointer-events:auto}
+.gt-h{display:flex;justify-content:space-between;align-items:center;font-family:var(--caps);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft);margin:2px 4px 10px}
+.gt-h button{font-size:20px;line-height:1;color:var(--soft);padding:0 4px}
+.gt-gifts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.gt-gifts button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 0 7px;border-radius:15px;background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.95);
+  font-family:var(--serif);font-size:13px;color:var(--ink);transition:transform .2s,background .3s}
+.gt-gifts button:hover{background:#fff}.gt-gifts button:active{transform:scale(.9)}
+.gt-gifts svg{width:32px;height:32px}
+.gt-words{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.gt-words button{font-family:var(--serif);font-style:italic;font-size:15.5px;padding:5px 12px 6px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.5);color:var(--ink);transition:transform .2s,background .3s}
+.gt-words button:hover{background:#fff}.gt-words button:active{transform:scale(.93)}
+.gt-wish{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:11px;font-family:var(--caps);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  padding:11px;border-radius:14px;background:var(--accent);color:#fff;font-weight:600}
+.gt-wish span{font-family:var(--serif);text-transform:none;letter-spacing:0;font-weight:500;font-size:13px;opacity:.85}
+
+.gt-live{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:11px 2px 0;padding-top:10px;border-top:1px solid rgba(0,0,0,.06)}
+.gt-live small{font-size:11px;font-style:italic;color:var(--soft);text-align:right}
+.sw{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--ink)}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw i{position:relative;flex:0 0 34px;height:20px;border-radius:99px;background:rgba(0,0,0,.14);transition:background .3s}
+.sw i:after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.sw input:checked+i{background:var(--accent)}.sw input:checked+i:after{transform:translateX(14px)}
+.sw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.cheer.other{opacity:.95}
+#cheers{position:fixed;inset:0;z-index:10;pointer-events:none;overflow:hidden}
+.cheer{position:absolute;left:0;top:0;max-width:min(78vw,360px);font-family:var(--script);font-size:31px;line-height:1.05;color:var(--accent);padding:6px 18px 9px;border-radius:22px;
+  background:rgba(255,255,255,.66);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(80,40,60,.13);will-change:transform,opacity}
+.cheer.wish{font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.3;color:var(--ink);padding:9px 15px 10px}
+.cheer.wish b{display:block;font-family:var(--caps);font-style:normal;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.flyicon{position:absolute;left:0;top:0;width:44px;height:44px}
+#wishModal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#wishModal.open{display:grid}
+.wlist{margin-top:18px}
+.wlist .wi{padding:13px 2px;border-top:1px solid #eadfcf}
+.wlist .wi b{font-family:var(--serif);font-weight:600;font-size:17px}
+.wlist .wi time{float:right;font-size:12px;opacity:.6;font-style:italic}
+.wlist .wi p{font-style:italic;font-size:16.5px;line-height:1.4;margin-top:2px}
+.wlist .empty{text-align:center;font-style:italic;opacity:.65;padding:14px 0 4px}
+@media (max-width:640px){#giftBtn{right:calc(env(safe-area-inset-right) + 18px);width:46px;height:46px}.cheer{font-size:27px}}
+
 /* RSVP */
 #modal{position:fixed;inset:0;z-index:35;display:none;place-items:center;padding:18px;background:rgba(40,25,35,.35);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 #modal.open{display:grid}
@@ -164,6 +216,9 @@ body.reading .sheet,body.reading #dots,body.reading .top,body.reading #hint{opac
     <button class="nav" id="rNext" aria-label="Next page">↓</button>
   </div>
 </div>
+<div id="cheers" aria-hidden="true"></div>
+<button id="giftBtn" aria-label="Send a gift or a cheer" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="1.5"/><rect x="3" y="7" width="18" height="3.6" rx="1"/><path d="M12 7v13"/><path d="M12 7c-2-3.6-6-3-5.2-.8S12 7 12 7zm0 0c2-3.6 6-3 5.2-.8S12 7 12 7z"/></svg></button>
+<div id="giftTray" role="dialog" aria-label="Send a gift or a cheer"><div class="gt-h"><span>Send a little something</span><button id="gtClose" aria-label="Close">×</button></div><div class="gt-gifts"><button data-gift="gift" aria-label="Throw a gift"><svg viewBox="0 0 32 32"><rect x="6" y="14" width="20" height="13" rx="2" fill="var(--accent)" opacity=".88"/><rect x="5" y="10" width="22" height="5" rx="1.6" fill="var(--accent)"/><rect x="14.6" y="10" width="2.8" height="17" fill="#fff" opacity=".9"/><path d="M16 10c-2.5-5-8-4.4-7-1.4S16 10 16 10zm0 0c2.5-5 8-4.4 7-1.4S16 10 16 10z" fill="none" stroke="#e7b75f" stroke-width="1.9" stroke-linejoin="round"/></svg><span>Gift</span></button><button data-gift="bouquet" aria-label="Throw a bouquet"><svg viewBox="0 0 32 32"><path d="M10 17l6 12 6-12z" fill="#eadcc4"/><path d="M13 22.5l3 1.6 3-1.6" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/><path d="M9 14c2-4 4-3 5 0M23 14c-2-4-4-3-5 0" fill="none" stroke="#6c9a52" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="10" r="4.2" fill="var(--accent)"/><circle cx="10.5" cy="12.5" r="3.4" fill="var(--accent)" opacity=".7"/><circle cx="21.5" cy="12.5" r="3.4" fill="#f2c14e"/><circle cx="16" cy="10" r="1.5" fill="#fff" opacity=".7"/></svg><span>Bouquet</span></button><button data-gift="balloons" aria-label="Throw a balloons"><svg viewBox="0 0 32 32"><path d="M11 17q2 6 5 12M21 16q-2 7-5 13M16 13v16" fill="none" stroke="#9a8a80" stroke-width="1" /><ellipse cx="11" cy="11" rx="5" ry="6" fill="var(--accent)" opacity=".85"/><ellipse cx="21" cy="10" rx="5" ry="6" fill="#7fb5e0"/><ellipse cx="16" cy="7.5" rx="4.6" ry="5.5" fill="#f2c14e"/><ellipse cx="14.6" cy="5.6" rx="1.2" ry="1.8" fill="#fff" opacity=".6"/></svg><span>Balloons</span></button><button data-gift="heart" aria-label="Throw a heart"><svg viewBox="0 0 32 32"><path d="M16 27C6 20 4 14 6.4 9.6 8.8 5.4 14 6 16 10c2-4 7.2-4.6 9.6-.4C28 14 26 20 16 27z" fill="#e8506e"/><path d="M10 10.5c1-1.6 2.6-2 3.6-1.6" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>Heart</span></button><button data-gift="cake" aria-label="Throw a cake"><svg viewBox="0 0 32 32"><rect x="15" y="4" width="2" height="6" rx="1" fill="#f2c14e"/><ellipse cx="16" cy="3.6" rx="1.5" ry="2" fill="#ff9e3d"/><rect x="9" y="10" width="14" height="7" rx="2" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M9 12.5q2 2 3.5 0t3.5 0 3.5 0 3.5 0" fill="none" stroke="var(--accent)" stroke-width="1.6"/><rect x="5" y="17" width="22" height="10" rx="2.5" fill="#fbf1e4" stroke="#e9d6c0"/><path d="M5 20q2.7 2.6 5.5 0t5.5 0 5.5 0 5.5 0" fill="none" stroke="var(--accent)" stroke-width="1.8"/></svg><span>Cake</span></button></div><div class="gt-words"><button data-word="Congratulations!">Congratulations!</button><button data-word="Can’t wait!">Can’t wait!</button><button data-word="So happy for you">So happy for you</button><button data-word="Cheers!">Cheers!</button><button data-word="See you there">See you there</button><button data-word="With love">With love</button></div><button class="gt-wish" id="gtWish">✎ Leave a wish</button><div class="gt-live"><label class="sw"><input type="checkbox" id="gtOthers" checked><i></i><span>Show guests’ gifts &amp; wishes</span></label><small id="gtMode"></small></div></div>
 <div id="busy">Growing…</div>
 
 <section class="sheet" id="sheet" aria-live="polite">
@@ -199,6 +254,22 @@ body.reading .sheet,body.reading #dots,body.reading .top,body.reading #hint{opac
 <div id="toast">Copied</div>
 <div id="loader"><div><div class="sprout"></div><div class="script">Planting the gardens</div><p id="loadMsg">Opening the gates…</p></div></div>
 
+<div id="wishModal" role="dialog" aria-modal="true" aria-labelledby="wishH">
+  <div class="paper">
+    <button class="close" id="wClose" aria-label="Close">×</button>
+    <h3 id="wishH">Wishes</h3>
+    <div class="lede" id="wishLede">A few words for the hosts</div>
+    <form id="wishForm">
+      <label for="wName">Your name</label>
+      <input id="wName" required maxlength="40" autocomplete="name" placeholder="Your name">
+      <label for="wMsg">Your wish</label>
+      <textarea id="wMsg" required maxlength="240" placeholder="Congratulations! Wishing you a beautiful evening…"></textarea>
+      <div class="row"><button class="btn primary" type="submit">Send wish</button></div>
+    </form>
+    <div class="wlist" id="wList"></div>
+    <p class="note" id="wishNote">Wishes are kept on this device.</p>
+  </div>
+</div>
 <div id="modal" role="dialog" aria-modal="true" aria-labelledby="rsvpH">
   <div class="paper">
     <button class="close" id="mClose" aria-label="Close">×</button>
@@ -237,6 +308,9 @@ window.BLOOM = {
   tagline:  'Five evenings in the garden · 2027',
   host:     'Your Studio',
   rsvpEmail:'hello@yourstudio.com',
+  // Guests' gifts, cheers and wishes, shared with every guest through a free Supabase project (see the README).
+  // Leave both blank and they're kept on each guest's own device instead. Both values are safe to publish.
+  social:   { supabaseUrl: '', supabaseKey: '', showOthers: true },
   timezone: 'Asia/Shanghai',
   venue:    'The Glasshouse Garden',
   address:  '88 Garden Lane, Shanghai',
@@ -766,11 +840,12 @@ window.PrintArt = (function () {
     $('#eMeta').textContent=`${F.short(v.date)} · ${F.range(v.start,v.end)}`;
     $('#btnCal').href=$('#iCal').href=gcal(v);$('#iMap').href=mapUrl(v);
     [...dots.children].forEach((b,k)=>b.classList.toggle('on',k===i));
+    if(!window.BloomScene&&ready)joinInvite(i);
   }
   function go(i){i=((i%N)+N)%N;if(window.BloomScene)window.BloomScene.go(i);else render(i);}
   $('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
   addEventListener('keydown',e=>{
-    if($('#modal').classList.contains('open')||document.body.classList.contains('reading'))return;
+    if($('#modal').classList.contains('open')||$('#wishModal').classList.contains('open')||document.body.classList.contains('reading'))return;
     if(e.key==='Escape'){closeInv();return;}
     if($('#inv').classList.contains('open')){if(e.key===' '||e.key==='Enter'){e.preventDefault();flipInv();}return;}
     if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft')go(cur-1);
@@ -815,6 +890,7 @@ window.PrintArt = (function () {
   }
   function reader(on,n){
     document.body.classList.toggle('reading',!!on);
+    requestAnimationFrame(()=>window.__placeGift&&window.__placeGift());
     if(on){readerPage(n||0);const h=$('#rHint');h.classList.add('show');clearTimeout(reader._t);reader._t=setTimeout(()=>h.classList.remove('show'),5000);}
     else $('#rHint').classList.remove('show');
   }
@@ -830,6 +906,89 @@ window.PrintArt = (function () {
   inv.addEventListener('pointermove',e=>{tiltTo(e.clientX/innerWidth*2-1,e.clientY/innerHeight*2-1);});
   inv.addEventListener('pointerleave',()=>tiltTo(0,0));
 
+
+  /* ---------- gifts, cheers and wishes ---------- */
+  const giftBtn=$('#giftBtn'),tray=$('#giftTray'),cheers=$('#cheers'),wishModal=$('#wishModal');
+  function placeGift(){const reading=document.body.classList.contains('reading'),ref=reading?$('#rbar'):$('#sheet'),r=ref.getBoundingClientRect(),b=innerHeight-r.top+14;
+    giftBtn.style.bottom=b+'px';tray.style.bottom=(b+60)+'px';}
+  window.__placeGift=placeGift;addEventListener('resize',placeGift);new ResizeObserver(placeGift).observe($('#sheet'));setTimeout(placeGift,50);
+  const openTray=o=>{tray.classList.toggle('open',o);giftBtn.setAttribute('aria-expanded',o);};
+  giftBtn.onclick=e=>{e.stopPropagation();openTray(!tray.classList.contains('open'));};
+  $('#gtClose').onclick=()=>openTray(false);
+  document.addEventListener('pointerdown',e=>{if(!tray.contains(e.target)&&!giftBtn.contains(e.target))openTray(false);});
+  const origin=()=>{const r=giftBtn.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];};
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const trunc=m=>m.length>90?m.slice(0,88)+'…':m;
+  // a phrase (or a wish) floats up and fades; other guests' rise from somewhere along the bottom
+  function cheer(html,cls,other){
+    const el=document.createElement('div');el.className='cheer'+(cls?' '+cls:'')+(other?' other':'');el.innerHTML=html;cheers.appendChild(el);
+    const [bx,by]=other?[innerWidth*(.25+Math.random()*.55),innerHeight*(.62+Math.random()*.1)]:origin();
+    const w=el.offsetWidth,h=el.offsetHeight,x0=Math.max(10,Math.min(bx-w*.8,innerWidth-w-12)),y0=by-h,dx=-(40+Math.random()*Math.min(160,innerWidth*.3))*(other&&Math.random()<.5?-1:1),dy=-(innerHeight*.32+Math.random()*innerHeight*.12),s=(Math.random()-.5)*30;
+    el.animate([{transform:`translate(${x0+30}px,${y0+10}px) scale(.5)`,opacity:0},{transform:`translate(${x0+dx*.25+s}px,${y0+dy*.18}px) scale(1.04)`,opacity:1,offset:.14},
+      {transform:`translate(${x0+dx*.6-s}px,${y0+dy*.6}px) scale(1)`,opacity:1,offset:.7},{transform:`translate(${x0+dx}px,${y0+dy}px) scale(.96)`,opacity:0}],
+      {duration:cls?5200:3800,easing:'cubic-bezier(.25,.6,.3,1)'}).onfinish=()=>el.remove();
+  }
+  const ICONS={};tray.querySelectorAll('[data-gift]').forEach(b=>ICONS[b.dataset.gift]=b.querySelector('svg').outerHTML);
+  function flyIcon(kind,from){ // when 3D isn't available the gift still flies, in 2D
+    const [x,y]=from||origin(),el=document.createElement('div');el.className='flyicon';el.innerHTML=ICONS[kind]||'';cheers.appendChild(el);
+    const tx=innerWidth*(.3+Math.random()*.4),ty=innerHeight*(.3+Math.random()*.25);
+    el.animate([{transform:`translate(${x-22}px,${y-22}px) scale(.4) rotate(0)`,opacity:0},{transform:`translate(${(x+tx)/2}px,${Math.min(y,ty)-160}px) scale(1.2) rotate(200deg)`,opacity:1,offset:.5},
+      {transform:`translate(${tx}px,${ty}px) scale(1) rotate(360deg)`,opacity:1,offset:.8},{transform:`translate(${tx}px,${ty+10}px) scale(.8)`,opacity:0}],{duration:1900,easing:'ease-out'}).onfinish=()=>el.remove();
+  }
+  const scene=()=>window.BloomScene;
+  function throwGift(kind,opts){const o=opts||{},[x,y]=o.other?[innerWidth*(.15+Math.random()*.7),innerHeight+10]:origin();
+    if(scene()&&scene().throwGift&&scene().throwGift(kind,x,y,o))return;if(!o.instant&&(!o.other||showOthers))flyIcon(kind,[x,y]);}
+
+  /* ---------- shared with every guest through Supabase, or kept on this device ---------- */
+  const S=C.social||{},online=!!(S.supabaseUrl&&S.supabaseKey);
+  const store=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}};
+  const me=store('bloom-client')||(()=>{const id=Math.random().toString(36).slice(2,12)+Date.now().toString(36);store('bloom-client',id);return id;})();
+  let showOthers=(v=>v===null?S.showOthers!==false:v==='1')(store('bloom-show-others'));
+  let sb=null,sbLoad=null,chan=null,liveKey=null,lastPost=0;const shared={wishes:[]};
+  function client(){if(!online)return Promise.resolve(null);
+    return sbLoad||(sbLoad=import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm').then(m=>(sb=m.createClient(S.supabaseUrl,S.supabaseKey,{auth:{persistSession:false}})))
+      .catch(e=>{console.warn('Guestbook is offline:',e);$('#gtMode').textContent='Offline right now';return null;}));}
+  async function post(row){const c=await client();if(!c)return false;const now=Date.now();if(now-lastPost<900&&row.kind!=='wish')return false;lastPost=now;
+    const {error}=await c.from('bloom_events').insert(Object.assign({invite:C.invites[cur].key,client:me},row));
+    if(error){toast(/Too many/i.test(error.message)?'Slow down a little, please':'Couldn’t send that, please try again');return false;}return true;}
+  async function joinInvite(i){                       // what guests already left, then anything new as it arrives
+    const c=await client();if(!c)return;const key=C.invites[i].key;if(liveKey===key)return;liveKey=key;
+    if(chan){c.removeChannel(chan);chan=null;}
+    const {data,error}=await c.from('bloom_events').select('id,kind,item,name,message,client,created_at').eq('invite',key).order('id',{ascending:false}).limit(200);
+    if(liveKey!==key)return;if(error){console.warn(error);return;}
+    shared.wishes=(data||[]).filter(r=>r.kind==='wish');if(wishModal.classList.contains('open'))renderW();
+    (data||[]).filter(r=>r.kind==='gift').slice(0,24).reverse().forEach(r=>throwGift(r.item,{instant:true,seed:r.id,other:r.client!==me,visible:r.client===me||showOthers}));
+    chan=c.channel('bloom-'+key).on('postgres_changes',{event:'INSERT',schema:'public',table:'bloom_events',filter:'invite=eq.'+key},p=>incoming(p.new)).subscribe();
+  }
+  function incoming(r){
+    if(!r||r.client===me)return;
+    if(r.kind==='wish'){shared.wishes.unshift(r);if(wishModal.classList.contains('open'))renderW();}
+    if(r.kind==='gift')throwGift(r.item,{other:true,seed:r.id,visible:showOthers});
+    if(!showOthers)return;
+    if(r.kind==='cheer')cheer(esc(r.item),'',true);else if(r.kind==='wish')cheer(`<b>${esc(r.name)}</b>${esc(trunc(r.message))}`,'wish',true);
+  }
+  const sw=$('#gtOthers');sw.checked=showOthers;$('#gtMode').textContent=online?'Shared with all guests':'Kept on this device';
+  sw.onchange=()=>{showOthers=sw.checked;store('bloom-show-others',showOthers?'1':'0');if(scene()&&scene().setOthersVisible)scene().setOthersVisible(showOthers);
+    if(!showOthers)cheers.querySelectorAll('.cheer.other').forEach(e=>e.remove());};
+
+  tray.querySelectorAll('[data-gift]').forEach(b=>b.onclick=()=>{const k=b.dataset.gift;openTray(false);   // step aside so the gift can be seen landing
+    throwGift(k);post({kind:'gift',item:k});});
+  tray.querySelectorAll('[data-word]').forEach(b=>b.onclick=()=>{cheer(esc(b.dataset.word));post({kind:'cheer',item:b.dataset.word});});
+  // wishes: the guestbook
+  const wKey=()=>'bloom-wishes-'+C.invites[cur].key;
+  const loadW=()=>online?shared.wishes.map(r=>({n:r.name,m:r.message,t:Date.parse(r.created_at)||Date.now()})):(()=>{try{return JSON.parse(store(wKey())||'[]');}catch(e){return [];}})();
+  const saveW=a=>store(wKey(),JSON.stringify(a.slice(0,200)));
+  function renderW(){const a=loadW();$('#wList').innerHTML=a.length?a.map(w=>`<div class="wi"><time>${esc(new Date(w.t).toLocaleDateString(undefined,{day:'numeric',month:'short'}))}</time><b>${esc(w.n)}</b><p>${esc(w.m)}</p></div>`).join(''):'<div class="empty">Be the first to leave a wish.</div>';}
+  function openWishes(){const v=C.invites[cur];$('#wishLede').textContent=`A few words for ${v.title}`;$('#wishNote').textContent=online?'Wishes are shared with everyone who has this invitation.':'Wishes are kept on this device.';
+    renderW();openTray(false);wishModal.classList.add('open');setTimeout(()=>$('#wName').focus(),60);}
+  $('#gtWish').onclick=openWishes;$('#wClose').onclick=()=>wishModal.classList.remove('open');
+  wishModal.addEventListener('click',e=>{if(e.target===wishModal)wishModal.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){wishModal.classList.remove('open');openTray(false);}});
+  $('#wishForm').addEventListener('submit',async e=>{e.preventDefault();const n=$('#wName').value.trim().slice(0,40),m=$('#wMsg').value.trim().slice(0,240);if(!n||!m)return;
+    if(online){const btn=e.submitter||$('#wishForm button');btn.disabled=true;const ok=await post({kind:'wish',name:n,message:m});btn.disabled=false;if(!ok)return;
+      shared.wishes.unshift({name:n,message:m,client:me,created_at:new Date().toISOString()});}
+    else{const a=loadW();a.unshift({n,m,t:Date.now()});saveW(a);}
+    renderW();$('#wMsg').value='';wishModal.classList.remove('open');setTimeout(()=>cheer(`<b>${esc(n)}</b>${esc(trunc(m))}`,'wish'),250);});
   /* ---------- RSVP ---------- */
   const modal=$('#modal');
   function openRsvp(){const v=C.invites[cur];$('#rsvpLede').textContent=`${v.title} · ${F.long(v.date)}`;
@@ -868,9 +1027,11 @@ window.PrintArt = (function () {
       const h=$('#hint');setTimeout(()=>h.classList.add('show'),1500);setTimeout(()=>h.classList.remove('show'),8000);
     },
     hideHint(){$('#hint').classList.remove('show');},
+    sceneReady(i){liveKey=null;joinInvite(i);},
     fallback:no3d
   };
   render(cur);
+  setTimeout(()=>{if(!window.BloomScene)joinInvite(cur);},4000);
 })();
 </script>
 
@@ -1505,7 +1666,9 @@ function buildCard(index) {
     group.traverse(o => { if (o.isInstancedMesh) o.dispose(); if ((o.isMesh || o.isPoints) && !shared.has(o.geometry)) o.geometry.dispose(); });
     own.forEach(o => o.dispose && !o.isMesh && !o.isPoints && o.dispose());
   }
-  return { group, update, dispose, index };
+  // somewhere dry in the garden where a thrown gift can land
+  function giftSpot(rand = Math.random) { for (let k = 0; k < 80; k++) { const x = X0 + .1 + rand() * (X1 - X0 - .2), z = Z0 + .15 + rand() * (GB - Z0 - .2); if (mask(x, z) > .7 && !wet(x, z)) return [x, H(x, z), z]; } return [0, H(0, -1.6), -1.6]; }
+  return { group, update, dispose, index, giftSpot };
 }
 
 /* ============ camera: drag to turn the card; scroll or swipe up to open it ============ */
@@ -1543,6 +1706,7 @@ async function show(i) {
   c.age = 0; c.group.position.y = -1.2; scene.add(c.group); active = c;
   setBokeh(INV[i].petals, (UI.LOOK[INV[i].key] || {}).accent || '#ffffff');
   renderer.compile(scene, camera); GROW.value = 0;
+  UI.sceneReady && UI.sceneReady(i);
 }
 function go(i) {
   i = ((i % NS) + NS) % NS; if (building || (active && active.index === i)) return;
@@ -1940,7 +2104,7 @@ function readerFrame(dt) {
 }
 const NAV = new Set(['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'ArrowLeft', 'ArrowUp', 'PageUp', 'Home', 'End', 'Escape', '+', '=', '-', '0']);
 addEventListener('keydown', e => {
-  if (document.getElementById('modal').classList.contains('open') || fading) return;
+  if (document.getElementById('modal').classList.contains('open') || document.getElementById('wishModal').classList.contains('open') || fading) return;
   if (reading) {
     if (!NAV.has(e.key)) return; e.preventDefault();
     if (e.key === 'Escape') { if (rZoomT > 1.01) zoomAt(1, innerWidth / 2, innerHeight / 2); else closeReader(); }
@@ -2004,12 +2168,116 @@ canvas.addEventListener('pointerup', e => {
 canvas.addEventListener('pointercancel', e => { if (reading) endPtr(e); flick = null; });
 canvas.addEventListener('pointerleave', () => rParT.set(0, 0));
 
-window.BloomScene = { go, read, close: closeReader, turn };
+
+/* ============ gifts guests can throw into the garden or onto the pages ============ */
+const giftMat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .42, clearcoat: .45, clearcoatRoughness: .3, sheen: .25 });
+const GIFT_CACHE = {}, GIFT_BOX_COLS = [['#e86a8a', '#fff6ea'], ['#f2c14e', '#ffffff'], ['#7fb5e0', '#fff6ea'], ['#b49ceb', '#fff6ea'], ['#f08a6c', '#fff3c4'], ['#2f3b52', '#e7c36f']];
+function giftGeo(kind, inv) {
+  const id = kind === 'box' ? kind : kind === 'bouquet' ? 'bouquet-' + inv.key : kind;
+  if (kind === 'box') return null;
+  if (GIFT_CACHE[id]) return GIFT_CACHE[id];
+  let g;
+  if (kind === 'bouquet') {
+    const P = inv.petals, parts = [xf(colorize(new THREE.ConeGeometry(.36, 1, 18, 1, true), '#efe3cf'), { rx: Math.PI, y: .5 })];
+    parts.push(xf(colorize(new THREE.TorusGeometry(.2, .035, 8, 24), P.edge), { rx: Math.PI / 2, y: .42 }));
+    for (let k = 0; k < 6; k++) parts.push(xf(leaf(.45, .1), { rx: .7, ry: k * TAU / 6, y: .9 }));
+    const head = inv.key === 'rose' ? [roseHead(P, 520, 1), .42] : inv.key === 'tulip' ? [tulipHead(P, rng(90), .8), .55] : inv.key === 'sunflower' ? [sunflowerHead(P, 950, 1, 80), .32] : inv.key === 'lavender' ? [buildLavender(P, 801), .55] : [blossomGeo(P, rng(60), 1), 1.5];
+    const spots = [[0, 1.12, 0], [.2, 1.02, .08], [-.18, 1.03, .1], [.05, 1.0, -.2], [-.12, .98, -.16], [.16, .97, -.12], [0, 1.0, .22]];
+    spots.forEach(([x, y, z], k) => parts.push(xf(head[0].clone(), { s: head[1] * (k ? .85 : 1), x, y, z, rx: x * 1.4, rz: -z * 1.4, ry: k })));
+    head[0].dispose(); g = mergeAll(parts);
+  } else if (kind === 'balloons') {
+    const cols = ['#e86a8a', '#7fb5e0', '#f2c14e'], parts = [];
+    [[-.3, 2.1, 0], [.32, 2.25, .1], [0, 2.55, -.15]].forEach(([x, y, z], k) => {
+      parts.push(xf(sphere(.34, 20, 16, cols[k]), { x, y, z, sy: 1.18 }), xf(colorize(new THREE.ConeGeometry(.06, .1, 8), cols[k]), { x, y: y - .42, z, rx: Math.PI }));
+      const L = Math.hypot(x, y - .45, z), c = new THREE.CylinderGeometry(.008, .008, L, 4); c.translate(0, L / 2, 0); parts.push(xf(colorize(c, '#c9bfb5'), { rz: -Math.atan2(x, y - .45), rx: Math.atan2(z, y - .45) }));
+    });
+    g = mergeAll(parts);
+  } else if (kind === 'heart') {
+    const sh = new THREE.Shape(); sh.moveTo(0, -.5); sh.bezierCurveTo(-.15, -.35, -.55, -.12, -.55, .18); sh.bezierCurveTo(-.55, .45, -.25, .55, 0, .32); sh.bezierCurveTo(.25, .55, .55, .45, .55, .18); sh.bezierCurveTo(.55, -.12, .15, -.35, 0, -.5);
+    const e = new THREE.ExtrudeGeometry(sh, { depth: .16, bevelEnabled: true, bevelThickness: .07, bevelSize: .06, bevelSegments: 4, curveSegments: 24 }); e.translate(0, .5, -.08); e.deleteAttribute('uv');
+    g = colorize(e, '#e8506e');   // extruded shapes have no index, so this one isn't merged
+  } else if (kind === 'cake') {
+    const P = inv.petals, rim = (r, y, c) => xf(colorize(new THREE.TorusGeometry(r, .045, 8, 32), c), { rx: Math.PI / 2, y });
+    const parts = [xf(colorize(new THREE.CylinderGeometry(.5, .5, .4, 32), '#fbf1e4'), { y: .2 }), rim(.5, .4, P.tip), xf(colorize(new THREE.CylinderGeometry(.33, .33, .32, 28), '#fbf1e4'), { y: .56 }), rim(.33, .72, P.tip),
+      xf(colorize(new THREE.CylinderGeometry(.025, .025, .22, 8), '#ffd36b'), { y: .83 }), xf(sphere(.045, 8, 6, '#ffb347'), { y: .97, sy: 1.5 })];
+    for (let k = 0; k < 8; k++) { const a = k / 8 * TAU; parts.push(xf(sphere(.05, 8, 6, '#c8264a'), { x: Math.cos(a) * .4, z: Math.sin(a) * .4, y: .44 })); }
+    g = mergeAll(parts);
+  }
+  SHARED_EXTRA.add(g); return (GIFT_CACHE[id] = g);
+}
+function giftBox(i) {
+  const id = 'box-' + i; if (GIFT_CACHE[id]) return GIFT_CACHE[id];
+  const [c, rb] = GIFT_BOX_COLS[i], box = (w, h, d, y, col) => xf(colorize(new THREE.BoxGeometry(w, h, d), col), { y }), bow = [];
+  for (const s of [-1, 1]) bow.push(xf(colorize(new THREE.TorusGeometry(.17, .05, 8, 20), rb), { x: s * .15, y: 1.07, ry: s * .5, rz: s * .55 }));
+  const g = mergeAll([box(1, .8, 1, .4, c), box(1.08, .2, 1.08, .86, c), box(1.1, .82, .16, .41, rb), box(.16, .82, 1.1, .41, rb), box(1.12, .22, .17, .86, rb), box(.17, .22, 1.12, .86, rb), ...bow, xf(sphere(.08, 10, 8, rb), { y: .98 })]);
+  SHARED_EXTRA.add(g); return (GIFT_CACHE[id] = g);
+}
+const GIFTS = [], _ray = new THREE.Raycaster(), _nd = new THREE.Vector2();
+function sparkle(grp, at, scale) {
+  const n = 28, P = new Float32Array(n * 3), V = []; for (let i = 0; i < n; i++) { P[i * 3] = at.x; P[i * 3 + 1] = at.y + .02; P[i * 3 + 2] = at.z; const a = Math.random() * TAU, u = Math.random(); V.push([Math.cos(a) * (.4 + u), 1.2 + Math.random() * 1.4, Math.sin(a) * (.4 + u)]); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(P, 3));
+  const m = new THREE.PointsMaterial({ color: '#fff1b8', size: .035 * scale / .12, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }), pts = new THREE.Points(g, m); pts.frustumCulled = false; grp.add(pts);
+  GIFTS.push({ fx: true, pts, V, age: 0, scale });
+}
+// throw a gift from a point on the screen; returns false if there is nowhere to throw it.
+// o.instant: already there (left earlier); o.seed: same spot for everyone; o.other: another guest's; o.visible: shown or hidden
+function throwGift(kind, sx, sy, o = {}) {
+  const inReader = reading && book, cam = inReader ? rCam : camera, grp = inReader && !o.instant ? book.group : active && active.group;
+  if (!grp || building || (fading && !o.instant)) return false;
+  const rand = o.seed != null ? rng(7919 * (o.seed | 0) + 13) : Math.random, useReader = grp !== (active && active.group);
+  const inv = INV[useReader ? book.index : active.index], sc = useReader ? .17 : .12;
+  const to = useReader ? new V3((rand() < .5 ? -1 : 1) * (1.02 + rand() * .3), 0, rScroll + (rand() - .5) * 2.6) : new V3(...active.giftSpot(rand));
+  const geo = kind === 'gift' ? giftBox(Math.floor(rand() * GIFT_BOX_COLS.length)) : ['bouquet', 'balloons', 'heart', 'cake'].includes(kind) ? giftGeo(kind, inv) : null;
+  if (!geo) return false;
+  const m = new THREE.Mesh(geo, giftMat); m.castShadow = true; m.receiveShadow = true; m.visible = o.visible !== false;
+  const g = { m, grp, to, kind, sc, ry: rand() * TAU, others: !!o.other, age: 0 };
+  if (o.instant) {                                     // left by someone earlier: it's simply there
+    if (kind === 'balloons') return true;              // balloons have long since floated away
+    m.position.copy(to); m.rotation.set(kind === 'heart' ? -.25 : 0, g.ry, 0); m.scale.setScalar(sc); grp.add(m);
+    Object.assign(g, { state: 'land', age: 1 }); GIFTS.push(g);
+  } else {
+    grp.updateWorldMatrix(true, false); const tw = grp.localToWorld(to.clone());
+    _nd.set(sx / innerWidth * 2 - 1, -(sy / innerHeight) * 2 + 1); _ray.setFromCamera(_nd, cam);
+    const from = grp.worldToLocal(_ray.ray.at(cam.position.distanceTo(tw) * .3, new V3()));
+    m.position.copy(from); m.scale.setScalar(sc * .3); grp.add(m);
+    Object.assign(g, { from, t: 0, dur: .95 + Math.random() * .25, arc: (useReader ? .9 : .7) + Math.random() * .4, spin: (Math.random() < .5 ? -1 : 1) * (5 + Math.random() * 4), state: 'fly' });
+    GIFTS.push(g);
+  }
+  const landed = GIFTS.filter(x => x.m && x.grp === grp && x.state !== 'gone');
+  if (landed.length > 26) landed[0].state = 'gone';
+  return true;
+}
+function setOthersVisible(v) { GIFTS.forEach(g => { if (g.m && g.others) g.m.visible = v; }); }
+function updateGifts(dt) {
+  for (let i = GIFTS.length - 1; i >= 0; i--) {
+    const g = GIFTS[i];
+    if (g.fx) { g.age += dt; const p = g.pts.geometry.attributes.position; for (let k = 0; k < g.V.length; k++) { const v = g.V[k]; v[1] -= 3 * dt; p.setXYZ(k, p.getX(k) + v[0] * dt * g.scale * 1.6, p.getY(k) + v[1] * dt * g.scale * 1.6, p.getZ(k) + v[2] * dt * g.scale * 1.6); }
+      p.needsUpdate = true; g.pts.material.opacity = Math.max(0, 1 - g.age / .9); if (g.age > .9) { g.pts.parent && g.pts.parent.remove(g.pts); g.pts.geometry.dispose(); g.pts.material.dispose(); GIFTS.splice(i, 1); } continue; }
+    if (!g.grp.parent) { GIFTS.splice(i, 1); continue; }               // its garden or book has gone
+    const m = g.m;
+    if (g.state === 'fly') {
+      g.t = Math.min(1, g.t + dt / g.dur); const e = g.t, h = Math.sin(Math.PI * e) * g.arc;
+      m.position.lerpVectors(g.from, g.to, e); m.position.y += h; m.rotation.set(Math.sin(e * 9) * .3 * (1 - e), g.ry + g.spin * e * (1 - e) * 2, 0);
+      m.scale.setScalar(g.sc * (.3 + .7 * Math.min(1, e * 1.6)));
+      if (g.t >= 1) { g.state = g.kind === 'balloons' ? 'float' : 'land'; g.age = 0; if (g.kind !== 'balloons' && m.visible) sparkle(g.grp, g.to, g.sc); m.rotation.set(g.kind === 'heart' ? -.25 : 0, g.ry, g.kind === 'heart' ? (Math.random() - .5) * .3 : 0); }
+    } else if (g.state === 'land') {
+      g.age += dt; const k = Math.min(1, g.age / .45), sq = Math.sin(k * Math.PI) * (1 - k * .5);
+      m.scale.set(g.sc * (1 + sq * .14), g.sc * (1 - sq * .22), g.sc * (1 + sq * .14));
+      if (g.kind === 'heart') m.rotation.y = g.ry + Math.sin(time * 1.2 + g.ry) * .15;
+    } else if (g.state === 'float') {
+      g.age += dt; m.position.y += dt * g.sc * 1.1; m.position.x += Math.sin(g.age * 1.3 + g.ry) * dt * g.sc * .6; m.rotation.z = Math.sin(g.age * 1.1) * .12;
+      if (g.age > 6) g.state = 'gone';
+    }
+    if (g.state === 'gone') { g.age2 = (g.age2 || 0) + dt; m.scale.multiplyScalar(Math.max(0, 1 - dt * 3)); if (g.age2 > 1.2) { m.parent && m.parent.remove(m); GIFTS.splice(i, 1); } }
+  }
+}
+window.BloomScene = { go, read, close: closeReader, turn, throwGift, setOthersVisible };
 
 /* ============ loop ============ */
 const clock = new THREE.Clock();
 function frame() {
   const dt = Math.min(clock.getDelta(), .05); time += dt; WIND.uTime.value = time;
+  try { updateGifts(dt); } catch (e) { console.error('Gift animation:', e); GIFTS.length = 0; }
   if (active) {
     active.age += dt; const a = easeOut(Math.min(1, active.age / 1.4));
     active.group.position.y = (1 - a) * -1.2 + Math.sin(time * .5) * .035; active.group.rotation.z = Math.sin(time * .37) * .008; active.group.rotation.x = Math.sin(time * .29) * .006;
