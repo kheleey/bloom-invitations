@@ -9,7 +9,7 @@ create table if not exists public.bloom_events (
   kind        text not null,                                             -- gift, cheer, wish, or reset (host only)
   item        text check (char_length(item) <= 40),                      -- the gift or the cheer
   name        text check (char_length(name) <= 40),                      -- wishes only
-  message     text check (char_length(message) <= 240),                 -- wishes only
+  message     text,                                                      -- wishes only (length checked below)
   client      text not null check (char_length(client) <= 40)            -- a random id per browser, used to slow down spam
 );
 create index if not exists bloom_events_invite_idx on public.bloom_events (invite, id desc);
@@ -22,7 +22,10 @@ drop policy if exists "guests can add" on public.bloom_events;
 create policy "guests can add" on public.bloom_events for insert to anon, authenticated with check (
      (kind = 'gift'  and item in ('gift', 'bouquet', 'balloons', 'heart', 'cake') and name is null and message is null)
   or (kind = 'cheer' and item in ('Congratulations!', 'Can’t wait!', 'So happy for you', 'Cheers!', 'See you there', 'With love') and name is null and message is null)
-  or (kind = 'wish'  and char_length(trim(coalesce(name, ''))) > 0 and char_length(trim(coalesce(message, ''))) > 0)
+  or (kind = 'wish'  and char_length(trim(coalesce(name, ''))) > 0 and char_length(trim(coalesce(message, ''))) > 0
+      -- wishes are public: no links, emails or phone numbers (11 or more digits, so dates and times are fine)
+      and (name || ' | ' || message) !~* '(https?://|www\.|t\.me/|[a-z0-9-]+\.(com|net|org|cn|io|me|co|xyz|top|info|link|ly|app|site|shop|vip|cc)\y|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})'
+      and (name || ' | ' || message) !~ '[0-9]([[:space:]()-]*[0-9]){10,}')
 );
 
 -- 3. Slow down anyone sending too much at once
@@ -50,6 +53,10 @@ create trigger bloom_rate_limit before insert on public.bloom_events for each ro
 -- 3b. Which kinds are allowed (kept separate so older setups get updated when this runs again)
 alter table public.bloom_events drop constraint if exists bloom_events_kind_check;
 alter table public.bloom_events add constraint bloom_events_kind_check check (kind in ('gift', 'cheer', 'wish', 'reset'));
+
+-- 3c. Wishes can be up to 1000 characters
+alter table public.bloom_events drop constraint if exists bloom_events_message_check;
+alter table public.bloom_events add constraint bloom_events_message_check check (char_length(message) <= 1000);
 
 -- 4. Send new rows to everyone who has the invitation open
 do $$ begin
