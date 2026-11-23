@@ -1728,12 +1728,22 @@ controls.addEventListener('end', () => { idleAt = time; });
 let active = null, current = UI.initial, building = false;
 const leaving = [];
 const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, easeOut = t => 1 - Math.pow(1 - t, 3);
+/* The page's own background, painted inside the 3D so the canvas has no see-through pixels.
+   Phones (iPhone especially) turn the faint, almost-transparent edges of glows into coloured specks otherwise. */
+const bgCan = document.createElement('canvas'); bgCan.width = bgCan.height = 256;
+const bgTex = new THREE.CanvasTexture(bgCan); bgTex.colorSpace = THREE.SRGBColorSpace;
+function paintBackdrop(i) {                       // same as the CSS: radial-gradient(120% 90% at 50% 40%, bg1, bg2)
+  const L = UI.LOOK[INV[i].key] || {}, x = bgCan.getContext('2d');
+  x.setTransform(1.2 * 256, 0, 0, .9 * 256, .5 * 256, .4 * 256);
+  const g = x.createRadialGradient(0, 0, 0, 0, 0, 1); g.addColorStop(0, L.bg1 || '#f7e3ea'); g.addColorStop(1, L.bg2 || '#ecccd8');
+  x.fillStyle = g; x.fillRect(-1, -1, 2, 2); bgTex.needsUpdate = true; scene.background = bgTex;
+}
 async function show(i) {
   if (building) return; building = true; UI.busy(true);
   await new Promise(r => requestAnimationFrame(() => setTimeout(r, 0)));
   const c = buildCard(i); UI.busy(false); building = false;
   if (active) { active.out = 0; leaving.push(active); }
-  c.age = 0; c.group.position.y = -1.2; scene.add(c.group); active = c;
+  c.age = 0; c.group.position.y = -1.2; scene.add(c.group); active = c; paintBackdrop(i);
   setBokeh(INV[i].petals, (UI.LOOK[INV[i].key] || {}).accent || '#ffffff');
   renderer.compile(scene, camera); GROW.value = 0;
   UI.sceneReady && UI.sceneReady(i);
@@ -1750,7 +1760,7 @@ function go(i) {
    each with flowers growing in its frame
    ================================================================ */
 const PW = 3.0, PH = 4.3, PT = .045, NP = PrintArt.PAGES || 5, STEP = PH, R_POLAR = .1, RT = .052, RB = .022;
-const rScene = new THREE.Scene(); rScene.environment = scene.environment; rScene.environmentIntensity = .55;
+const rScene = new THREE.Scene(); rScene.background = bgTex; rScene.environment = scene.environment; rScene.environmentIntensity = .55;
 rScene.add(new THREE.HemisphereLight('#f6f4ff', '#dcc8b8', 1.05));
 const rKey = new THREE.DirectionalLight('#fff1dc', 2.5); rKey.castShadow = true; rKey.shadow.mapSize.set(coarse ? 1024 : 2048, coarse ? 1024 : 2048);
 Object.assign(rKey.shadow.camera, { left: -3.6, right: 3.6, top: 3.6, bottom: -3.6, near: .5, far: 20 }); rKey.shadow.camera.updateProjectionMatrix();
