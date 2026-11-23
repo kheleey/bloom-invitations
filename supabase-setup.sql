@@ -19,14 +19,16 @@ alter table public.bloom_events enable row level security;
 drop policy if exists "guests can read" on public.bloom_events;
 create policy "guests can read" on public.bloom_events for select to anon, authenticated using (true);
 drop policy if exists "guests can add" on public.bloom_events;
+-- If you rename an invitation's key in index.html, change it in this list too ('test-only' is for the security test).
 create policy "guests can add" on public.bloom_events for insert to anon, authenticated with check (
+  invite in ('cherry-blossom', 'tulip', 'rose', 'lavender', 'sunflower', 'test-only') and (
      (kind = 'gift'  and item in ('gift', 'bouquet', 'balloons', 'heart', 'cake') and name is null and message is null)
   or (kind = 'cheer' and item in ('Congratulations!', 'Can’t wait!', 'So happy for you', 'Cheers!', 'See you there', 'With love') and name is null and message is null)
   or (kind = 'wish'  and char_length(trim(coalesce(name, ''))) > 0 and char_length(trim(coalesce(message, ''))) > 0
       -- wishes are public: no links, emails or phone numbers (11 or more digits, so dates and times are fine)
       and (name || ' | ' || message) !~* '(https?://|www\.|t\.me/|[a-z0-9-]+\.(com|net|org|cn|io|me|co|xyz|top|info|link|ly|app|site|shop|vip|cc)\y|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})'
       and (name || ' | ' || message) !~ '[0-9]([[:space:]()-]*[0-9]){10,}')
-);
+));
 
 -- 3. Slow down anyone sending too much at once
 create or replace function public.bloom_rate_limit() returns trigger language plpgsql security definer set search_path = public as $$
@@ -42,8 +44,8 @@ begin
   if (select count(*) from public.bloom_events where invite = new.invite and created_at > now() - interval '1 minute') >= 90 then
     raise exception 'Too many in a short time. Please wait a moment.';
   end if;
-  if (select count(*) from public.bloom_events) >= 50000 then
-    raise exception 'The guestbook is full.';
+  if (select count(*) from public.bloom_events where invite = new.invite) >= 10000 then
+    raise exception 'This guestbook is full.';             -- the host's reset empties it again
   end if;
   return new;
 end $$;
@@ -78,6 +80,7 @@ alter table public.bloom_owner enable row level security;      -- no policies, s
 revoke all on public.bloom_owner from anon, authenticated;
 
 -- wrong guesses are counted; after 8 in 15 minutes the reset stops checking codes for a while
+-- (if someone locks you out on purpose, run:  delete from public.bloom_attempts;  to unlock it)
 create table if not exists public.bloom_attempts (at timestamptz not null default now());
 alter table public.bloom_attempts enable row level security;
 revoke all on public.bloom_attempts from anon, authenticated;

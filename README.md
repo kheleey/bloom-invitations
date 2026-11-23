@@ -64,8 +64,8 @@ The code is stored only as a bcrypt hash in a table guests can't read, and wrong
 ### Security notes
 - The Supabase **publishable (anon) key** in `index.html` is meant to be public. Row-level security lets guests only read and add, and only in the allowed shapes: the five gifts, the six cheers on the tray, and wishes up to 1000 characters with no links, emails or phone numbers (wishes are public, so this protects guests and keeps spam out). Never put the `service_role` or **secret** key in the page.
 - Everything guests send, including wish names and messages, can be read by anyone with the link. Tell guests that wishes are public.
-- Spam is limited per browser, per invitation (90 a minute) and in total (50,000 rows). If you change the cheers on the tray, change the list in the `guests can add` policy in `supabase-setup.sql` too, and run it again.
-- The host code is stored only as a bcrypt hash in a table guests can't read. After 8 wrong codes in 15 minutes, the reset stops accepting codes for a while.
+- Guests can only post to your five invitations. Spam is limited per browser, per invitation (90 a minute) and to 10,000 rows per invitation, which the host's reset empties again. If you rename an invitation's `key`, change it in the policy list in `supabase-setup.sql` too. If you change the cheers on the tray, change the list in the `guests can add` policy in `supabase-setup.sql` too, and run it again.
+- The host code is stored only as a bcrypt hash in a table guests can't read. After 8 wrong codes in 15 minutes, the reset stops accepting codes for a while. If someone locks you out on purpose, run `delete from public.bloom_attempts;` in Supabase's SQL Editor to unlock it.
 
 ## Make it yours
 
