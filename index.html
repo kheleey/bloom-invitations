@@ -1333,7 +1333,11 @@ function instanced(geo, mat, list, colors) {
   m.count = list.length; m.frustumCulled = false; m.castShadow = true; m.receiveShadow = true; return m;
 }
 const softTex = (stops, size = 128) => { const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'), g = x.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2); stops.forEach(([o, col]) => g.addColorStop(o, col)); x.fillStyle = g; x.fillRect(0, 0, size, size); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
-const mistTex = softTex([[0, 'rgba(255,255,255,.9)'], [.5, 'rgba(255,255,255,.35)'], [1, 'rgba(255,255,255,0)']]);
+const mistTex = (() => {   // built pixel by pixel: a 2D-canvas gradient left colour noise that iPhones showed as sparkles
+  const N = 128, d = new Uint8Array(N * N * 4), A = r => r < .5 ? .9 + (.35 - .9) * r / .5 : r < 1 ? .35 * (1 - (r - .5) / .5) : 0;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const r = Math.hypot(x + .5 - N / 2, y + .5 - N / 2) / (N / 2), k = (y * N + x) * 4; d[k] = d[k + 1] = d[k + 2] = 255; d[k + 3] = Math.round(A(r) * 255); }
+  const t = new THREE.DataTexture(d, N, N); t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.needsUpdate = true; return t;
+})();
 const wingTex = (() => {
   const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.translate(0, 64);
   const wing = (sx, sy, rx, ry, rot) => { x.save(); x.translate(sx, sy); x.rotate(rot); x.beginPath(); x.ellipse(rx * .55, 0, rx * .6, ry, 0, 0, TAU); x.restore(); };
